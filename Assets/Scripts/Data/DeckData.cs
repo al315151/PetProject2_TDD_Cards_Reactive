@@ -30,4 +30,31 @@ public class DeckData
             }
         }
     }
+
+    public CardData GetTopCardFromDeck()
+    {
+        //Get card and remove it.
+        var topCardFromDeck = deckCardData.FirstOrDefault();
+        deckCardData.Remove(topCardFromDeck);
+        return topCardFromDeck;
+    }
+
+    public void Shuffle()
+    {
+        // One card at a time, let's find the next one to add.
+        var shuffledDeck = new List<CardData>();
+
+        var randomProcess = new Random();
+
+        var initialDeckSize = deckCardData.Count;
+
+        for (int i = 0; i < initialDeckSize; i++)
+        {
+            var cardIndexToMove = randomProcess.Next(deckCardData.Count);
+            var cardToShuffle = deckCardData[cardIndexToMove];
+            deckCardData.RemoveAt(cardIndexToMove);
+            shuffledDeck.Add(cardToShuffle);
+        }
+        deckCardData = shuffledDeck;
+    }
 }
