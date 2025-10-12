@@ -8,6 +8,12 @@ public class GameManagerData
 
     private List<PlayerData> playersData;
     private DeckData deckData;
+    private int currentRound;
+
+    private IGameRoundPrototype gameRoundConcretePrototype;
+
+    private GameRoundData currentGameRound;
+    private List<GameRoundData> roundDataHistory;
 
     public void CreateGame(int numberOfCPUPlayers)
     {
@@ -25,6 +31,9 @@ public class GameManagerData
 
         deckData = new DeckData();
         deckData.CreateDeck();
+
+        gameRoundConcretePrototype = new GameRoundData(currentRound);
+        roundDataHistory = new List<GameRoundData>();
     }
 
     public void StartGame()
@@ -53,5 +62,64 @@ public class GameManagerData
                 player.AddCardToHandFromDeck(deckData);
            }
         }
+    }
+
+    public int GetCurrentRoundId()
+    {
+        return currentGameRound.RoundId;
+    }
+
+    public int GetCurrentPlayerInOrder()
+    {
+        return currentGameRound.GetCurrentPlayerIdInOrder();
+    }
+
+    public void CreateAndStartRound()
+    {
+        currentRound++;
+        var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
+        if (currentGameRound != null)
+        {
+            roundDataHistory.Add(currentGameRound);
+        }
+        currentGameRound = gameRoundPrototype as GameRoundData;
+    }
+
+    public void EstablishRoundOrder()
+    {
+        // Winner of last round will start.
+        // Otherwise, player will go last. 
+        var playerOrder = new List<int>();
+        var startingIndex = 1;
+        if (currentGameRound.RoundId <= 1)
+        {
+            startingIndex = 1;
+        }
+        else
+        {
+            var previousRoundWinner = roundDataHistory[roundDataHistory.Count - 1].RoundWinnerId;
+            startingIndex = 0;
+            for (int i = 0; i < playersData.Count; i++)
+            {
+                if (playersData[i].PlayerId == previousRoundWinner)
+                {
+                    startingIndex = i;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < playersData.Count; i++)
+        {
+            if (startingIndex == playersData.Count)
+            {
+                startingIndex = 0;
+            }
+
+            playerOrder.Add(playersData[startingIndex].PlayerId);
+            startingIndex++;
+        }
+
+        currentGameRound.SetPlayerOrder(playerOrder);
     }
 }
