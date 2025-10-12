@@ -7,8 +7,12 @@ public class DeckData
     public static int NumberOfCardsPerSuit = 12;
 
     public int DeckCardCount => deckCardData.Count;
+    public CardSuit ChosenCardSuit => chosenCardSuit;
 
     private List<CardData> deckCardData;
+    private CardSuit chosenCardSuit;
+
+    
 
     public DeckData() {
         deckCardData = new List<CardData>();
@@ -56,5 +60,15 @@ public class DeckData
             shuffledDeck.Add(cardToShuffle);
         }
         deckCardData = shuffledDeck;
+    }
+
+    public void ChooseInitialSuit()
+    {
+        //Suit is chosen by grabbing intial card and storing its suit.        
+        var firstCard = GetTopCardFromDeck();
+        chosenCardSuit = firstCard.CardSuit;
+
+        // After being chosen, it will be placed onto the bottom of the deck.
+        deckCardData.Add(firstCard);
     }
 }

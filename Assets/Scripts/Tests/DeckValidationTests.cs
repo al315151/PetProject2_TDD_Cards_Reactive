@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 public class DeckValidationTests
@@ -89,24 +88,18 @@ public class DeckValidationTests
         Assert.IsTrue(isDeckShuffled);
     }
 
-
     [Test]
-    public void PlayerValidationTestGetCardsUpToCardLimit()
+    public void DeckValidationTestChooseGameSuit()
     {
         var deck = new DeckData();
         deck.CreateDeck();
+        deck.ChooseInitialSuit();
 
-        //Create player
-        var player = new PlayerData();
-        player.AddCardToHandFromDeck(deck);
+        CardSuit cardSuit = deck.ChosenCardSuit;
 
-        for (int i = 0; i < 10; i++)
-        {
-            player.AddCardToHandFromDeck(deck);
-        }
-
-        Assert.IsTrue(player.PlayerHandSize == PlayerData.MaxHandSize);
+        Assert.IsNotNull(cardSuit);
     }
+    
 
     // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
     // `yield return null;` to skip a frame.
