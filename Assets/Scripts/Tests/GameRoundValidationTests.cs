@@ -3,17 +3,22 @@ using UnityEngine;
 
 public class GameRoundValidationTests
 {
-    [Test]
-    public void GameRoundValidationCreateGameRound()
+    private void SetupGameManagerAndStartGame(out GameManagerData gameManager)
     {
         var numberOfCPUPlayers = 2;
 
-        var gameManager = new GameManagerData();
+        gameManager = new GameManagerData();
 
         //Create the game and start it.
         //Only then Game Rounds can be created.
         gameManager.CreateGame(numberOfCPUPlayers);
         gameManager.StartGame();
+    }
+
+    [Test]
+    public void GameRoundValidationCreateGameRound()
+    {
+        SetupGameManagerAndStartGame(out GameManagerData gameManager);
 
         gameManager.CreateAndStartRound();
 
@@ -23,12 +28,7 @@ public class GameRoundValidationTests
     [Test]
     public void GameRoundValidationEstablishRoundOrder()
     {
-
-        var numberOfCPUPlayers = 2;
-        var gameManager = new GameManagerData();
-
-        gameManager.CreateGame(numberOfCPUPlayers);
-        gameManager.StartGame();
+        SetupGameManagerAndStartGame(out GameManagerData gameManager);
 
         gameManager.CreateAndStartRound();
 
@@ -36,13 +36,23 @@ public class GameRoundValidationTests
         //For now resolving the round is not needed.
         gameManager.EstablishRoundOrder();
 
-        //For first round, first player should be the first CPU, and the player should be the last.
-        var gameRound = gameManager.GetCurrentRoundId();
-
         var firstPlayerInPlayOrder = gameManager.GetCurrentPlayerInOrder();
         var firstCPUId = 1;
 
         Assert.IsTrue(firstPlayerInPlayOrder == firstCPUId);
+    }
+
+    [Test]
+    public void GameRoundValidationPlayRound()
+    {
+        SetupGameManagerAndStartGame(out GameManagerData gameManager);
+
+        gameManager.CreateAndStartRound();
+        gameManager.EstablishRoundOrder();
+
+        //Number of players: 2 + player.
+
+
     }
 
 }

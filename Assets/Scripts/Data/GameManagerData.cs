@@ -43,7 +43,6 @@ public class GameManagerData
         deckData.ChooseInitialSuit();
 
         DrawInitialHandForPlayers();
-
     }
 
     public int CurrentDeckSize()
