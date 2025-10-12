@@ -20,6 +20,7 @@ public class PlayerData : IPlayerPrototype
     public PlayerData(PlayerData copy)
     {
         id = copy.id;
+        playerHand = new List<CardData>();
     }
 
     public void SetupId(int id)
