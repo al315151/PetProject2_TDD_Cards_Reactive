@@ -12,24 +12,13 @@ public class PlayerData : IPlayerPrototype
 
     public bool PlayedCardForTheRound { get; set; }
 
-    private int id;
+    private readonly int id;
     private List<CardData> playerHand;
 
     public PlayerData(int id = 0)
     {
         this.id = id;
         playerHand = new List<CardData>();
-    }
-
-    public PlayerData(PlayerData copy)
-    {
-        id = copy.id;
-        playerHand = new List<CardData>();
-    }
-
-    public void SetupId(int id)
-    {
-        this.id = id;
     }
 
     public void AddCardToHandFromDeck(DeckData deck)
@@ -41,9 +30,9 @@ public class PlayerData : IPlayerPrototype
         playerHand.Add(deck.GetTopCardFromDeck());
     }
 
-    public IPlayerPrototype Clone()
+    public IPlayerPrototype Clone(int id)
     {
-        return new PlayerData(this);
+        return new PlayerData(id);
     }
 
     public void RequestCardFromPlayer()

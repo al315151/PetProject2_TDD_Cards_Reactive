@@ -25,8 +25,8 @@ public class PlayerValidationTests
     public void PlayerValidationTestCreatePrototypePlayerFromBasePlayer()
     {
         var newPlayer = new PlayerData();
-        var copyOfNewPlayer = newPlayer.Clone() as PlayerData;
+        var copyOfNewPlayer = newPlayer.Clone(4) as PlayerData;
 
-        Assert.IsTrue(newPlayer.PlayerId == copyOfNewPlayer.PlayerId && newPlayer.GetHashCode() != copyOfNewPlayer.GetHashCode());
+        Assert.IsTrue(newPlayer.PlayerId != copyOfNewPlayer.PlayerId && newPlayer.GetHashCode() != copyOfNewPlayer.GetHashCode());
     }
 }

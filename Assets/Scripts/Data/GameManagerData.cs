@@ -24,8 +24,7 @@ public class GameManagerData
 
         for (int i = 0; i < numberOfCPUPlayers; i++)
         {
-            var newCPU = basePlayer.Clone() as PlayerData;
-            newCPU.SetupId(playersData.Count);
+            var newCPU = basePlayer.Clone(playersData.Count) as PlayerData;
             playersData.Add(newCPU);
         }
 
@@ -83,7 +82,7 @@ public class GameManagerData
         }
         currentGameRound = gameRoundPrototype as GameRoundData;
 
-        currentGameRound.ReceivePlayersFromRound(playersData);
+        currentGameRound.ReceivePlayers(playersData);
     }
 
     public void EstablishRoundOrder()

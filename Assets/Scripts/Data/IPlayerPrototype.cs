@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IPlayerPrototype
 {
-    public IPlayerPrototype Clone();
+    public IPlayerPrototype Clone(int id);
 }

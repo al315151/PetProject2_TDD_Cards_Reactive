@@ -45,7 +45,7 @@ public class GameRoundData : IGameRoundPrototype
         return playerOrder[currentPlayerInOrderIndex];
     }
 
-    public void ReceivePlayersFromRound(List<PlayerData> playersData)
+    public void ReceivePlayers(List<PlayerData> playersData)
     {
         UnsubscribeToPlayerEvents();
 

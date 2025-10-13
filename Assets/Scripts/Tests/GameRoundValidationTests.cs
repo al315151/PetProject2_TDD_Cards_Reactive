@@ -57,7 +57,7 @@ public class GameRoundValidationTests
 
         GameRoundData round = gameManager.GetCurrentRound();
 
-        //Following order, wait until all players do paly their cards. 
+        //Following order, wait until all players do play their cards. 
         round.StartPlayPhase();
 
         var timeoutInSeconds = 3;
