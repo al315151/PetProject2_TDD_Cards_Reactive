@@ -1,5 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
-using UnityEngine;
 
 public class GameRoundValidationTests
 {
@@ -43,7 +45,7 @@ public class GameRoundValidationTests
     }
 
     [Test]
-    public void GameRoundValidationPlayRound()
+    public async Task GameRoundValidationPlayPhaseMakesPlayersSelectCardForRound()
     {
         SetupGameManagerAndStartGame(out GameManagerData gameManager);
 
@@ -51,7 +53,26 @@ public class GameRoundValidationTests
         gameManager.EstablishRoundOrder();
 
         //Number of players: 2 + player.
+        List<PlayerData> players = gameManager.GetPlayers();
 
+        GameRoundData round = gameManager.GetCurrentRound();
+
+        //Following order, wait until all players do paly their cards. 
+        round.StartPlayPhase();
+
+        var timeoutInSeconds = 3;
+
+        var timeoutInSecondsTimeStamp = DateTime.Now;
+        while(round.IsRoundPlayPhaseFinished == false)
+        {
+            await Task.Delay(100);
+            if ((DateTime.Now - timeoutInSecondsTimeStamp).TotalSeconds > timeoutInSeconds)
+            {
+                break;
+            }
+        }
+
+        Assert.IsTrue(round.IsRoundPlayPhaseFinished);
 
     }
 

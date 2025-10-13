@@ -5,8 +5,12 @@ public class PlayerData : IPlayerPrototype
 {
     public static int MaxHandSize = 3;
 
+    public Action<int, CardData> OnCardPlayed;
+
     public int PlayerHandSize => playerHand.Count;
     public int PlayerId => id;
+
+    public bool PlayedCardForTheRound { get; set; }
 
     private int id;
     private List<CardData> playerHand;
@@ -40,5 +44,13 @@ public class PlayerData : IPlayerPrototype
     public IPlayerPrototype Clone()
     {
         return new PlayerData(this);
+    }
+
+    public void RequestCardFromPlayer()
+    {
+        //For now, choose card at random.
+        var randomIndex = new Random().Next(playerHand.Count);
+        var randomCard = playerHand[randomIndex];
+        OnCardPlayed?.Invoke(id, randomCard);
     }
 }

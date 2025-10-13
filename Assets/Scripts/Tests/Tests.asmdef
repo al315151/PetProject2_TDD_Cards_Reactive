@@ -4,7 +4,9 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "CardGame.Data"
+        "CardGame.Data",
+        "R3.Unity",
+        "R3.Unity.Editor"
     ],
     "includePlatforms": [
         "Editor"

@@ -82,6 +82,8 @@ public class GameManagerData
             roundDataHistory.Add(currentGameRound);
         }
         currentGameRound = gameRoundPrototype as GameRoundData;
+
+        currentGameRound.ReceivePlayersFromRound(playersData);
     }
 
     public void EstablishRoundOrder()
@@ -120,5 +122,15 @@ public class GameManagerData
         }
 
         currentGameRound.SetPlayerOrder(playerOrder);
+    }
+
+    public List<PlayerData> GetPlayers()
+    {
+        return playersData;
+    }
+
+    public GameRoundData GetCurrentRound()
+    {
+        return currentGameRound;
     }
 }
