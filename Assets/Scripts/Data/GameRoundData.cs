@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Codice.CM.Common;
+using UnityEngine;
 
 public class GameRoundData : IGameRoundPrototype
 {
@@ -13,7 +15,7 @@ public class GameRoundData : IGameRoundPrototype
 
     private List<PlayerData> playersData;
 
-    private List<KeyValuePair<int, CardData>> playedCardsByPlayers;
+    private Dictionary<int, CardData> playedCardsByPlayers;
 
     private int roundWinnerId;
     private int currentPlayerInOrderIndex;
@@ -22,7 +24,7 @@ public class GameRoundData : IGameRoundPrototype
     {
         this.roundId = roundId;
         playerOrder = new List<int>();
-        playedCardsByPlayers = new List<KeyValuePair<int, CardData>>();
+        playedCardsByPlayers = new Dictionary<int, CardData>();
     }
 
     public IGameRoundPrototype Clone(int roundId)
@@ -70,7 +72,7 @@ public class GameRoundData : IGameRoundPrototype
 
     private void OnCardPlayedFromPlayer(int playerId, CardData cardData)
     {
-        playedCardsByPlayers.Add(new KeyValuePair<int, CardData>(playerId, cardData));
+        playedCardsByPlayers.Add(playerId, cardData);
 
         currentPlayerInOrderIndex++;
         //Stop going through users if they have all played.
@@ -105,5 +107,64 @@ public class GameRoundData : IGameRoundPrototype
                 break;
             }
         }
+    }
+
+    public int ResolveRound(CardSuit predominantCardSuit)
+    {
+        //Rounds can be resolved with the following rules.
+        //First get the cards on the predominant suit.
+        //If there is more than one, those will be resolved by their scores.
+        //if there is none, the first player in order will count as the predominant suit.
+
+        List<int> playersWithPredominantSuit = new List<int>();
+
+        var dictionaryEnumerator = playedCardsByPlayers.GetEnumerator();
+
+        while (dictionaryEnumerator.MoveNext()) {
+            if (dictionaryEnumerator.Current.Value.CardSuit == predominantCardSuit)
+            {
+                playersWithPredominantSuit.Add(dictionaryEnumerator.Current.Key);
+            }
+        }
+
+        if (playersWithPredominantSuit.Count == 1)
+        {
+            // Only one player with it, it wins the round!
+            return playersWithPredominantSuit[0];
+        }
+        if (playersWithPredominantSuit.Count == 0)
+        {
+            return ResolveRound(playedCardsByPlayers[playerOrder[0]].CardSuit);
+        }
+
+        //This situation requires a check to know which player wins the round.
+        //First we go by max score, then if two players are equal at score, then we go at max number.
+        // Given that only players that played specific suit arrive here, all cards should be unique and thus there will be no ties.
+
+        var maxScore = -1;
+        var maxNumber = 0;
+
+        var maxScorePlayerId = 0;
+        var maxNumberPlayerId = 0;
+
+        for (int i = 0; i < playersWithPredominantSuit.Count; i++)
+        {
+            var cardNumber = playedCardsByPlayers[playersWithPredominantSuit[i]].CardNumber;
+            var cardScore = CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(cardNumber);
+
+            if (maxScore < cardScore)
+            {
+                maxScorePlayerId = playersWithPredominantSuit[i];
+            }
+            if (maxNumber < cardNumber)
+            {
+                maxNumberPlayerId = playersWithPredominantSuit[i];
+            }
+
+            maxScore = Mathf.Max(maxScore, cardScore);
+            maxNumber = Mathf.Max(maxNumber, cardNumber);
+        }
+
+        return maxScore > 0 ? maxScorePlayerId : maxNumberPlayerId;
     }
 }

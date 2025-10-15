@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using UnityEngine;
 
 public class GameRoundValidationTests
 {
@@ -58,12 +59,148 @@ public class GameRoundValidationTests
         GameRoundData round = gameManager.GetCurrentRound();
 
         //Following order, wait until all players do play their cards. 
-        round.StartPlayPhase();
+        await GameRoundPlayPhase(round);
+
+        Assert.IsTrue(round.IsRoundPlayPhaseFinished);
+    }
+
+    [Test]
+    public async Task GameRoundValidationResolvePhase_PlayerWins_ChosenSuit()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+        
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(chosenCardSuit, 5));
+        players[1].AddCard(new CardData(otherCardSuit, 5));
+        players[2].AddCard(new CardData(otherCardSuit, 1));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+
+        Assert.IsTrue(winnerId == players[0].PlayerId);
+    }
+
+    [Test]
+    public async Task GameRoundValidationResolvePhase_PlayerWinsWithHighestScore_ChosenSuit()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(chosenCardSuit, 5));
+        players[1].AddCard(new CardData(chosenCardSuit, 12));
+        players[2].AddCard(new CardData(otherCardSuit, 1));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+
+        Assert.IsTrue(winnerId == players[1].PlayerId);
+    }
+
+    [Test]
+    public async Task GameRoundValidationResolvePhase_FirstPlayerWins_NoChosenSuit()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+        CardSuit anotherCardSuit = CardSuit.Coins;
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(otherCardSuit, 5));
+        players[1].AddCard(new CardData(anotherCardSuit, 12));
+        players[2].AddCard(new CardData(anotherCardSuit, 1));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+
+        Assert.IsTrue(winnerId == players[0].PlayerId);
+    }
+
+    [Test]
+    public async Task GameRoundValidationResolvePhase_PlayerWinsWithHighestScore_NoChosenSuit()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+        CardSuit anotherCardSuit = CardSuit.Coins;
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(otherCardSuit, 5));
+        players[1].AddCard(new CardData(anotherCardSuit, 12));
+        players[2].AddCard(new CardData(otherCardSuit, 1));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+
+        Assert.IsTrue(winnerId == players[2].PlayerId);
+    }
+
+    [Test]
+    public async Task GameRoundValidationResolvePhase_PlayerWinsWithHighestNumber_NoScore_NoChosenSuit()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+        CardSuit anotherCardSuit = CardSuit.Coins;
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(otherCardSuit, 5));
+        players[1].AddCard(new CardData(anotherCardSuit, 12));
+        players[2].AddCard(new CardData(otherCardSuit, 2));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+
+        Assert.IsTrue(winnerId == players[0].PlayerId);
+    }
+
+    private void CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData)
+    {
+        var playerData = new PlayerData();
+
+        players = new() {
+            playerData.Clone(1) as PlayerData,
+            playerData.Clone(2) as PlayerData,
+            playerData.Clone(3) as PlayerData,
+        };
+
+        gameRoundData = new GameRoundData(1);
+        gameRoundData.ReceivePlayers(players);
+        gameRoundData.SetPlayerOrder(new() { 1, 2, 3 });
+    }
+
+    private async Task GameRoundPlayPhase(GameRoundData gameRoundData)
+    {
+        gameRoundData.StartPlayPhase();
 
         var timeoutInSeconds = 3;
 
         var timeoutInSecondsTimeStamp = DateTime.Now;
-        while(round.IsRoundPlayPhaseFinished == false)
+        while (gameRoundData.IsRoundPlayPhaseFinished == false)
         {
             await Task.Delay(100);
             if ((DateTime.Now - timeoutInSecondsTimeStamp).TotalSeconds > timeoutInSeconds)
@@ -71,9 +208,6 @@ public class GameRoundValidationTests
                 break;
             }
         }
-
-        Assert.IsTrue(round.IsRoundPlayPhaseFinished);
-
     }
 
 }

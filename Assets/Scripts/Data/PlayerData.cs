@@ -42,4 +42,9 @@ public class PlayerData : IPlayerPrototype
         var randomCard = playerHand[randomIndex];
         OnCardPlayed?.Invoke(id, randomCard);
     }
+
+    public void AddCard(CardData cardData)
+    {
+        playerHand.Add(cardData);
+    }
 }
