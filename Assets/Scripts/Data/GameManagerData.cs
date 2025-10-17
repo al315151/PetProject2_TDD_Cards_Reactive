@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 public class GameManagerData
 {
@@ -19,7 +20,8 @@ public class GameManagerData
     {
         playersData = new List<PlayerData>();
 
-        var basePlayer = new PlayerData();
+        //Player will be -1. No player should be allowed to be 0.
+        var basePlayer = new PlayerData(-1);
         playersData.Add(basePlayer);
 
         for (int i = 0; i < numberOfCPUPlayers; i++)
@@ -131,5 +133,23 @@ public class GameManagerData
     public GameRoundData GetCurrentRound()
     {
         return currentGameRound;
+    }
+
+    public void StartPlayRound()
+    {        
+        //First setup the Round object.
+        CreateAndStartRound();
+        // Then set round order.
+        EstablishRoundOrder();
+        // Then, start the Play phase. we will receive event / wait for the cards to be played 
+        currentGameRound.StartPlayPhase();       
+        // On current gameplay, we will have to wait for player input to actually know when to resolve the situation.
+    }
+
+    public void FinishRound()
+    {
+        var winnerId = currentGameRound.ResolveRound(deckData.ChosenCardSuit);
+
+        currentGameRound.FinishRound(winnerId);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Codice.CM.Common;
 using UnityEngine;
@@ -8,6 +9,8 @@ public class GameRoundData : IGameRoundPrototype
     public int RoundWinnerId => roundWinnerId;
 
     public bool IsRoundPlayPhaseFinished => playedCardsByPlayers.Count == playersData.Count;
+
+    public bool IsRoundFinished { get; private set; }
 
     private readonly int roundId;
 
@@ -25,6 +28,7 @@ public class GameRoundData : IGameRoundPrototype
         this.roundId = roundId;
         playerOrder = new List<int>();
         playedCardsByPlayers = new Dictionary<int, CardData>();
+        IsRoundFinished = false;
     }
 
     public IGameRoundPrototype Clone(int roundId)
@@ -35,11 +39,6 @@ public class GameRoundData : IGameRoundPrototype
     public void SetPlayerOrder(List<int> playerOrder)
     {
         this.playerOrder = playerOrder;
-    }
-
-    public void SetupRoundWinner(int roundWinnerId)
-    {
-        this.roundWinnerId = roundWinnerId;
     }
 
     public int GetCurrentPlayerIdInOrder()
@@ -130,10 +129,12 @@ public class GameRoundData : IGameRoundPrototype
         if (playersWithPredominantSuit.Count == 1)
         {
             // Only one player with it, it wins the round!
-            return playersWithPredominantSuit[0];
+            roundWinnerId = playersWithPredominantSuit[0];
+            return roundWinnerId;
         }
         if (playersWithPredominantSuit.Count == 0)
         {
+            //No players with predominant score, we will use the first player suit as the chosen suit.
             return ResolveRound(playedCardsByPlayers[playerOrder[0]].CardSuit);
         }
 
@@ -165,6 +166,36 @@ public class GameRoundData : IGameRoundPrototype
             maxNumber = Mathf.Max(maxNumber, cardNumber);
         }
 
-        return maxScore > 0 ? maxScorePlayerId : maxNumberPlayerId;
+        var winnerId = maxScore > 0 ? maxScorePlayerId : maxNumberPlayerId;
+        roundWinnerId = winnerId;
+
+        return winnerId;
+    }
+
+    public int GetTotalRoundScore()
+    {
+        var totalRoundScore = 0;
+        var dictionaryEnumerator = playedCardsByPlayers.GetEnumerator();
+
+        while (dictionaryEnumerator.MoveNext())
+        {
+            totalRoundScore += CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(dictionaryEnumerator.Current.Value.CardNumber);
+        }
+        return totalRoundScore;
+    }
+
+    public void FinishRound(int winnerId)
+    {
+        var roundScore = GetTotalRoundScore();
+        
+        for (int i = 0; i < playersData.Count; i++)
+        {
+            if (playersData[i].PlayerId == winnerId)
+            {
+                playersData[i].AddScoreToPlayer(roundScore);
+            }
+        }
+
+        IsRoundFinished = true;
     }
 }

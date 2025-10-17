@@ -14,6 +14,7 @@ public class PlayerData : IPlayerPrototype
 
     private readonly int id;
     private List<CardData> playerHand;
+    int score = 0;
 
     public PlayerData(int id = 0)
     {
@@ -46,5 +47,15 @@ public class PlayerData : IPlayerPrototype
     public void AddCard(CardData cardData)
     {
         playerHand.Add(cardData);
+    }
+
+    public int GetScore()
+    {
+        return score;
+    }
+
+    public void AddScoreToPlayer(int roundScore)
+    {
+        score += roundScore;
     }
 }

@@ -178,6 +178,59 @@ public class GameRoundValidationTests
         Assert.IsTrue(winnerId == players[0].PlayerId);
     }
 
+    [Test]
+    public async Task GameRoundValidationResolvePhase_RoundScoreResult_OneAce_EqualsToItsPoints()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+        CardSuit anotherCardSuit = CardSuit.Coins;
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(otherCardSuit, 5));
+        players[1].AddCard(new CardData(anotherCardSuit, 1));
+        players[2].AddCard(new CardData(otherCardSuit, 2));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+
+        int scoreFromRound = gameRoundData.GetTotalRoundScore();
+        int scoreForAce = CardNumberToScoreConversionHelper.CardNumberToScoreConversion[1];
+
+        Assert.IsTrue(scoreFromRound == scoreForAce);
+    }
+
+    [Test]
+    public async Task GameRoundValidationEndPhase_FinishRound_WinnerObtainsPointsFromRound()
+    {
+        CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+
+        CardSuit chosenCardSuit = CardSuit.Swords;
+        CardSuit otherCardSuit = CardSuit.Clubs;
+        CardSuit anotherCardSuit = CardSuit.Coins;
+
+        //Add expected cards to players so that we can rig who is going to win.
+        players[0].AddCard(new CardData(otherCardSuit, 5));
+        players[1].AddCard(new CardData(anotherCardSuit, 12));
+        players[2].AddCard(new CardData(otherCardSuit, 2));
+
+        await GameRoundPlayPhase(gameRoundData);
+
+        Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+        int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+        int scoreFromRound = gameRoundData.GetTotalRoundScore();
+        gameRoundData.FinishRound(winnerId);
+
+        Assert.IsTrue(players[0].GetScore() == scoreFromRound);
+        
+    }
+
+
     private void CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData)
     {
         var playerData = new PlayerData();

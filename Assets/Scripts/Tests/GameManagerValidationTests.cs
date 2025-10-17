@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameManagerValidationTests
 {
@@ -16,7 +19,7 @@ public class GameManagerValidationTests
     }
 
     [Test]
-    public void GameManagerTestStartGame()
+    public void GameManagerValidation_StartGame_PlayersReceiveIntendedInitialCards()
     {
         var numberOfCPUPlayers = 2;
         var gameManager = new GameManagerData();
@@ -31,6 +34,91 @@ public class GameManagerValidationTests
         var currentDeckSize = gameManager.CurrentDeckSize();
 
         Assert.IsTrue(currentDeckSize == numberOfExpectedCards - (playerMaxHandCount * gameManager.NumberOfPlayers));
+    }
+
+    [Test]
+    public async Task GameManagerValidation_PlayOneRound()
+    {
+        var numberOfCPUPlayers = 2;
+        var gameManager = new GameManagerData();
+        gameManager.CreateGame(numberOfCPUPlayers);
+
+        var players = gameManager.GetPlayers();
+
+        gameManager.StartGame();
+        gameManager.StartPlayRound();
+
+        var currentRound = gameManager.GetCurrentRound();
+
+
+        var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
+
+        Assert.IsTrue(playPhaseFinished);
+
+        gameManager.FinishRound();
+
+        var roundFinished = await WaitForRoundToBeFinished(currentRound);
+
+        Assert.IsTrue(roundFinished);
+
+        //Make sure the winner player has gotten the score.
+
+        var roundWinner = GetRoundWinner(players, currentRound);
+        var roundScore = currentRound.GetTotalRoundScore();
+        
+
+        Assert.IsTrue(roundWinner.GetScore() == roundScore);
+
+    }
+
+    private async Task<bool> WaitForRoundToBeFinished(GameRoundData round)
+    {
+        var timeoutLengthInSeconds = 3;
+        var timeoutStartTime = DateTime.Now;
+
+        while (round.IsRoundFinished == false)
+        {
+            if ((DateTime.Now - timeoutStartTime).TotalSeconds > timeoutLengthInSeconds)
+            {
+                break;
+            }
+            await Task.Delay(100);
+        }
+
+        return round.IsRoundFinished;
+    }
+
+    private async Task<bool> WaitForRoundPlayPhaseToBeFinished(GameRoundData round)
+    {
+        var timeoutLengthInSeconds = 3;
+        var timeoutStartTime = DateTime.Now;
+
+        while (round.IsRoundPlayPhaseFinished == false)
+        {
+            if ((DateTime.Now - timeoutStartTime).TotalSeconds > timeoutLengthInSeconds)
+            {
+                break;
+            }
+            await Task.Delay(100);
+        }
+
+        return round.IsRoundPlayPhaseFinished;
+    }
+
+    private PlayerData GetRoundWinner(List<PlayerData> players, GameRoundData round)
+    {
+        var winnerId = round.RoundWinnerId;
+        PlayerData roundWinner = null;
+
+        for (var i = 0; i < players.Count; i++)
+        {
+            if (players[i].PlayerId == winnerId)
+            {
+                roundWinner = players[i];
+                break;
+            }
+        }
+        return roundWinner;
     }
 
 }
