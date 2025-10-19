@@ -47,19 +47,10 @@ public class GameManagerValidationTests
         var players = gameManager.GetPlayers();
 
         gameManager.StartGame();
-        gameManager.StartPlayRound();
 
-        var currentRound = gameManager.GetCurrentRound();
+        await PlayOneRound(gameManager);
         
-        var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
-
-        Assert.IsTrue(playPhaseFinished);
-
-        gameManager.FinishRound();
-
-        var roundFinished = await WaitForRoundToBeFinished(currentRound);
-
-        Assert.IsTrue(roundFinished);
+        var currentRound = gameManager.GetCurrentRound();
 
         //Make sure the winner player has gotten the score.
 
@@ -69,6 +60,26 @@ public class GameManagerValidationTests
         Assert.IsTrue(roundWinner.GetScore() == roundScore);
     }
 
+    [Test]
+    public async Task GameManagerValidation_PlayTwoRounds()
+    {
+        
+    }
+
+    private async Task<bool> PlayOneRound(GameManagerData gameManager)
+    {
+        gameManager.StartPlayRound();
+        
+        var currentRound = gameManager.GetCurrentRound();
+        var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
+
+        gameManager.FinishRound();
+
+        var roundFinished = await WaitForRoundToBeFinished(currentRound);
+
+        return playPhaseFinished && roundFinished;
+    }
+    
     private async Task<bool> WaitForRoundToBeFinished(GameRoundData round)
     {
         var timeoutLengthInSeconds = 3;
