@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using NUnit.Framework;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameManagerValidationTests
 {
@@ -38,7 +37,7 @@ public class GameManagerValidationTests
     }
 
     [Test]
-    public async Task GameManagerValidation_PlayOneRound()
+    public async Task GameManagerValidation_PlayOneRound_RoundLifecycleIsCorrect()
     {
         var numberOfCPUPlayers = 2;
         var gameManager = new GameManagerData();
@@ -61,13 +60,11 @@ public class GameManagerValidationTests
     }
 
     [Test]
-    public async Task GameManagerValidation_PlayTwoRounds()
+    public async Task GameManagerValidation_PlayTwoRounds_RoundsAreDifferent()
     {
         var numberOfCPUPlayers = 2;
         var gameManager = new GameManagerData();
         gameManager.CreateGame(numberOfCPUPlayers);
-
-        var players = gameManager.GetPlayers();
 
         gameManager.StartGame();
 
@@ -75,19 +72,55 @@ public class GameManagerValidationTests
         
         var firstRound = gameManager.GetCurrentRound();
 
-        var firstRoundWinner = GetRoundWinner(players, firstRound);
-        var firstRoundScore = firstRound.GetTotalRoundScore();
-        
         var secondRoundFinished = await PlayOneRound(gameManager);
-        
+
         var secondRound = gameManager.GetCurrentRound();
 
-        var secondRoundWinner = GetRoundWinner(players, secondRound);
-        var secondRoundScore = secondRound.GetTotalRoundScore();
-        
         Assert.IsTrue(firstRoundFinished && secondRoundFinished && firstRound.RoundId != secondRound.RoundId);
     }
 
+    [Test]
+    public async Task GameManagerValidation_PlayFourRounds_PlayersHaveProperAmountOfCards()
+    {
+        var numberOfCPUPlayers = 2;
+        var gameManager = new GameManagerData();
+        gameManager.CreateGame(numberOfCPUPlayers);
+
+        gameManager.StartGame();
+
+        var players = gameManager.GetPlayers();
+        
+        var firstRoundFinished = await PlayOneRound(gameManager);
+        var firstRound = gameManager.GetCurrentRound();
+
+        var secondRoundFinished = await PlayOneRound(gameManager);
+        var secondRound = gameManager.GetCurrentRound();
+        
+        var thirdRoundFinished = await PlayOneRound(gameManager);
+        var thirdRound = gameManager.GetCurrentRound();
+        
+        var fourthRoundFinished = await PlayOneRound(gameManager);
+        var fourthRound = gameManager.GetCurrentRound();
+
+        var allRoundsFinished = firstRoundFinished && secondRoundFinished && thirdRoundFinished && fourthRoundFinished;
+        var allRoundsIdAreDifferent = firstRound.RoundId != secondRound.RoundId 
+                                      && firstRound.RoundId != thirdRound.RoundId 
+                                      && firstRound.RoundId != fourthRound.RoundId;
+
+        var allPlayersHaveFullHand = true;
+
+        foreach (var player in players) {
+            // Hand is refilled at the start of the round.
+            if (player.PlayerHandSize == PlayerData.MaxHandSize - 1) {
+                continue;
+            }
+            allPlayersHaveFullHand = false;
+            break;
+        }
+        
+        Assert.IsTrue(allRoundsFinished && allRoundsIdAreDifferent && allPlayersHaveFullHand);
+    }
+    
     private async Task<bool> PlayOneRound(GameManagerData gameManager)
     {
         gameManager.StartPlayRound();

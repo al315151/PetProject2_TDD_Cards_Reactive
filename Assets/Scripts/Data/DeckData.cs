@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Random = System.Random;
 
 namespace Data
 {
@@ -61,6 +63,8 @@ namespace Data
             var firstCard = GetTopCardFromDeck();
             chosenCardSuit = firstCard.CardSuit;
 
+            Debug.Log($"[Deck] Chosen Suit is: {chosenCardSuit}");
+            
             // After being chosen, it will be placed onto the bottom of the deck.
             deckCardData.Add(firstCard);
         }

@@ -82,6 +82,7 @@ namespace Data
             
             currentGameRound = gameRoundPrototype as GameRoundData;
             currentGameRound.ReceivePlayers(playersData);
+            currentGameRound.StartPlayerDrawPhase(deckData);
         }
 
         public void EstablishRoundOrder()

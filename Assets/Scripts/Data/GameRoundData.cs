@@ -188,5 +188,15 @@ namespace Data
             }
             IsRoundFinished = true;
         }
+
+        public void StartPlayerDrawPhase(DeckData deckData)
+        {
+            for (var i = 0; i < playersData.Count; i++) {
+                if (playersData[i].PlayerHandSize >= PlayerData.MaxHandSize) {
+                    continue;
+                }
+                playersData[i].AddCard(deckData.GetTopCardFromDeck());
+            }
+        }
     }
 }
