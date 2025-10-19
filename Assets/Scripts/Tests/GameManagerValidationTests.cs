@@ -80,9 +80,11 @@ public class GameManagerValidationTests
     }
 
     [Test]
-    public async Task GameManagerValidation_PlayFourRounds_PlayersHaveProperAmountOfCards()
+    [TestCase(3)]
+    [TestCase(7)]
+    [TestCase(0)]
+    public async Task GameManagerValidation_PlayFourRounds_PlayersHaveProperAmountOfCards(int numberOfCPUPlayers)
     {
-        var numberOfCPUPlayers = 2;
         var gameManager = new GameManagerData();
         gameManager.CreateGame(numberOfCPUPlayers);
 
@@ -122,9 +124,11 @@ public class GameManagerValidationTests
     }
     
     [Test]
-    public async Task GameManagerValidation_PlayAllRounds_PlayUntilDeckIsEmpty()
+    [TestCase(3)]
+    [TestCase(7)]
+    [TestCase(0)]
+    public async Task GameManagerValidation_PlayAllRounds_PlayUntilDeckIsEmpty(int numberOfCPUPlayers)
     {
-        var numberOfCPUPlayers = 2;
         var gameManager = new GameManagerData();
         gameManager.CreateGame(numberOfCPUPlayers);
 
@@ -132,7 +136,7 @@ public class GameManagerValidationTests
 
         var previousRoundId = -3;
         // Triggering more rounds than the deck should be able to handle.
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 99; i++) {
             var nRoundFinished = await PlayOneRound(gameManager);
             var nRound = gameManager.GetCurrentRound();
 
