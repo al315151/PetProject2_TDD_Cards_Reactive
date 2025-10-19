@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data;
 using NUnit.Framework;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -49,8 +50,7 @@ public class GameManagerValidationTests
         gameManager.StartPlayRound();
 
         var currentRound = gameManager.GetCurrentRound();
-
-
+        
         var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
 
         Assert.IsTrue(playPhaseFinished);
@@ -66,9 +66,7 @@ public class GameManagerValidationTests
         var roundWinner = GetRoundWinner(players, currentRound);
         var roundScore = currentRound.GetTotalRoundScore();
         
-
         Assert.IsTrue(roundWinner.GetScore() == roundScore);
-
     }
 
     private async Task<bool> WaitForRoundToBeFinished(GameRoundData round)
@@ -76,10 +74,8 @@ public class GameManagerValidationTests
         var timeoutLengthInSeconds = 3;
         var timeoutStartTime = DateTime.Now;
 
-        while (round.IsRoundFinished == false)
-        {
-            if ((DateTime.Now - timeoutStartTime).TotalSeconds > timeoutLengthInSeconds)
-            {
+        while (round.IsRoundFinished == false) {
+            if ((DateTime.Now - timeoutStartTime).TotalSeconds > timeoutLengthInSeconds) {
                 break;
             }
             await Task.Delay(100);
@@ -93,10 +89,8 @@ public class GameManagerValidationTests
         var timeoutLengthInSeconds = 3;
         var timeoutStartTime = DateTime.Now;
 
-        while (round.IsRoundPlayPhaseFinished == false)
-        {
-            if ((DateTime.Now - timeoutStartTime).TotalSeconds > timeoutLengthInSeconds)
-            {
+        while (round.IsRoundPlayPhaseFinished == false) {
+            if ((DateTime.Now - timeoutStartTime).TotalSeconds > timeoutLengthInSeconds) {
                 break;
             }
             await Task.Delay(100);
@@ -110,10 +104,8 @@ public class GameManagerValidationTests
         var winnerId = round.RoundWinnerId;
         PlayerData roundWinner = null;
 
-        for (var i = 0; i < players.Count; i++)
-        {
-            if (players[i].PlayerId == winnerId)
-            {
+        for (var i = 0; i < players.Count; i++) {
+            if (players[i].PlayerId == winnerId) {
                 roundWinner = players[i];
                 break;
             }

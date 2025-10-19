@@ -1,155 +1,144 @@
-using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
-public class GameManagerData
+namespace Data
 {
-    public int NumberOfPlayers => playersData.Count;
-
-    private List<PlayerData> playersData;
-    private DeckData deckData;
-    private int currentRound;
-
-    private IGameRoundPrototype gameRoundConcretePrototype;
-
-    private GameRoundData currentGameRound;
-    private List<GameRoundData> roundDataHistory;
-
-    public void CreateGame(int numberOfCPUPlayers)
+    public class GameManagerData
     {
-        playersData = new List<PlayerData>();
+        public int NumberOfPlayers => playersData.Count;
 
-        //Player will be -1. No player should be allowed to be 0.
-        var basePlayer = new PlayerData(-1);
-        playersData.Add(basePlayer);
+        private List<PlayerData> playersData;
+        private DeckData deckData;
+        private int currentRound;
 
-        for (int i = 0; i < numberOfCPUPlayers; i++)
+        private IGameRoundPrototype gameRoundConcretePrototype;
+
+        private GameRoundData currentGameRound;
+        private List<GameRoundData> roundDataHistory;
+
+        public void CreateGame(int numberOfCPUPlayers)
         {
-            var newCPU = basePlayer.Clone(playersData.Count) as PlayerData;
-            playersData.Add(newCPU);
+            playersData = new List<PlayerData>();
+
+            //Player will be -1. No player should be allowed to be 0.
+            var basePlayer = new PlayerData(-1);
+            playersData.Add(basePlayer);
+
+            for (var i = 0; i < numberOfCPUPlayers; i++) {
+                var newCPU = basePlayer.Clone(playersData.Count) as PlayerData;
+                playersData.Add(newCPU);
+            }
+
+            deckData = new DeckData();
+            deckData.CreateDeck();
+
+            gameRoundConcretePrototype = new GameRoundData(currentRound);
+            roundDataHistory = new List<GameRoundData>();
         }
 
-        deckData = new DeckData();
-        deckData.CreateDeck();
-
-        gameRoundConcretePrototype = new GameRoundData(currentRound);
-        roundDataHistory = new List<GameRoundData>();
-    }
-
-    public void StartGame()
-    {
-        //Shuffle the cards, set the deck chosen Suit.
-        deckData.Shuffle();
-        deckData.ChooseInitialSuit();
-
-        DrawInitialHandForPlayers();
-    }
-
-    public int CurrentDeckSize()
-    {
-        return deckData.DeckCardCount;
-    }
-
-    private void DrawInitialHandForPlayers()
-    {
-        var initialCardCountForPlayer = PlayerData.MaxHandSize;
-        for (int i = 0;i < playersData.Count;i++)
+        public void StartGame()
         {
-           var player = playersData[i];
-           for (int j = 0; j < initialCardCountForPlayer; j++)
-           {
-                player.AddCardToHandFromDeck(deckData);
-           }
+            //Shuffle the cards, set the deck chosen Suit.
+            deckData.Shuffle();
+            deckData.ChooseInitialSuit();
+
+            DrawInitialHandForPlayers();
         }
-    }
 
-    public int GetCurrentRoundId()
-    {
-        return currentGameRound.RoundId;
-    }
-
-    public int GetCurrentPlayerInOrder()
-    {
-        return currentGameRound.GetCurrentPlayerIdInOrder();
-    }
-
-    public void CreateAndStartRound()
-    {
-        currentRound++;
-        var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
-        if (currentGameRound != null)
+        public int CurrentDeckSize()
         {
-            roundDataHistory.Add(currentGameRound);
+            return deckData.DeckCardCount;
         }
-        currentGameRound = gameRoundPrototype as GameRoundData;
 
-        currentGameRound.ReceivePlayers(playersData);
-    }
-
-    public void EstablishRoundOrder()
-    {
-        // Winner of last round will start.
-        // Otherwise, player will go last. 
-        var playerOrder = new List<int>();
-        var startingIndex = 1;
-        if (currentGameRound.RoundId <= 1)
+        private void DrawInitialHandForPlayers()
         {
-            startingIndex = 1;
-        }
-        else
-        {
-            var previousRoundWinner = roundDataHistory[roundDataHistory.Count - 1].RoundWinnerId;
-            startingIndex = 0;
-            for (int i = 0; i < playersData.Count; i++)
-            {
-                if (playersData[i].PlayerId == previousRoundWinner)
-                {
-                    startingIndex = i;
-                    break;
+            var initialCardCountForPlayer = PlayerData.MaxHandSize;
+            for (var i = 0; i < playersData.Count; i++) { 
+                var player = playersData[i]; 
+                for (int j = 0; j < initialCardCountForPlayer; j++) {
+                    player.AddCardToHandFromDeck(deckData);
                 }
             }
         }
 
-        for (int i = 0; i < playersData.Count; i++)
+        public int GetCurrentRoundId()
         {
-            if (startingIndex == playersData.Count)
-            {
-                startingIndex = 0;
-            }
-
-            playerOrder.Add(playersData[startingIndex].PlayerId);
-            startingIndex++;
+            return currentGameRound.RoundId;
         }
 
-        currentGameRound.SetPlayerOrder(playerOrder);
-    }
+        public int GetCurrentPlayerInOrder()
+        {
+            return currentGameRound.GetCurrentPlayerIdInOrder();
+        }
 
-    public List<PlayerData> GetPlayers()
-    {
-        return playersData;
-    }
+        public void CreateAndStartRound()
+        {
+            currentRound++;
+            var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
+            if (currentGameRound != null) {
+                roundDataHistory.Add(currentGameRound);
+            }
+            currentGameRound = gameRoundPrototype as GameRoundData;
+            currentGameRound.ReceivePlayers(playersData);
+        }
 
-    public GameRoundData GetCurrentRound()
-    {
-        return currentGameRound;
-    }
+        public void EstablishRoundOrder()
+        {
+            // Winner of last round will start.
+            // Otherwise, player will go last. 
+            var playerOrder = new List<int>();
+            var startingIndex = 1;
+            if (currentGameRound.RoundId <= 1) {
+                startingIndex = 1;
+            }
+            else {
+                var previousRoundWinner = roundDataHistory[^1].RoundWinnerId;
+                startingIndex = 0;
+                for (int i = 0; i < playersData.Count; i++) {
+                    if (playersData[i].PlayerId == previousRoundWinner) {
+                        startingIndex = i;
+                        break;
+                    }
+                }
+            }
 
-    public void StartPlayRound()
-    {        
-        //First setup the Round object.
-        CreateAndStartRound();
-        // Then set round order.
-        EstablishRoundOrder();
-        // Then, start the Play phase. we will receive event / wait for the cards to be played 
-        currentGameRound.StartPlayPhase();       
-        // On current gameplay, we will have to wait for player input to actually know when to resolve the situation.
-    }
+            for (int i = 0; i < playersData.Count; i++) {
+                if (startingIndex == playersData.Count) {
+                    startingIndex = 0;
+                }
 
-    public void FinishRound()
-    {
-        var winnerId = currentGameRound.ResolveRound(deckData.ChosenCardSuit);
+                playerOrder.Add(playersData[startingIndex].PlayerId);
+                startingIndex++;
+            }
 
-        currentGameRound.FinishRound(winnerId);
+            currentGameRound.SetPlayerOrder(playerOrder);
+        }
+
+        public List<PlayerData> GetPlayers()
+        {
+            return playersData;
+        }
+
+        public GameRoundData GetCurrentRound()
+        {
+            return currentGameRound;
+        }
+
+        public void StartPlayRound()
+        {        
+            //First setup the Round object.
+            CreateAndStartRound();
+            // Then set round order.
+            EstablishRoundOrder();
+            // Then, start the Play phase. we will receive event / wait for the cards to be played 
+            currentGameRound.StartPlayPhase();       
+            // On current gameplay, we will have to wait for player input to actually know when to resolve the situation.
+        }
+
+        public void FinishRound()
+        {
+            var winnerId = currentGameRound.ResolveRound(deckData.ChosenCardSuit);
+
+            currentGameRound.FinishRound(winnerId);
+        }
     }
 }

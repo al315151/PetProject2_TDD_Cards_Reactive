@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Data;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -30,16 +31,13 @@ public class DeckValidationTests
 
         var areAllCardsDifferent = true;
 
-        while (areAllCardsDifferent && newDeck.DeckCardCount > 0)
-        {
+        while (areAllCardsDifferent && newDeck.DeckCardCount > 0) {
             var topCard = newDeck.GetTopCardFromDeck();
 
-            for (int i = 0; i < removedCards.Count; i++)
-            {
+            for (var i = 0; i < removedCards.Count; i++) {
                 var removedCard = removedCards[i];
                 if (removedCard.CardNumber == topCard.CardNumber 
-                    && removedCard.CardSuit == topCard.CardSuit)
-                {
+                    && removedCard.CardSuit == topCard.CardSuit) {
                     areAllCardsDifferent = false;
                     break;
                 }
@@ -47,7 +45,6 @@ public class DeckValidationTests
 
             removedCards.Add(topCard);
         }
-
         
         Assert.IsTrue(areAllCardsDifferent);
     }
@@ -60,8 +57,7 @@ public class DeckValidationTests
 
         //Get initial order of all cards.
         var initialCardOrder = new List<CardData>();
-        while (deck.DeckCardCount > 0)
-        {
+        while (deck.DeckCardCount > 0) {
             var topCard = deck.GetTopCardFromDeck();
             initialCardOrder.Add(topCard);
         }
@@ -73,12 +69,10 @@ public class DeckValidationTests
         var isDeckShuffled = false;
         var deckDepth = 0;
         //Then check if the cards have changed place.
-        while (deck.DeckCardCount > 0)
-        {
+        while (deck.DeckCardCount > 0) {
             var topCardAfterShuffle = deck.GetTopCardFromDeck();
             if (topCardAfterShuffle.CardNumber != initialCardOrder[deckDepth].CardNumber ||
-                topCardAfterShuffle.CardSuit != initialCardOrder[deckDepth].CardSuit)
-            {
+                topCardAfterShuffle.CardSuit != initialCardOrder[deckDepth].CardSuit) {
                 isDeckShuffled = true;
                 break;
             }

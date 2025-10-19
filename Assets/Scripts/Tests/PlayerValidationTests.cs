@@ -1,32 +1,34 @@
+using Data;
 using NUnit.Framework;
-using UnityEngine;
 
-public class PlayerValidationTests
+namespace Tests
 {
-    [Test]
-    public void PlayerValidationTestGetCardsUpToCardLimit()
+    public class PlayerValidationTests
     {
-        var deck = new DeckData();
-        deck.CreateDeck();
-
-        //Create player
-        var player = new PlayerData();
-        player.AddCardToHandFromDeck(deck);
-
-        for (int i = 0; i < 10; i++)
+        [Test]
+        public void PlayerValidationTestGetCardsUpToCardLimit()
         {
+            var deck = new DeckData();
+            deck.CreateDeck();
+
+            //Create player
+            var player = new PlayerData();
             player.AddCardToHandFromDeck(deck);
+
+            for (int i = 0; i < 10; i++) {
+                player.AddCardToHandFromDeck(deck);
+            }
+
+            Assert.IsTrue(player.PlayerHandSize == PlayerData.MaxHandSize);
         }
 
-        Assert.IsTrue(player.PlayerHandSize == PlayerData.MaxHandSize);
-    }
+        [Test]
+        public void PlayerValidationTestCreatePrototypePlayerFromBasePlayer()
+        {
+            var newPlayer = new PlayerData();
+            var copyOfNewPlayer = newPlayer.Clone(4) as PlayerData;
 
-    [Test]
-    public void PlayerValidationTestCreatePrototypePlayerFromBasePlayer()
-    {
-        var newPlayer = new PlayerData();
-        var copyOfNewPlayer = newPlayer.Clone(4) as PlayerData;
-
-        Assert.IsTrue(newPlayer.PlayerId != copyOfNewPlayer.PlayerId && newPlayer.GetHashCode() != copyOfNewPlayer.GetHashCode());
+            Assert.IsTrue(newPlayer.PlayerId != copyOfNewPlayer.PlayerId && newPlayer.GetHashCode() != copyOfNewPlayer.GetHashCode());
+        }
     }
 }
