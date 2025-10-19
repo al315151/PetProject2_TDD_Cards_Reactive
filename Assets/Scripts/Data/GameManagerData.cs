@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Data
 {
     public class GameManagerData
     {
         public int NumberOfPlayers => playersData.Count;
+        public int GameWinnerPlayerId => gameWinnerId;
+        public int GameWinnerPlayerScore => gameWinnerScore;
 
         private List<PlayerData> playersData;
         private DeckData deckData;
@@ -15,6 +18,9 @@ namespace Data
         private GameRoundData currentGameRound;
         private List<GameRoundData> roundDataHistory;
 
+        private int gameWinnerId;
+        private int gameWinnerScore;
+        
         public void CreateGame(int numberOfCPUPlayers)
         {
             playersData = new List<PlayerData>();
@@ -70,7 +76,7 @@ namespace Data
             return currentGameRound.GetCurrentPlayerIdInOrder();
         }
 
-        public void CreateAndStartRound()
+        public bool CreateAndStartRound()
         {
             currentRound++;
             if (currentGameRound != null) {
@@ -80,11 +86,18 @@ namespace Data
             
             var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
             
-            currentGameRound = gameRoundPrototype as GameRoundData;
-            currentGameRound.ReceivePlayers(playersData);
-            currentGameRound.StartPlayerDrawPhase(deckData);
-        }
+            var gameRound = gameRoundPrototype as GameRoundData;
+            gameRound.ReceivePlayers(playersData);
+            gameRound.StartPlayerDrawPhase(deckData);
 
+            if (CanRoundBePlayed() == false) {
+                return false;
+            }
+            currentGameRound = gameRound;
+            return true;
+
+        }
+        
         public void EstablishRoundOrder()
         {
             // Winner of last round will start.
@@ -127,15 +140,18 @@ namespace Data
             return currentGameRound;
         }
 
-        public void StartPlayRound()
-        {        
+        public bool StartPlayRound()
+        {
             //First setup the Round object.
-            CreateAndStartRound();
+            if (CreateAndStartRound() == false) {
+                return false;
+            }
             // Then set round order.
             EstablishRoundOrder();
             // Then, start the Play phase. we will receive event / wait for the cards to be played 
             currentGameRound.StartPlayPhase();       
             // On current gameplay, we will have to wait for player input to actually know when to resolve the situation.
+            return true;
         }
 
         public void FinishRound()
@@ -143,6 +159,29 @@ namespace Data
             var winnerId = currentGameRound.ResolveRound(deckData.ChosenCardSuit);
 
             currentGameRound.FinishRound(winnerId);
+        }
+        
+        private bool CanRoundBePlayed()
+        {
+            for (int i = 0; i < playersData.Count; i++) {
+                if (playersData[i].PlayerHandSize < 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void FinishGame()
+        {
+            var playerMaxScore = -1;
+            foreach (var player in playersData) {
+                var currentPlayerScore = player.GetScore();
+                if (currentPlayerScore > playerMaxScore) {
+                    playerMaxScore = currentPlayerScore;
+                    gameWinnerScore = playerMaxScore;
+                    gameWinnerId = player.PlayerId;
+                }
+            }
         }
     }
 }

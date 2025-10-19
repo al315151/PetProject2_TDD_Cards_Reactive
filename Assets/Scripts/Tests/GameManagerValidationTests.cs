@@ -121,9 +121,86 @@ public class GameManagerValidationTests
         Assert.IsTrue(allRoundsFinished && allRoundsIdAreDifferent && allPlayersHaveFullHand);
     }
     
+    [Test]
+    public async Task GameManagerValidation_PlayAllRounds_PlayUntilDeckIsEmpty()
+    {
+        var numberOfCPUPlayers = 2;
+        var gameManager = new GameManagerData();
+        gameManager.CreateGame(numberOfCPUPlayers);
+
+        gameManager.StartGame();
+
+        var previousRoundId = -3;
+        // Triggering more rounds than the deck should be able to handle.
+        for (var i = 0; i < 20; i++) {
+            var nRoundFinished = await PlayOneRound(gameManager);
+            var nRound = gameManager.GetCurrentRound();
+
+            // if round cannot be played and deck is 0, game is over!
+            if (nRoundFinished == false && gameManager.CurrentDeckSize() == 0) {
+                break;
+            }
+            
+            Assert.IsTrue(nRoundFinished && nRound.RoundId != previousRoundId);
+            previousRoundId = nRound.RoundId;
+        }
+
+        var deckSize = gameManager.CurrentDeckSize();
+        Assert.IsTrue(deckSize == 0);
+    }
+    
+    [Test]
+    [TestCase(3)]
+    [TestCase(7)]
+    [TestCase(0)]
+    public async Task GameManagerValidation_PlayAllRounds_GameWinnerHasHighestScore(int numberOfCPUPlayers)
+    {
+        var gameManager = new GameManagerData();
+        gameManager.CreateGame(numberOfCPUPlayers);
+
+        gameManager.StartGame();
+
+        var players = gameManager.GetPlayers();
+
+        var previousRoundId = -3;
+        
+        // Triggering more rounds than the deck should be able to handle.
+        while (gameManager.CurrentDeckSize() > 0) {
+            var nRoundFinished = await PlayOneRound(gameManager);
+            var nRound = gameManager.GetCurrentRound();
+
+            // if round cannot be played and deck is 0, game is over!
+            if (nRoundFinished == false && gameManager.CurrentDeckSize() == 0) {
+                break;
+            }
+            
+            Assert.IsTrue(nRoundFinished && nRound.RoundId != previousRoundId);
+            previousRoundId = nRound.RoundId;
+        }
+
+        var deckSize = gameManager.CurrentDeckSize();
+        Assert.IsTrue(deckSize == 0);
+
+        gameManager.FinishGame();
+
+        var gameWinnerScore = gameManager.GameWinnerPlayerScore;
+
+        var foundHigherScoreThanWinner = false;
+        for (var i = 0; i < players.Count; i++) {
+            if (players[i].GetScore() > gameWinnerScore) {
+                foundHigherScoreThanWinner = true;
+                break;
+            }
+        }
+        
+        Assert.IsFalse(foundHigherScoreThanWinner);
+    }
+    
     private async Task<bool> PlayOneRound(GameManagerData gameManager)
     {
-        gameManager.StartPlayRound();
+        if (gameManager.StartPlayRound() == false) {
+            return false;
+        }
         
         var currentRound = gameManager.GetCurrentRound();
         var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);

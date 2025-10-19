@@ -25,11 +25,15 @@ public class PlayerData : IPlayerPrototype
 
     public void AddCardToHandFromDeck(DeckData deck)
     {
-        if (playerHand.Count >= MaxHandSize)
-        {
+        if (playerHand.Count >= MaxHandSize) {
             return;
         }
-        playerHand.Add(deck.GetTopCardFromDeck());
+        var card = deck.GetTopCardFromDeck();
+        // If cards have run out, do not add anything!
+        if (card == null) {
+            return;
+        }
+        playerHand.Add(card);
     }
 
     public IPlayerPrototype Clone(int id)

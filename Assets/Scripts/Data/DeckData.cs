@@ -35,7 +35,9 @@ namespace Data
         {
             //Get card and remove it.
             var topCardFromDeck = deckCardData.FirstOrDefault();
-            deckCardData.Remove(topCardFromDeck);
+            if (topCardFromDeck != null) {
+                deckCardData.Remove(topCardFromDeck);
+            }
             return topCardFromDeck;
         }
 

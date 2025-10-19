@@ -195,7 +195,7 @@ namespace Data
                 if (playersData[i].PlayerHandSize >= PlayerData.MaxHandSize) {
                     continue;
                 }
-                playersData[i].AddCard(deckData.GetTopCardFromDeck());
+                playersData[i].AddCardToHandFromDeck(deckData);
             }
         }
     }
