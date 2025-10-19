@@ -46,10 +46,13 @@ namespace Data
             return playerOrder[currentPlayerInOrderIndex];
         }
 
-        public void ReceivePlayers(List<PlayerData> playersData)
+        public void RemovePlayerReferences()
         {
             UnsubscribeToPlayerEvents();
-
+        }
+        
+        public void ReceivePlayers(List<PlayerData> playersData)
+        {
             this.playersData = playersData;
 
             SubscribeToPlayerEvents();
@@ -70,6 +73,7 @@ namespace Data
 
         private void OnCardPlayedFromPlayer(int playerId, CardData cardData)
         {
+            Debug.Log($"[Round: {roundId}] Player: {playerId} has played card: Number: {cardData.CardNumber} , Suit: {cardData.CardSuit}");
             playedCardsByPlayers.Add(playerId, cardData);
 
             currentPlayerInOrderIndex++;
@@ -121,6 +125,7 @@ namespace Data
             if (playersWithPredominantSuit.Count == 1) {
                 // Only one player with it, it wins the round!
                 roundWinnerId = playersWithPredominantSuit[0];
+                Debug.Log($"[Round: {roundId}] Player: {roundWinnerId} Wins the Round!");
                 return roundWinnerId;
             }
             if (playersWithPredominantSuit.Count == 0) {
@@ -156,6 +161,8 @@ namespace Data
             var winnerId = maxScore > 0 ? maxScorePlayerId : maxNumberPlayerId;
             roundWinnerId = winnerId;
 
+            Debug.Log($"[Round: {roundId}] Player: {roundWinnerId} Wins the Round!");
+            
             return winnerId;
         }
 

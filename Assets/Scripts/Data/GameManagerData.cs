@@ -73,10 +73,13 @@ namespace Data
         public void CreateAndStartRound()
         {
             currentRound++;
-            var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
             if (currentGameRound != null) {
+                currentGameRound.RemovePlayerReferences();
                 roundDataHistory.Add(currentGameRound);
             }
+            
+            var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
+            
             currentGameRound = gameRoundPrototype as GameRoundData;
             currentGameRound.ReceivePlayers(playersData);
         }

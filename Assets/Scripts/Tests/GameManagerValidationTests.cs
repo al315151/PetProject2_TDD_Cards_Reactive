@@ -63,7 +63,29 @@ public class GameManagerValidationTests
     [Test]
     public async Task GameManagerValidation_PlayTwoRounds()
     {
+        var numberOfCPUPlayers = 2;
+        var gameManager = new GameManagerData();
+        gameManager.CreateGame(numberOfCPUPlayers);
+
+        var players = gameManager.GetPlayers();
+
+        gameManager.StartGame();
+
+        var firstRoundFinished = await PlayOneRound(gameManager);
         
+        var firstRound = gameManager.GetCurrentRound();
+
+        var firstRoundWinner = GetRoundWinner(players, firstRound);
+        var firstRoundScore = firstRound.GetTotalRoundScore();
+        
+        var secondRoundFinished = await PlayOneRound(gameManager);
+        
+        var secondRound = gameManager.GetCurrentRound();
+
+        var secondRoundWinner = GetRoundWinner(players, secondRound);
+        var secondRoundScore = secondRound.GetTotalRoundScore();
+        
+        Assert.IsTrue(firstRoundFinished && secondRoundFinished && firstRound.RoundId != secondRound.RoundId);
     }
 
     private async Task<bool> PlayOneRound(GameManagerData gameManager)

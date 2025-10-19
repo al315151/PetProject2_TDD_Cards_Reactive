@@ -42,6 +42,7 @@ public class PlayerData : IPlayerPrototype
         //For now, choose card at random.
         var randomIndex = new Random().Next(playerHand.Count);
         var randomCard = playerHand[randomIndex];
+        playerHand.Remove(randomCard);
         OnCardPlayed?.Invoke(id, randomCard);
     }
 
