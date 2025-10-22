@@ -20,11 +20,16 @@ namespace View
         [SerializeField]
         private List<Sprite> cardSuitSprites;
 
-        public Action OnCardButtonPressed;
+        public Action<CardSuit, int> OnCardButtonPressed;
+
+        private CardSuit cardSuit;
+        private int cardNumber;
         
-        public void SetupCardGraphics(CardSuit cardSuit, string cardNumber)
+        public void SetupCardGraphics(CardSuit cardSuit, int cardNumber)
         {
-            cardNumberText.text = cardNumber;
+            this.cardSuit = cardSuit;
+            this.cardNumber = cardNumber;
+            cardNumberText.text = cardNumber.ToString();
             cardSuitImage.sprite = GetSuitSprite(cardSuit);
             cardInteractionButton.interactable = true;
         }
@@ -41,7 +46,7 @@ namespace View
 
         private void OnCardPressed()
         {
-            OnCardButtonPressed?.Invoke();
+            OnCardButtonPressed?.Invoke(cardSuit, cardNumber);
         }
 
         public void ResetCardGraphics()
