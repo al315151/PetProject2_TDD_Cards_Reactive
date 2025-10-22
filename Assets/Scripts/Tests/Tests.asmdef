@@ -4,7 +4,11 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "CardGame.Data"
+        "CardGame.Data",
+        "CardGame.LifetimeScope",
+        "CardGame.Presenter",
+        "VContainer",
+        "R3.Unity"
     ],
     "includePlatforms": [
         "Editor"

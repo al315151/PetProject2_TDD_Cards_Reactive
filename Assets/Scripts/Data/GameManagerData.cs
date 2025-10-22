@@ -95,7 +95,6 @@ namespace Data
             }
             currentGameRound = gameRound;
             return true;
-
         }
         
         public void EstablishRoundOrder()

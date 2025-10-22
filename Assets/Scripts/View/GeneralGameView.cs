@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace View
 {
-    public class GameStatsView : MonoBehaviour
+    public class GeneralGameView : MonoBehaviour
     {
         [SerializeField]
         private TMP_Text gameRoundNumberText;
@@ -29,18 +29,6 @@ namespace View
         {
             newGameButton.onClick.RemoveListener(OnNewGameClicked);
             finishGameButton.onClick.RemoveListener(OnFinishGameClicked);
-        }
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
         }
         
         private void OnNewGameClicked()
