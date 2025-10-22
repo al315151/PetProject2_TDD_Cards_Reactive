@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Data
 {
-    public class GameRoundData : IGameRoundPrototype
+    public class GameRoundData : IGameRoundPrototype, IObserver<KeyValuePair<int, CardData>>
     {
         public int RoundId => roundId;
         public int RoundWinnerId => roundWinnerId;
@@ -23,6 +24,8 @@ namespace Data
         private int roundWinnerId;
         private int currentPlayerInOrderIndex;
 
+        private IDisposable currentPlayerInOrderDisposable;
+        
         public GameRoundData(int roundId)
         {
             this.roundId = roundId;
@@ -46,29 +49,15 @@ namespace Data
             return playerOrder[currentPlayerInOrderIndex];
         }
 
-        public void RemovePlayerReferences()
-        {
-            UnsubscribeToPlayerEvents();
-        }
-        
         public void ReceivePlayers(List<PlayerData> playersData)
         {
             this.playersData = playersData;
-
-            SubscribeToPlayerEvents();
         }
 
         public void StartPlayPhase()
         {
             // For each player, ask them to play their cards. 
             RequestCardFromPlayer(GetCurrentPlayerIdInOrder());
-        }
-
-        private void SubscribeToPlayerEvents()
-        {
-            for (var i = 0; i < playersData.Count; i++) {
-                playersData[i].OnCardPlayed += OnCardPlayedFromPlayer;
-            }
         }
 
         private void OnCardPlayedFromPlayer(int playerId, CardData cardData)
@@ -89,19 +78,17 @@ namespace Data
             if (playersData == null || playersData.Count == 0) {
                 return;
             }
-
-            for (var i = 0; i < playersData.Count; i++) {
-                playersData[i].OnCardPlayed -= OnCardPlayedFromPlayer;
-            }
+            currentPlayerInOrderDisposable?.Dispose();
         }
 
         private void RequestCardFromPlayer(int playerId)
         {
             for (var i = 0; i < playersData.Count; i++) {
-                if (playersData[i].PlayerId == playerId) {
-                    playersData[i].RequestCardFromPlayer();
-                    break;
+                if (playersData[i].PlayerId != playerId) {
+                    continue;
                 }
+                currentPlayerInOrderDisposable = playersData[i].Subscribe(this);
+                break;
             }
         }
 
@@ -197,6 +184,22 @@ namespace Data
                 }
                 playersData[i].AddCardToHandFromDeck(deckData);
             }
+        }
+
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(KeyValuePair<int, CardData> playerAndCard)
+        {
+            UnsubscribeToPlayerEvents();
+            OnCardPlayedFromPlayer(playerAndCard.Key, playerAndCard.Value);
         }
     }
 }

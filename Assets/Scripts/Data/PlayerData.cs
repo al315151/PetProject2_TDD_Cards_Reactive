@@ -1,67 +1,86 @@
 using System;
 using System.Collections.Generic;
-using Data;
+using System.Threading.Tasks;
 
-public class PlayerData : IPlayerPrototype
+namespace Data
 {
-    public static int MaxHandSize = 3;
-
-    public Action<int, CardData> OnCardPlayed;
-
-    public int PlayerHandSize => playerHand.Count;
-    public int PlayerId => id;
-
-    public bool PlayedCardForTheRound { get; set; }
-
-    private readonly int id;
-    private List<CardData> playerHand;
-    int score = 0;
-
-    public PlayerData(int id = 0)
+    public class PlayerData : IPlayerPrototype, IObservable<KeyValuePair<int, CardData>>, IDisposable
     {
-        this.id = id;
-        playerHand = new List<CardData>();
-    }
+        public static int MaxHandSize = 3;
 
-    public void AddCardToHandFromDeck(DeckData deck)
-    {
-        if (playerHand.Count >= MaxHandSize) {
-            return;
+        public int PlayerHandSize => playerHand.Count;
+        public int PlayerId => id;
+
+        private readonly int id;
+        private List<CardData> playerHand;
+        int score = 0;
+
+        private IObserver<KeyValuePair<int, CardData>> roundDataObserver;
+        
+        public PlayerData(int id = 0)
+        {
+            this.id = id;
+            playerHand = new List<CardData>();
         }
-        var card = deck.GetTopCardFromDeck();
-        // If cards have run out, do not add anything!
-        if (card == null) {
-            return;
+
+        public void AddCardToHandFromDeck(DeckData deck)
+        {
+            if (playerHand.Count >= MaxHandSize) {
+                return;
+            }
+            var card = deck.GetTopCardFromDeck();
+            // If cards have run out, do not add anything!
+            if (card == null) {
+                return;
+            }
+            playerHand.Add(card);
         }
-        playerHand.Add(card);
-    }
 
-    public IPlayerPrototype Clone(int id)
-    {
-        return new PlayerData(id);
-    }
+        public IPlayerPrototype Clone(int id)
+        {
+            return new PlayerData(id);
+        }
 
-    public void RequestCardFromPlayer()
-    {
-        //For now, choose card at random.
-        var randomIndex = new Random().Next(playerHand.Count);
-        var randomCard = playerHand[randomIndex];
-        playerHand.Remove(randomCard);
-        OnCardPlayed?.Invoke(id, randomCard);
-    }
+        public void RequestCardFromPlayer()
+        {
+            //For now, choose card at random.
+            var randomIndex = new Random().Next(playerHand.Count);
+            var randomCard = playerHand[randomIndex];
+            playerHand.Remove(randomCard);
+            roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, randomCard));
+        }
 
-    public void AddCard(CardData cardData)
-    {
-        playerHand.Add(cardData);
-    }
+        public void AddCard(CardData cardData)
+        {
+            playerHand.Add(cardData);
+        }
 
-    public int GetScore()
-    {
-        return score;
-    }
+        public int GetScore()
+        {
+            return score;
+        }
 
-    public void AddScoreToPlayer(int roundScore)
-    {
-        score += roundScore;
+        public void AddScoreToPlayer(int roundScore)
+        {
+            score += roundScore;
+        }
+
+        public IDisposable Subscribe(IObserver<KeyValuePair<int, CardData>> observer)
+        {
+            roundDataObserver = observer;
+            _ = TriggerPlayCard();
+            return this;
+        }
+
+        public void Dispose()
+        {
+            roundDataObserver = null;
+        }
+
+        private async Task TriggerPlayCard()
+        {
+            await Task.Delay(1);
+            RequestCardFromPlayer();
+        }
     }
 }

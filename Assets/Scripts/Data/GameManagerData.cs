@@ -80,7 +80,6 @@ namespace Data
         {
             currentRound++;
             if (currentGameRound != null) {
-                currentGameRound.RemovePlayerReferences();
                 roundDataHistory.Add(currentGameRound);
             }
             
