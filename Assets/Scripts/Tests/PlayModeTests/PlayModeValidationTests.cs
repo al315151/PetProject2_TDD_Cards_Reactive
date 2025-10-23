@@ -1,9 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 using LifetimeScope;
 using NUnit.Framework;
+using Presenters;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using VContainer;
 
 namespace Tests
 {
@@ -24,9 +27,7 @@ namespace Tests
         public IEnumerator PlayModeValidation_GetLifetimeScope()
         {
             yield return LoadSampleScene();
-            
-            var scene = SceneManager.GetSceneByName(sceneName);
-            
+
             var applicationLifetimeScope = GameObject.Find("ApplicationLifetimeScope");
             
             Assert.IsNotNull(applicationLifetimeScope);
@@ -35,7 +36,25 @@ namespace Tests
 
             Assert.IsNotNull(scopeContainer);
         }
-        
+
+        [UnityTest]
+        public IEnumerator PlayModeValidation_StartGameOnPlayMode()
+        {
+            yield return LoadSampleScene();
+
+            var applicationLifetimeScope = GameObject.Find("ApplicationLifetimeScope");
+            Assert.IsNotNull(applicationLifetimeScope);
+            var scopeContainer = applicationLifetimeScope.GetComponent<ApplicationLifetimeScope>();
+            Assert.IsNotNull(scopeContainer);
+
+            yield return new WaitForSeconds(3.0f);
+            
+            var gameManagerPresenter = scopeContainer.Container.Resolve<GeneralGamePresenter>();
+            Assert.IsNotNull(gameManagerPresenter);
+            
+            gameManagerPresenter.StartGameButtonPressed();
+        }
+
         private IEnumerator LoadSampleScene()
         {
             Assert.That(Application.CanStreamedLevelBeLoaded(sceneName),

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEditor;
 
 namespace Data
 {
@@ -79,6 +80,13 @@ namespace Data
 
         private async Task TriggerPlayCard()
         {
+#if UNITY_EDITOR
+            //Allow for tests to not await on delays.
+            if (EditorApplication.isPlaying == false) {
+                RequestCardFromPlayer();
+                return;
+            }
+#endif
             await Task.Delay(1);
             RequestCardFromPlayer();
         }

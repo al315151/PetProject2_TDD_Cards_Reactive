@@ -1,5 +1,7 @@
+using Presenters;
 using UnityEngine;
 using VContainer;
+using VContainer.Unity;
 using View;
 
 namespace LifetimeScope
@@ -16,7 +18,8 @@ namespace LifetimeScope
       {
          builder.RegisterInstance(generalGameView).As<GeneralGameView>();
          builder.RegisterInstance(playerView).As<PlayerView>();
+         
+         builder.Register<GeneralGamePresenter>(Lifetime.Scoped).As<GeneralGamePresenter, IInitializable>();
       }
-   
    }
 }
