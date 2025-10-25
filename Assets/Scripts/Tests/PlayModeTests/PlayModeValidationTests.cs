@@ -66,6 +66,7 @@ namespace Tests
             Assert.IsNotNull(tableUIPresenter.SelectedCardSuit == gameManagerData.DeckInitialCardSuit);
         }
 
+        [UnityTest]
         public IEnumerator PlayModeValidation_StartGameRound()
         {
             yield return LoadSampleScene();

@@ -15,7 +15,7 @@ namespace Presenters
         
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
-
+        
         public GeneralGamePresenter(
             GameManagerData gameManagerData, 
             PlayersService playersService,
@@ -32,6 +32,13 @@ namespace Presenters
         {
             gameManagerData.StartGame();
             OnGameStarted?.Invoke(gameManagerData.DeckInitialCardSuit);
+        }
+
+        public void StartGameRound()
+        {
+            if (gameManagerData.StartPlayRound() == false) {
+                
+            }
         }
 
         public void Initialize()
