@@ -7,9 +7,11 @@ using VContainer.Unity;
 
 namespace Services
 {
-    public class PlayersService
+    public class PlayersService : IInitializable, IDisposable
     {
         private const int MaxCPUPlayers = 3;
+
+        public Action OnPlayersInitialized;
         
         private List<PlayerData> npcPlayersData = new();
         
@@ -18,11 +20,11 @@ namespace Services
         public void Initialize()
         {
             CreatePlayers(MaxCPUPlayers);
+            OnPlayersInitialized?.Invoke();
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public void CreatePlayers(int numberOfCPUPlayers)

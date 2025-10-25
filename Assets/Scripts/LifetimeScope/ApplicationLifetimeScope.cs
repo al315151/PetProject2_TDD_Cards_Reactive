@@ -1,6 +1,7 @@
 using System;
 using Data;
 using Presenters;
+using Services;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -26,6 +27,7 @@ namespace LifetimeScope
          builder.RegisterInstance(playerView).As<PlayerView>();
 
          // Then bind presenters which take care of managing both.
+         builder.Register<PlayersService>(Lifetime.Scoped).As<PlayersService, IInitializable, IDisposable>();
          builder.Register<GeneralGamePresenter>(Lifetime.Scoped).As<GeneralGamePresenter, IInitializable, IDisposable>();
          builder.Register<TableUIPresenter>(Lifetime.Scoped).As<TableUIPresenter, IInitializable, IDisposable>();
       }

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Data;
 using LifetimeScope;
 using NUnit.Framework;
 using Presenters;
+using Services;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -50,6 +52,9 @@ namespace Tests
 
             yield return new WaitForSeconds(3.0f);
 
+            var playersService = scopeContainer.Container.Resolve<PlayersService>();
+            Assert.IsNotNull(playersService);
+            
             var gameManagerPresenter = scopeContainer.Container.Resolve<GeneralGamePresenter>();
             Assert.IsNotNull(gameManagerPresenter);
             
@@ -63,7 +68,10 @@ namespace Tests
             var tableUIPresenter = scopeContainer.Container.Resolve<TableUIPresenter>();
             Assert.IsNotNull(tableUIPresenter);
             
-            Assert.IsNotNull(tableUIPresenter.SelectedCardSuit == gameManagerPresenter.TestOnlyGameManagerData.DeckInitialCardSuit);
+            var gameManagerData = scopeContainer.Container.Resolve<GameManagerData>();
+            Assert.IsNotNull(gameManagerData);
+            
+            Assert.IsNotNull(tableUIPresenter.SelectedCardSuit == gameManagerData.DeckInitialCardSuit);
         }
 
         private IEnumerator LoadSampleScene()
