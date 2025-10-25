@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using NUnit.Framework;
+using Services;
 
 namespace Tests
 {
@@ -15,7 +16,10 @@ namespace Tests
         public void GameManagerTestCreateGameWithSpecifiedPlayers(int numberOfCPUPlayers)
         {        
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.CreateGame();
 
             Assert.IsTrue(gameManager.NumberOfPlayers == numberOfCPUPlayers + 1);
         }
@@ -25,7 +29,10 @@ namespace Tests
         {
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.CreateGame();
 
             var playerMaxHandCount = PlayerData.MaxHandSize;
             var numberOfExpectedCards = DeckData.NumberOfCardsPerSuit * Enum.GetValues(typeof(CardSuit)).Length;
@@ -43,9 +50,13 @@ namespace Tests
         {
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
-
-            var players = gameManager.GetPlayers();
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            
+            var players = playerService.GetAllPlayers();
+            
+            gameManager.ReceivePlayersData(players);
+            gameManager.CreateGame();
 
             gameManager.StartGame();
 
@@ -66,7 +77,10 @@ namespace Tests
         {
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.CreateGame();
 
             gameManager.StartGame();
 
@@ -88,12 +102,16 @@ namespace Tests
         public async Task GameManagerValidation_PlayFourRounds_PlayersHaveProperAmountOfCards(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            
+            var players = playerService.GetAllPlayers();
+            
+            gameManager.ReceivePlayersData(players);
+            gameManager.CreateGame();
 
             gameManager.StartGame();
 
-            var players = gameManager.GetPlayers();
-        
             var firstRoundFinished = await PlayOneRound(gameManager);
             var firstRound = gameManager.GetCurrentRound();
 
@@ -134,7 +152,10 @@ namespace Tests
         public async Task GameManagerValidation_PlayAllRounds_PlayUntilDeckIsEmpty(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.CreateGame();
 
             gameManager.StartGame();
 
@@ -164,11 +185,15 @@ namespace Tests
         public async Task GameManagerValidation_PlayAllRounds_GameWinnerHasHighestScore(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            gameManager.CreateGame(numberOfCPUPlayers);
+            var playerService = new PlayersService();
+            playerService.CreatePlayers(numberOfCPUPlayers);
+            
+            var players = playerService.GetAllPlayers();
+            
+            gameManager.ReceivePlayersData(players);
+            gameManager.CreateGame();
 
             gameManager.StartGame();
-
-            var players = gameManager.GetPlayers();
 
             var previousRoundId = -3;
         

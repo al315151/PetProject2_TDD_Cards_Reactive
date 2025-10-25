@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using VContainer;
+using View;
 
 namespace Tests
 {
@@ -48,11 +49,21 @@ namespace Tests
             Assert.IsNotNull(scopeContainer);
 
             yield return new WaitForSeconds(3.0f);
-            
+
             var gameManagerPresenter = scopeContainer.Container.Resolve<GeneralGamePresenter>();
             Assert.IsNotNull(gameManagerPresenter);
             
-            gameManagerPresenter.StartGameButtonPressed();
+            var gameManagerView = scopeContainer.Container.Resolve<GeneralGameView>();
+            Assert.IsNotNull(gameManagerView);
+            
+            // trigger newGame as in button interaction.
+            gameManagerView.NewGameButtonClicked?.Invoke();
+            
+            // Check that deck has the proper suit.
+            var tableUIPresenter = scopeContainer.Container.Resolve<TableUIPresenter>();
+            Assert.IsNotNull(tableUIPresenter);
+            
+            Assert.IsNotNull(tableUIPresenter.SelectedCardSuit == gameManagerPresenter.TestOnlyGameManagerData.DeckInitialCardSuit);
         }
 
         private IEnumerator LoadSampleScene()

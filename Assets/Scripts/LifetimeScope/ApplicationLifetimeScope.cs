@@ -1,3 +1,5 @@
+using System;
+using Data;
 using Presenters;
 using UnityEngine;
 using VContainer;
@@ -16,10 +18,16 @@ namespace LifetimeScope
 
       protected override void Configure(IContainerBuilder builder)
       {
+         // First bind data sources.
+         builder.Register<GameManagerData>(Lifetime.Scoped).AsSelf();
+         
+         // Then bind view.
          builder.RegisterInstance(generalGameView).As<GeneralGameView>();
          builder.RegisterInstance(playerView).As<PlayerView>();
-         
-         builder.Register<GeneralGamePresenter>(Lifetime.Scoped).As<GeneralGamePresenter, IInitializable>();
+
+         // Then bind presenters which take care of managing both.
+         builder.Register<GeneralGamePresenter>(Lifetime.Scoped).As<GeneralGamePresenter, IInitializable, IDisposable>();
+         builder.Register<TableUIPresenter>(Lifetime.Scoped).As<TableUIPresenter, IInitializable, IDisposable>();
       }
    }
 }

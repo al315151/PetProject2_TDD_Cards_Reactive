@@ -3,27 +3,34 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using NUnit.Framework;
+using Services;
 
 namespace Tests
 {
     public class GameRoundValidationTests
     {
-        private void SetupGameManagerAndStartGame(out GameManagerData gameManager)
+        private void SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService)
         {
             var numberOfCPUPlayers = 2;
 
             gameManager = new GameManagerData();
+            playersService = new PlayersService();
+            playersService.CreatePlayers(numberOfCPUPlayers);
+            
+            var players = playersService.GetAllPlayers();
+            
+            gameManager.ReceivePlayersData(players);
+            gameManager.CreateGame();
 
             //Create the game and start it.
             //Only then Game Rounds can be created.
-            gameManager.CreateGame(numberOfCPUPlayers);
             gameManager.StartGame();
         }
 
         [Test]
         public void GameRoundValidationCreateGameRound()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManager);
+            SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService);
 
             gameManager.CreateAndStartRound();
 
@@ -33,7 +40,7 @@ namespace Tests
         [Test]
         public void GameRoundValidationEstablishRoundOrder()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManager);
+            SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService);
 
             gameManager.CreateAndStartRound();
 
@@ -50,13 +57,13 @@ namespace Tests
         [Test]
         public async Task GameRoundValidationPlayPhaseMakesPlayersSelectCardForRound()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManager);
+            SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService);
 
             gameManager.CreateAndStartRound();
             gameManager.EstablishRoundOrder();
 
             //Number of players: 2 + player.
-            List<PlayerData> players = gameManager.GetPlayers();
+            List<PlayerData> players = playersService.GetAllPlayers();
 
             GameRoundData round = gameManager.GetCurrentRound();
 

@@ -9,6 +9,8 @@ namespace Data
         public int GameWinnerPlayerId => gameWinnerId;
         public int GameWinnerPlayerScore => gameWinnerScore;
 
+        public CardSuit DeckInitialCardSuit => deckData.ChosenCardSuit;
+
         private List<PlayerData> playersData;
         private DeckData deckData;
         private int currentRound;
@@ -20,27 +22,26 @@ namespace Data
 
         private int gameWinnerId;
         private int gameWinnerScore;
-        
-        public void CreateGame(int numberOfCPUPlayers)
+
+        public GameManagerData()
         {
-            playersData = new List<PlayerData>();
-
-            //Player will be -1. No player should be allowed to be 0.
-            var basePlayer = new PlayerData(-1);
-            playersData.Add(basePlayer);
-
-            for (var i = 0; i < numberOfCPUPlayers; i++) {
-                var newCPU = basePlayer.Clone(playersData.Count) as PlayerData;
-                playersData.Add(newCPU);
-            }
-
             deckData = new DeckData();
-            deckData.CreateDeck();
-
+            
             gameRoundConcretePrototype = new GameRoundData(currentRound);
             roundDataHistory = new List<GameRoundData>();
         }
+        
+        public void CreateGame()
+        {
+            //Players will be created through PlayersService.
+            deckData.CreateDeck();
+        }
 
+        public void ReceivePlayersData(List<PlayerData> playersData)
+        {
+            this.playersData = playersData;
+        }
+        
         public void StartGame()
         {
             //Shuffle the cards, set the deck chosen Suit.
@@ -126,11 +127,6 @@ namespace Data
             }
 
             currentGameRound.SetPlayerOrder(playerOrder);
-        }
-
-        public List<PlayerData> GetPlayers()
-        {
-            return playersData;
         }
 
         public GameRoundData GetCurrentRound()

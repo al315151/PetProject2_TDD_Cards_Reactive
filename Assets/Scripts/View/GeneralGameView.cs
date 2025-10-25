@@ -7,6 +7,10 @@ namespace View
 {
     public class GeneralGameView : MonoBehaviour
     {
+        public Action NewGameButtonClicked;
+        
+        public Action FinishButtonClicked;
+        
         [SerializeField]
         private TMP_Text gameRoundNumberText;
     
@@ -33,12 +37,12 @@ namespace View
         
         private void OnNewGameClicked()
         {
-            throw new NotImplementedException();
+            NewGameButtonClicked?.Invoke();            
         }
         
         private void OnFinishGameClicked()
         {
-            throw new NotImplementedException();
+            FinishButtonClicked?.Invoke();
         }
     }
 }
