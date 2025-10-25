@@ -44,5 +44,10 @@ namespace View
         {
             FinishButtonClicked?.Invoke();
         }
+
+        public void SetRoundNumber(string roundNumber)
+        {
+            gameRoundNumberText.text = roundNumber;
+        }
     }
 }

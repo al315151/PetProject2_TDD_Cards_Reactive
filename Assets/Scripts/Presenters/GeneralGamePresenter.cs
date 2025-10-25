@@ -1,5 +1,6 @@
 using System;
 using Data;
+using R3;
 using Services;
 using UnityEngine;
 using VContainer.Unity;
@@ -15,7 +16,9 @@ namespace Presenters
         
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
-        
+
+        private IDisposable currentRoundIndexDisposable;
+
         public GeneralGamePresenter(
             GameManagerData gameManagerData, 
             PlayersService playersService,
@@ -36,16 +39,15 @@ namespace Presenters
 
         public void StartGameRound()
         {
-            if (gameManagerData.StartPlayRound() == false) {
-                
-            }
+            gameManagerData.StartPlayRound();
         }
 
         public void Initialize()
         {
-            gameManagerData.CreateGame();
-
             gameView.NewGameButtonClicked += StartGameButtonPressed;
+            SubscribeOnGameManagerDataStats();
+
+            gameManagerData.CreateGame();
         }
 
         private void OnPlayersInitialized()
@@ -53,10 +55,16 @@ namespace Presenters
             gameManagerData.ReceivePlayersData(playersService.GetAllPlayers());
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
             gameView.NewGameButtonClicked -= StartGameButtonPressed;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
+            currentRoundIndexDisposable?.Dispose();
+        }
+
+        private void SubscribeOnGameManagerDataStats()
+        {
+            currentRoundIndexDisposable = gameManagerData.CurrentRoundIndex.Subscribe( onNext: roundIndex => gameView.SetRoundNumber(roundIndex.ToString()));
         }
     }
 }

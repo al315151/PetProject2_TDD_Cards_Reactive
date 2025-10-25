@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Data;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,5 +62,11 @@ namespace View
         {
             return cardSuitSprites[(int)cardSuit];
         }
+
+        public bool IsCardTheSame(CardSuit cardSuit, int cardNumber)
+        {
+            return this.cardSuit == cardSuit && this.cardNumber == cardNumber;
+        }
+
     }
 }

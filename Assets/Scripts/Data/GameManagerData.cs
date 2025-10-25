@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 
 namespace Data
@@ -10,10 +11,10 @@ namespace Data
         public int GameWinnerPlayerScore => gameWinnerScore;
 
         public CardSuit DeckInitialCardSuit => deckData.ChosenCardSuit;
+        public ReactiveProperty<int> CurrentRoundIndex { get; private set; }
 
         private List<PlayerData> playersData;
-        private DeckData deckData;
-        private int currentRound;
+        private DeckData deckData;        
 
         private IGameRoundPrototype gameRoundConcretePrototype;
 
@@ -26,8 +27,10 @@ namespace Data
         public GameManagerData()
         {
             deckData = new DeckData();
-            
-            gameRoundConcretePrototype = new GameRoundData(currentRound);
+
+            CurrentRoundIndex = new ReactiveProperty<int>(0);
+
+            gameRoundConcretePrototype = new GameRoundData(CurrentRoundIndex.CurrentValue);
             roundDataHistory = new List<GameRoundData>();
         }
         
@@ -79,12 +82,12 @@ namespace Data
 
         public bool CreateAndStartRound()
         {
-            currentRound++;
+            CurrentRoundIndex.Value++;
             if (currentGameRound != null) {
                 roundDataHistory.Add(currentGameRound);
             }
             
-            var gameRoundPrototype = gameRoundConcretePrototype.Clone(currentRound);
+            var gameRoundPrototype = gameRoundConcretePrototype.Clone(CurrentRoundIndex.Value);
             
             var gameRound = gameRoundPrototype as GameRoundData;
             gameRound.ReceivePlayers(playersData);

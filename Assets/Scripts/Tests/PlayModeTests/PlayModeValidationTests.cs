@@ -67,7 +67,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator PlayModeValidation_StartGameRound()
+        public IEnumerator PlayModeValidation_ValidateGameRoundSteps()
         {
             yield return LoadSampleScene();
 
@@ -83,8 +83,29 @@ namespace Tests
             
             // trigger newGame as in button interaction.
             gameManagerView.NewGameButtonClicked?.Invoke();
-            
+
             // Start game round
+
+            //Cards need to be setup in table.
+            //Player's cards need to be updated with its data.
+            var tableUIView = scopeContainer.Container.Resolve<TableUIView>();
+            Assert.IsNotNull(tableUIView);
+
+            //Round is divided on different phases.
+
+
+            // Draw phase -- first round it does nothing, but it will make players draw cards on each following round.
+
+
+            // Play phase -- Each player, in order, plays the cards they want on the established order.
+
+
+            // Resolve phase -- A round winner is decided by checking the cards that were received from the players, and scores are given.
+
+
+            yield return new WaitForEndOfFrame();
+
+
         }
 
         private void DisablePlayerInput(ApplicationLifetimeScope scope)

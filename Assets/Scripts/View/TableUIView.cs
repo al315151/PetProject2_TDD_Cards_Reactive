@@ -6,12 +6,14 @@ using R3;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
 
 namespace View
 {
     public class TableUIView : MonoBehaviour
     {
-        private readonly CardSuitSpriteProvider cardSuitSpriteProvider;
+        private CardSuitSpriteProvider cardSuitSpriteProvider;
+        
         [SerializeField]
         private Image selectedCardSuitImage;
 
@@ -25,12 +27,15 @@ namespace View
         private List<CardView> cardViews;
 
         public Action RequestDeckCardCountUpdate;
-        
-        public TableUIView(CardSuitSpriteProvider cardSuitSpriteProvider)
+
+        [Inject]
+        public void Inject(CardSuitSpriteProvider cardSuitProvider)
         {
-            this.cardSuitSpriteProvider = cardSuitSpriteProvider;
+            cardSuitSpriteProvider = cardSuitProvider;
+            
             var everySecondCheck = Observable.Interval(TimeSpan.FromSeconds(1f), destroyCancellationToken);
             everySecondCheck.Subscribe(x => RequestDeckCardCountUpdate?.Invoke());
+
         }
         
         public void SetupSelectedCardSuitVisuals(CardSuit cardSuit)

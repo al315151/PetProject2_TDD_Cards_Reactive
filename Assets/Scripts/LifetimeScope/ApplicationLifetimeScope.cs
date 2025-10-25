@@ -33,7 +33,9 @@ namespace LifetimeScope
          builder.RegisterInstance(generalGameView).As<GeneralGameView>();
          builder.RegisterInstance(playerView).As<PlayerView>();
          builder.RegisterInstance(cardSuitSpriteSpriteProvider).As<CardSuitSpriteProvider>();
-         builder.RegisterInstance(tableUIView).As<TableUIView>();
+
+         //Force Monobehaviours to be injected even if not resolved yet using RegisterComponent!
+         builder.RegisterComponent(tableUIView).AsSelf();
 
          // Then bind presenters which take care of managing both.
          builder.Register<PlayersService>(Lifetime.Scoped).As<PlayersService, IInitializable, IDisposable>();

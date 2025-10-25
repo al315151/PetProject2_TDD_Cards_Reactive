@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using R3;
 using UnityEditor;
 
 namespace Data
@@ -9,13 +10,14 @@ namespace Data
     {
         public static int MaxHandSize = 3;
 
-        public int PlayerHandSize => playerHand.Count;
+        public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
+
+        public int PlayerHandSize => PlayerHand.CurrentValue.Count;
         public int PlayerId => id;
 
         private readonly int id;
-        private List<CardData> playerHand;
-        int score = 0;
         
+        int score = 0;        
         private bool inputEnabled = false;
 
         private IObserver<KeyValuePair<int, CardData>> roundDataObserver;
@@ -23,13 +25,13 @@ namespace Data
         public PlayerData(int id = 0)
         {
             this.id = id;
-            playerHand = new List<CardData>();
+            PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
             inputEnabled = true;
         }
 
         public void AddCardToHandFromDeck(DeckData deck)
         {
-            if (playerHand.Count >= MaxHandSize) {
+            if (PlayerHand.CurrentValue.Count >= MaxHandSize) {
                 return;
             }
             var card = deck.GetTopCardFromDeck();
@@ -37,7 +39,7 @@ namespace Data
             if (card == null) {
                 return;
             }
-            playerHand.Add(card);
+            PlayerHand.CurrentValue.Add(card);
         }
 
         public IPlayerPrototype Clone(int id)
@@ -48,15 +50,15 @@ namespace Data
         public void RequestCardFromPlayer()
         {
             //For now, choose card at random.
-            var randomIndex = new Random().Next(playerHand.Count);
-            var randomCard = playerHand[randomIndex];
-            playerHand.Remove(randomCard);
+            var randomIndex = new Random().Next(PlayerHand.Value.Count);
+            var randomCard = PlayerHand.CurrentValue[randomIndex];
+            PlayerHand.CurrentValue.Remove(randomCard);
             roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, randomCard));
         }
 
         public void AddCard(CardData cardData)
         {
-            playerHand.Add(cardData);
+            PlayerHand.CurrentValue.Add(cardData);
         }
 
         public int GetScore()
