@@ -41,23 +41,15 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator PlayModeValidation_StartGameOnPlayMode()
+        public IEnumerator PlayModeValidation_StartGame()
         {
             yield return LoadSampleScene();
 
-            var applicationLifetimeScope = GameObject.Find("ApplicationLifetimeScope");
-            Assert.IsNotNull(applicationLifetimeScope);
-            var scopeContainer = applicationLifetimeScope.GetComponent<ApplicationLifetimeScope>();
-            Assert.IsNotNull(scopeContainer);
-
+            var scopeContainer = GetPlayModeLifetimeScope();
+            
+            //Wait some seconds so that everything has been initialized.
             yield return new WaitForSeconds(3.0f);
 
-            var playersService = scopeContainer.Container.Resolve<PlayersService>();
-            Assert.IsNotNull(playersService);
-            
-            var gameManagerPresenter = scopeContainer.Container.Resolve<GeneralGamePresenter>();
-            Assert.IsNotNull(gameManagerPresenter);
-            
             var gameManagerView = scopeContainer.Container.Resolve<GeneralGameView>();
             Assert.IsNotNull(gameManagerView);
             
@@ -72,6 +64,51 @@ namespace Tests
             Assert.IsNotNull(gameManagerData);
             
             Assert.IsNotNull(tableUIPresenter.SelectedCardSuit == gameManagerData.DeckInitialCardSuit);
+        }
+
+        public IEnumerator PlayModeValidation_StartGameRound()
+        {
+            yield return LoadSampleScene();
+
+            var scopeContainer = GetPlayModeLifetimeScope();
+
+            //Wait some seconds so that everything has been initialized.
+            yield return new WaitForSeconds(3.0f);
+            
+            var gameManagerView = scopeContainer.Container.Resolve<GeneralGameView>();
+            Assert.IsNotNull(gameManagerView);
+            
+            DisablePlayerInput(scopeContainer);
+            
+            // trigger newGame as in button interaction.
+            gameManagerView.NewGameButtonClicked?.Invoke();
+            
+            // Start game round
+        }
+
+        private void DisablePlayerInput(ApplicationLifetimeScope scope)
+        {
+            const int playerId = -1;
+            //Get players, and disablePlayer input for user (on tests we make it select random cards).
+            var playersService = scope.Container.Resolve<PlayersService>();
+            Assert.IsNotNull(playersService);
+
+            var players = playersService.GetAllPlayers();
+            foreach (var player in players) {
+                if (player.PlayerId == playerId) {
+                    player.DisablePlayerInput();
+                }
+            }
+        }
+        
+        private ApplicationLifetimeScope GetPlayModeLifetimeScope()
+        {
+            var applicationLifetimeScope = GameObject.Find("ApplicationLifetimeScope");
+            Assert.IsNotNull(applicationLifetimeScope);
+            var scopeContainer = applicationLifetimeScope.GetComponent<ApplicationLifetimeScope>();
+            Assert.IsNotNull(scopeContainer);
+
+            return scopeContainer;
         }
 
         private IEnumerator LoadSampleScene()
@@ -90,6 +127,5 @@ namespace Tests
             
             Assert.That(scene.isLoaded);
         }
-        
     }
 }

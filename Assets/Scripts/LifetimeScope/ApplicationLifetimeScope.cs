@@ -17,6 +17,9 @@ namespace LifetimeScope
       [SerializeField]
       private PlayerView playerView;
 
+      [SerializeField]
+      private CardSuitSpriteProviderScriptableObject cardSuitSpriteProvider;
+      
       protected override void Configure(IContainerBuilder builder)
       {
          // First bind data sources.
@@ -25,6 +28,7 @@ namespace LifetimeScope
          // Then bind view.
          builder.RegisterInstance(generalGameView).As<GeneralGameView>();
          builder.RegisterInstance(playerView).As<PlayerView>();
+         builder.RegisterInstance(cardSuitSpriteProvider).As<CardSuitSpriteProviderScriptableObject>();
 
          // Then bind presenters which take care of managing both.
          builder.Register<PlayersService>(Lifetime.Scoped).As<PlayersService, IInitializable, IDisposable>();

@@ -1,3 +1,5 @@
+using Data;
+
 public class CardData
 {
     public CardSuit CardSuit { get; private set; }

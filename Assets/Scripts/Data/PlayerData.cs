@@ -15,6 +15,8 @@ namespace Data
         private readonly int id;
         private List<CardData> playerHand;
         int score = 0;
+        
+        private bool inputEnabled = false;
 
         private IObserver<KeyValuePair<int, CardData>> roundDataObserver;
         
@@ -22,6 +24,7 @@ namespace Data
         {
             this.id = id;
             playerHand = new List<CardData>();
+            inputEnabled = true;
         }
 
         public void AddCardToHandFromDeck(DeckData deck)
@@ -66,6 +69,16 @@ namespace Data
             score += roundScore;
         }
 
+        public void DisablePlayerInput()
+        {
+            inputEnabled = false;
+        }
+
+        public void EnablePlayerInput()
+        {
+            inputEnabled = true;
+        }
+        
         public IDisposable Subscribe(IObserver<KeyValuePair<int, CardData>> observer)
         {
             roundDataObserver = observer;
@@ -87,6 +100,11 @@ namespace Data
                 return;
             }
 #endif
+            //Play mode + input enabled: normal gameplay flow.
+            if (inputEnabled) {
+                return;
+            }
+            
             await Task.Delay(1);
             RequestCardFromPlayer();
         }
