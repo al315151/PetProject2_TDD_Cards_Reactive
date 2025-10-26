@@ -14,6 +14,7 @@ namespace Presenters
 
         public Action<CardSuit> OnGameStarted;
         public Action OnGameRoundStarted;
+        public Action OnGameRoundFinished;
         public Action OnGameFinished;
         
         private readonly GameManagerData gameManagerData;
@@ -67,7 +68,7 @@ namespace Presenters
             gameManagerData.ReceivePlayersData(playersService.GetAllPlayers());
         }
 
-        public new void Dispose()
+        public void Dispose()
         {
             gameView.NewGameButtonClicked -= StartGameButtonPressed;
             gameView.StartNextRoundButtonClicked -= StartNextRoundButtonPressed;
@@ -90,6 +91,7 @@ namespace Presenters
             {
                 var winnerId = currentRound.ResolveRound(gameManagerData.DeckInitialCardSuit);
                 currentRound.FinishRound(winnerId);
+                OnGameRoundFinished?.Invoke();
             }
         }
     }

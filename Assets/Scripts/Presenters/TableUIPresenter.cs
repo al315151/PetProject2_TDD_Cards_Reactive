@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Data;
-using NUnit.Framework;
 using R3;
 using Services;
-using UnityEngine;
 using VContainer.Unity;
 using View;
+using System.Linq;
 
 namespace Presenters
 {
@@ -21,6 +20,7 @@ namespace Presenters
 
         private CardSuit selectedSuit;
         private IDisposable playerDisposables;
+        private IDisposable playedCardsDisposables;
 
         public TableUIPresenter(
             GeneralGamePresenter gameManagerPresenter,
@@ -38,13 +38,30 @@ namespace Presenters
         {
             gameManagerPresenter.OnGameStarted += OnGameStarted;
             gameManagerPresenter.OnGameRoundStarted += OnGameRoundStarted;
+            gameManagerPresenter.OnGameRoundFinished += OnGameRoundFinished;
             playersService.OnPlayersInitialized += OnPlayersInitialized;
             tableUIView.RequestDeckCardCountUpdate += OnRequestDeckCardCountUpdate;
+
+            tableUIView.ResetGameGraphics();
+        }
+
+        private void OnGameRoundFinished()
+        {
+            var currentRound = gameManagerData.GetCurrentRound();
+            if (currentRound != null)
+            {
+                var winnerId = currentRound.RoundWinnerId;
+                var winnerString = winnerId == -1 ? "You" : winnerId.ToString();
+
+                tableUIView.SetRoundWinnerText(winnerString);
+            }
+
+            playedCardsDisposables?.Dispose();
         }
 
         private void OnGameRoundStarted()
         {
-            tableUIView.ResetCardViews();
+            ResetRoundGraphics();
             SetupRoundRelatedData();
         }
 
@@ -55,6 +72,8 @@ namespace Presenters
 
         private void OnGameStarted(CardSuit initialCardSuit)
         {
+            ResetRoundGraphics();
+            tableUIView.ResetGameGraphics();
             tableUIView.SetupSelectedCardSuitVisuals(initialCardSuit);
         }
 
@@ -63,10 +82,17 @@ namespace Presenters
             SubscribeToPlayerRelatedData();
         }
 
+        private void ResetRoundGraphics()
+        {
+            tableUIView.ResetCardViews();
+            tableUIView.SetRoundWinnerText(string.Empty);
+        }
+
         public void Dispose()
         {
             gameManagerPresenter.OnGameStarted -= OnGameStarted;
             gameManagerPresenter.OnGameRoundStarted -= OnGameRoundStarted;
+            gameManagerPresenter.OnGameRoundFinished -= OnGameRoundFinished;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
             tableUIView.RequestDeckCardCountUpdate -= OnRequestDeckCardCountUpdate;
             playerDisposables?.Dispose();
@@ -76,6 +102,7 @@ namespace Presenters
         {
             var currentGameRound = gameManagerData.GetCurrentRound();
             tableUIView.SetPlayerRoundOrderText(currentGameRound.PlayerOrder);
+            playedCardsDisposables = currentGameRound.PlayedCardsByPlayers.Subscribe(playedCards => tableUIView.SetupRoundCardsView(playedCards));
         }
 
         private void SubscribeToPlayerRelatedData()

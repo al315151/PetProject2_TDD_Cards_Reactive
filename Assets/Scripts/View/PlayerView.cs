@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Data;
 using TMPro;
 using UnityEngine;
 
@@ -23,6 +22,7 @@ namespace View
             }
 
             ResetAllCardViews();
+            SetPlayerScore(0);
         }
         
         private void OnDisable()

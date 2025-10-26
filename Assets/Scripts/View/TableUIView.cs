@@ -12,6 +12,9 @@ namespace View
 {
     public class TableUIView : MonoBehaviour
     {
+        private const string playerScoreFormat = "Player {0} score: {1}";
+        private const string playerOrderFormat = "Player {0}";
+
         private CardSuitSpriteProvider cardSuitSpriteProvider;
         
         [SerializeField]
@@ -19,7 +22,10 @@ namespace View
 
         [SerializeField]
         private TMP_Text cardsLeftInDeckText;
-        
+
+        [SerializeField]
+        private TMP_Text roundWinnerText;
+
         [SerializeField]
         private List<TMP_Text> npcPlayersScoresText;
 
@@ -53,8 +59,6 @@ namespace View
 
         public void SetNPCPlayerScores(List<KeyValuePair<int, int>> playerScores)
         {
-            var playerScoreFormat = "Player {0} score: {1}";
-
             for (int i = 0; i < playerScores.Count; i++)
             {
                 var playerId = playerScores[i].Key.ToString();
@@ -68,7 +72,6 @@ namespace View
 
         public void SetPlayerRoundOrderText(List<int> playerOrder)
         {
-            var playerOrderFormat = "Player {0}";
             for (int i = 0;i < playerOrder.Count;i++)
             {
                 var playerId = playerOrder[i].ToString();
@@ -94,6 +97,35 @@ namespace View
             for (int i = 0; i < cardViews.Count; i++)
             {
                 cardViews[i].ResetCardGraphics();
+            }
+        }
+
+        public void SetRoundWinnerText(string text)
+        {
+            roundWinnerText.text = text;
+        }
+
+        public void ResetGameGraphics()
+        {
+            ResetCardViews();
+            SetRoundWinnerText(string.Empty);
+            ResetNPCScores();
+            ResetPlayerRoundOrderText();
+        }
+
+        private void ResetNPCScores()
+        {
+            foreach(var npcScores in npcPlayersScoresText)
+            {
+                npcScores.text = string.Format(playerScoreFormat, string.Empty, string.Empty);
+            }
+        }
+
+        private void ResetPlayerRoundOrderText()
+        {
+            foreach (var npcRoundOrder in npcPlayersRoundOrderText)
+            {
+                npcRoundOrder.text = string.Format(playerOrderFormat, string.Empty);
             }
         }
     }

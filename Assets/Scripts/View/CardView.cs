@@ -33,7 +33,6 @@ namespace View
             this.cardNumber = cardNumber;
             cardNumberText.text = cardNumber.ToString();
             cardSuitImage.sprite = GetSuitSprite(cardSuit);
-            cardInteractionButton.interactable = true;
         }
 
         private void OnEnable()
@@ -55,7 +54,6 @@ namespace View
         {
             cardSuitImage.sprite = null;
             cardNumberText.text = string.Empty;
-            cardInteractionButton.interactable = false;
         }
         
         private Sprite GetSuitSprite(CardSuit cardSuit)

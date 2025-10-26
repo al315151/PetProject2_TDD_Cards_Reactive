@@ -24,6 +24,7 @@ namespace View
         {
             newGameButton.onClick.AddListener(OnNewGameClicked);
             startNextRoundButton.onClick.AddListener(OnStartNextRoundButtonClicked);
+            SetRoundNumber(string.Empty);
         }
 
         private void OnDisable()
