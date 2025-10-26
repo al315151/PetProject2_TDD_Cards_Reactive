@@ -45,6 +45,11 @@ namespace Services
             return allPlayers;
         }
 
+        public PlayerData GetUserPlayer()
+        {
+            return userPlayer;
+        }
+
         public List<PlayerData> GetCPUPlayers()
         {
             return npcPlayersData;

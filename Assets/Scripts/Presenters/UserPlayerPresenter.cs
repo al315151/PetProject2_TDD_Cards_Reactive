@@ -1,23 +1,16 @@
 using System;
+using System.Collections.Generic;
 using Data;
-using Presenters;
-using R3;
 using Services;
-using UnityEngine;
 using VContainer.Unity;
 using View;
 
 public class UserPlayerPresenter : IInitializable, IDisposable
 {
-    const int PlayerId = -1;
-
     private readonly PlayersService playersService;
     private readonly PlayerView playerView;
 
     private PlayerData userPlayerData;
-
-    private IDisposable playerHandDisposable;
-    private IDisposable playerScoreDisposable;
 
     public UserPlayerPresenter(
         PlayersService playersService,
@@ -25,40 +18,44 @@ public class UserPlayerPresenter : IInitializable, IDisposable
     {
         this.playersService = playersService;
         this.playerView = playerView;
+
+        playersService.OnPlayersInitialized += OnPlayersInitialized;
     }
 
     public void Initialize()
     {
-        playersService.OnPlayersInitialized += OnPlayersInitialized;
     }
 
     public void Dispose()
     {
         playersService.OnPlayersInitialized -= OnPlayersInitialized;
-        playerHandDisposable?.Dispose();
-        playerScoreDisposable?.Dispose();
+        if (userPlayerData != null)
+        {
+            userPlayerData.PlayerHandUpdated -= OnPlayerHandUpdated;
+            userPlayerData.PlayerScoreUpdated -= OnPlayerScoreUpdated;
+        }
+        
+    }
+
+    private void OnPlayerHandUpdated(List<CardData> list)
+    {
+        playerView.SetupCardViews(list);
     }
 
     private void OnPlayersInitialized()
     {
-        //Get PlayerData and subscribe to its changes!
-        var players = playersService.GetAllPlayers();
-
-        for (int i = 0; players.Count > 0; i++)
-        {
-            if (players[i].PlayerId == PlayerId)
-            {
-                userPlayerData = players[i];
-            }
-        }
-
+        userPlayerData = playersService.GetUserPlayer();
         SubscribeToPlayerDataChanges();
     }
 
     private void SubscribeToPlayerDataChanges()
     {
-        playerHandDisposable = userPlayerData.PlayerHand.Subscribe(handList => { playerView.SetupCardViews(handList);});
-        playerScoreDisposable = userPlayerData.PlayerScore.Subscribe(score => { playerView.SetPlayerScore(score); });
+        userPlayerData.PlayerHandUpdated += OnPlayerHandUpdated;
+        userPlayerData.PlayerScoreUpdated += OnPlayerScoreUpdated;
     }
-
+        
+    private void OnPlayerScoreUpdated()
+    {
+        playerView.SetPlayerScore(userPlayerData.GetScore());
+    }
 }
