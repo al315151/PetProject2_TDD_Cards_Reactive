@@ -80,7 +80,10 @@ namespace Tests
             Assert.IsNotNull(gameManagerView);
             
             DisablePlayerInput(scopeContainer);
-            
+
+            var gameManagerData = scopeContainer.Container.Resolve<GameManagerData>();
+            Assert.IsNotNull(gameManagerData);
+
             // trigger newGame as in button interaction.
             gameManagerView.NewGameButtonClicked?.Invoke();
 
@@ -88,24 +91,14 @@ namespace Tests
             // trigger newGame as in button interaction.
             gameManagerView.StartNextRoundButtonClicked?.Invoke();
 
-            //Cards need to be setup in table.
-            //Player's cards need to be updated with its data.
-            var tableUIView = scopeContainer.Container.Resolve<TableUIView>();
-            Assert.IsNotNull(tableUIView);
-
             //Round is divided on different phases.
             // Draw phase -- first round it does nothing, but it will make players draw cards on each following round.
-
-
             // Play phase -- Each player, in order, plays the cards they want on the established order.
-
-
             // Resolve phase -- A round winner is decided by checking the cards that were received from the players, and scores are given.
+            var currentGameRound = gameManagerData.GetCurrentRound();
+            yield return new WaitForSeconds(1.0f);
 
-
-            yield return new WaitForEndOfFrame();
-
-
+            Assert.IsTrue(currentGameRound.IsRoundFinished);
         }
 
         private void DisablePlayerInput(ApplicationLifetimeScope scope)

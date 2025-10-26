@@ -9,6 +9,8 @@ namespace Data
         public int RoundId => roundId;
         public int RoundWinnerId => roundWinnerId;
 
+        public Action PlayPhaseFinished;
+
         public bool IsRoundPlayPhaseFinished => playedCardsByPlayers.Count == playersData.Count;
 
         public bool IsRoundFinished { get; private set; }
@@ -70,6 +72,7 @@ namespace Data
             currentPlayerInOrderIndex++;
             //Stop going through users if they have all played.
             if (currentPlayerInOrderIndex >= playersData.Count) {
+                PlayPhaseFinished?.Invoke();
                 return;
             }
             RequestCardFromPlayer(GetCurrentPlayerIdInOrder());

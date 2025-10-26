@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using R3;
-using UnityEngine;
 
 namespace Data
 {
@@ -12,6 +12,8 @@ namespace Data
 
         public CardSuit DeckInitialCardSuit => deckData.ChosenCardSuit;
         public ReactiveProperty<int> CurrentRoundIndex { get; private set; }
+
+        public Action CurrentRoundPlayPhaseFinished;
 
         private List<PlayerData> playersData;
         private DeckData deckData;        
@@ -85,13 +87,16 @@ namespace Data
             CurrentRoundIndex.Value++;
             if (currentGameRound != null) {
                 roundDataHistory.Add(currentGameRound);
-            }
-            
+                currentGameRound.PlayPhaseFinished -= OnCurrentRoundPlayPhaseFinished;
+            }            
+
             var gameRoundPrototype = gameRoundConcretePrototype.Clone(CurrentRoundIndex.Value);
             
             var gameRound = gameRoundPrototype as GameRoundData;
             gameRound.ReceivePlayers(playersData);
             gameRound.StartPlayerDrawPhase(deckData);
+
+            gameRound.PlayPhaseFinished += OnCurrentRoundPlayPhaseFinished;
 
             if (CanRoundBePlayed() == false) {
                 currentGameRound = null;
@@ -100,7 +105,7 @@ namespace Data
             currentGameRound = gameRound;
             return true;
         }
-        
+
         public void EstablishRoundOrder()
         {
             // Winner of last round will start.
@@ -158,7 +163,12 @@ namespace Data
 
             currentGameRound.FinishRound(winnerId);
         }
-        
+
+        private void OnCurrentRoundPlayPhaseFinished()
+        {
+            CurrentRoundPlayPhaseFinished?.Invoke();
+        }
+
         private bool CanRoundBePlayed()
         {
             for (int i = 0; i < playersData.Count; i++) {

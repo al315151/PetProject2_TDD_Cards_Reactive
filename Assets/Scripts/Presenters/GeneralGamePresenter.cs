@@ -71,12 +71,25 @@ namespace Presenters
             gameView.NewGameButtonClicked -= StartGameButtonPressed;
             gameView.StartNextRoundButtonClicked -= StartNextRoundButtonPressed;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
+            gameManagerData.CurrentRoundPlayPhaseFinished -= OnCurrentRoundPlayPhaseFinished;
             currentRoundIndexDisposable?.Dispose();
         }
 
         private void SubscribeOnGameManagerDataStats()
         {
             currentRoundIndexDisposable = gameManagerData.CurrentRoundIndex.Subscribe( onNext: roundIndex => gameView.SetRoundNumber(roundIndex.ToString()));
+
+            gameManagerData.CurrentRoundPlayPhaseFinished += OnCurrentRoundPlayPhaseFinished;
+        }
+
+        private void OnCurrentRoundPlayPhaseFinished()
+        {
+            var currentRound = gameManagerData.GetCurrentRound();
+            if (currentRound != null)
+            {
+                var winnerId = currentRound.ResolveRound(gameManagerData.DeckInitialCardSuit);
+                currentRound.FinishRound(winnerId);
+            }
         }
     }
 }

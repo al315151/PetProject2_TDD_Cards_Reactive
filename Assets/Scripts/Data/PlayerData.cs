@@ -104,8 +104,8 @@ namespace Data
                 return;
             }
 #endif
-            //Play mode + input enabled: normal gameplay flow.
-            if (inputEnabled) {
+            //Play mode + input enabled: normal gameplay flow for the player (pressing the buttons).
+            if (inputEnabled && id == -1) {
                 return;
             }
             
