@@ -12,7 +12,7 @@ namespace Data
         public int RoundWinnerId => roundWinnerId;
 
         public Action PlayPhaseFinished;
-        public ReactiveProperty<List<CardData>> PlayedCardsByPlayers;
+        public Action OnPlayerCardPlayed;
 
         public bool IsRoundPlayPhaseFinished => playedCardsByPlayers.Count == playersData.Count;
 
@@ -27,6 +27,7 @@ namespace Data
         private List<PlayerData> playersData;
 
         private readonly Dictionary<int, CardData> playedCardsByPlayers;
+        private List<CardData> playedCardsInOrder;
 
         private int roundWinnerId;
         private int currentPlayerInOrderIndex;
@@ -38,7 +39,7 @@ namespace Data
             this.roundId = roundId;
             playerOrder = new List<int>();
             playedCardsByPlayers = new Dictionary<int, CardData>();
-            PlayedCardsByPlayers = new ReactiveProperty<List<CardData>>(new List<CardData>());
+            playedCardsInOrder = new List<CardData>();
             IsRoundFinished = false;
         }
 
@@ -64,7 +65,7 @@ namespace Data
 
         public void StartPlayPhase()
         {
-            PlayedCardsByPlayers.Value = new List<CardData>();
+            playedCardsInOrder = new List<CardData>();
             // For each player, ask them to play their cards. 
             RequestCardFromPlayer(GetCurrentPlayerIdInOrder());
         }
@@ -73,7 +74,8 @@ namespace Data
         {
             Debug.Log($"[Round: {roundId}] Player: {playerId} has played card: Number: {cardData.CardNumber} , Suit: {cardData.CardSuit}");
             playedCardsByPlayers.Add(playerId, cardData);
-            PlayedCardsByPlayers.Value.Add(cardData);
+            playedCardsInOrder.Add(cardData);
+            OnPlayerCardPlayed?.Invoke();
 
             currentPlayerInOrderIndex++;
             //Stop going through users if they have all played.
@@ -199,18 +201,21 @@ namespace Data
 
         public void OnCompleted()
         {
-            throw new NotImplementedException();
         }
 
         public void OnError(Exception error)
         {
-            throw new NotImplementedException();
         }
 
         public void OnNext(KeyValuePair<int, CardData> playerAndCard)
         {
             UnsubscribeToPlayerEvents();
             OnCardPlayedFromPlayer(playerAndCard.Key, playerAndCard.Value);
+        }
+
+        public List<CardData> GetPlayedCards()
+        {
+            return playedCardsInOrder;
         }
     }
 }

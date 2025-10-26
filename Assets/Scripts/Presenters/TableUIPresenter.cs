@@ -20,7 +20,6 @@ namespace Presenters
 
         private CardSuit selectedSuit;
         private IDisposable playerDisposables;
-        private IDisposable playedCardsDisposables;
 
         public TableUIPresenter(
             GeneralGamePresenter gameManagerPresenter,
@@ -54,9 +53,9 @@ namespace Presenters
                 var winnerString = winnerId == -1 ? "You" : winnerId.ToString();
 
                 tableUIView.SetRoundWinnerText(winnerString);
-            }
 
-            playedCardsDisposables?.Dispose();
+                currentRound.OnPlayerCardPlayed -= OnPlayerCardPlayed;
+            }            
         }
 
         private void OnGameRoundStarted()
@@ -102,7 +101,13 @@ namespace Presenters
         {
             var currentGameRound = gameManagerData.GetCurrentRound();
             tableUIView.SetPlayerRoundOrderText(currentGameRound.PlayerOrder);
-            playedCardsDisposables = currentGameRound.PlayedCardsByPlayers.Subscribe(playedCards => tableUIView.SetupRoundCardsView(playedCards));
+            currentGameRound.OnPlayerCardPlayed += OnPlayerCardPlayed;
+        }
+
+        private void OnPlayerCardPlayed()
+        {
+            var currentGameRound = gameManagerData.GetCurrentRound();
+            tableUIView.SetupRoundCardsView(currentGameRound.GetPlayedCards());
         }
 
         private void SubscribeToPlayerRelatedData()
