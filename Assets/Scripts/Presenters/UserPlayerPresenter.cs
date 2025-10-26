@@ -17,6 +17,7 @@ public class UserPlayerPresenter : IInitializable, IDisposable
     private PlayerData userPlayerData;
 
     private IDisposable playerHandDisposable;
+    private IDisposable playerScoreDisposable;
 
     public UserPlayerPresenter(
         PlayersService playersService,
@@ -35,6 +36,7 @@ public class UserPlayerPresenter : IInitializable, IDisposable
     {
         playersService.OnPlayersInitialized -= OnPlayersInitialized;
         playerHandDisposable?.Dispose();
+        playerScoreDisposable?.Dispose();
     }
 
     private void OnPlayersInitialized()
@@ -56,6 +58,7 @@ public class UserPlayerPresenter : IInitializable, IDisposable
     private void SubscribeToPlayerDataChanges()
     {
         playerHandDisposable = userPlayerData.PlayerHand.Subscribe(handList => { playerView.SetupCardViews(handList);});
+        playerScoreDisposable = userPlayerData.PlayerScore.Subscribe(score => { playerView.SetPlayerScore(score); });
     }
 
 }

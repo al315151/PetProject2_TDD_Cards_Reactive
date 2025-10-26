@@ -94,6 +94,7 @@ namespace Data
             gameRound.StartPlayerDrawPhase(deckData);
 
             if (CanRoundBePlayed() == false) {
+                currentGameRound = null;
                 return false;
             }
             currentGameRound = gameRound;

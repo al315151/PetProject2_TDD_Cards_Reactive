@@ -41,7 +41,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator PlayModeValidation_StartGame()
+        public IEnumerator PlayModeValidation_StartGame_ViewIsInitialized()
         {
             yield return LoadSampleScene();
 
@@ -52,7 +52,7 @@ namespace Tests
 
             var gameManagerView = scopeContainer.Container.Resolve<GeneralGameView>();
             Assert.IsNotNull(gameManagerView);
-            
+
             // trigger newGame as in button interaction.
             gameManagerView.NewGameButtonClicked?.Invoke();
             
@@ -62,7 +62,7 @@ namespace Tests
             
             var gameManagerData = scopeContainer.Container.Resolve<GameManagerData>();
             Assert.IsNotNull(gameManagerData);
-            
+
             Assert.IsNotNull(tableUIPresenter.SelectedCardSuit == gameManagerData.DeckInitialCardSuit);
         }
 
@@ -85,6 +85,8 @@ namespace Tests
             gameManagerView.NewGameButtonClicked?.Invoke();
 
             // Start game round
+            // trigger newGame as in button interaction.
+            gameManagerView.StartNextRoundButtonClicked?.Invoke();
 
             //Cards need to be setup in table.
             //Player's cards need to be updated with its data.
@@ -92,8 +94,6 @@ namespace Tests
             Assert.IsNotNull(tableUIView);
 
             //Round is divided on different phases.
-
-
             // Draw phase -- first round it does nothing, but it will make players draw cards on each following round.
 
 

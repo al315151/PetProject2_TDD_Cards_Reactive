@@ -37,17 +37,18 @@ namespace Presenters
             OnGameStarted?.Invoke(gameManagerData.DeckInitialCardSuit);
         }
 
-        public void StartGameRound()
-        {
-            gameManagerData.StartPlayRound();
-        }
-
         public void Initialize()
         {
             gameView.NewGameButtonClicked += StartGameButtonPressed;
+            gameView.StartNextRoundButtonClicked += StartNextRoundButtonPressed;
             SubscribeOnGameManagerDataStats();
 
             gameManagerData.CreateGame();
+        }
+
+        private void StartNextRoundButtonPressed()
+        {
+            gameManagerData.StartPlayRound();
         }
 
         private void OnPlayersInitialized()
@@ -58,6 +59,7 @@ namespace Presenters
         public new void Dispose()
         {
             gameView.NewGameButtonClicked -= StartGameButtonPressed;
+            gameView.StartNextRoundButtonClicked -= StartNextRoundButtonPressed;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
             currentRoundIndexDisposable?.Dispose();
         }

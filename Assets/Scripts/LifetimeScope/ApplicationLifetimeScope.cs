@@ -39,6 +39,8 @@ namespace LifetimeScope
 
          // Then bind presenters which take care of managing both.
          builder.Register<PlayersService>(Lifetime.Scoped).As<PlayersService, IInitializable, IDisposable>();
+         
+         builder.Register<UserPlayerPresenter>(Lifetime.Scoped).As<UserPlayerPresenter, IInitializable, IDisposable>();
          builder.Register<GeneralGamePresenter>(Lifetime.Scoped).As<GeneralGamePresenter, IInitializable, IDisposable>();
          builder.Register<TableUIPresenter>(Lifetime.Scoped).As<TableUIPresenter, IInitializable, IDisposable>();
       }

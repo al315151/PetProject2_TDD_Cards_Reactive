@@ -22,7 +22,10 @@ namespace View
         
         [SerializeField]
         private List<TMP_Text> npcPlayersScoresText;
-        
+
+        [SerializeField]
+        private List<TMP_Text> npcPlayersRoundOrderText;
+
         [SerializeField]
         private List<CardView> cardViews;
 
@@ -46,6 +49,25 @@ namespace View
         public void SetCardsLeftInDeck(int cardsLeftInDeck)
         {
             cardsLeftInDeckText.text = cardsLeftInDeck.ToString();
+        }
+
+        public void SetNPCPlayerScores(List<KeyValuePair<int, int>> playerScores)
+        {
+            var playerScoreFormat = "Player {0} score: {1}";
+
+            for (int i = 0; i < playerScores.Count; i++)
+            {
+                npcPlayersScoresText[i].text = string.Format(playerScoreFormat, playerScores[i].Key, playerScores[i].Value);
+            }
+        }
+
+        public void SetPlayerRoundOrderText(List<int> playerOrder)
+        {
+            var playerOrderFormat = "Player {0}";
+            for (int i = 0;i < playerOrder.Count;i++)
+            {
+                npcPlayersRoundOrderText[i].text = string.Format(playerOrderFormat, playerOrder[i]);
+            }
         }
     }
 }

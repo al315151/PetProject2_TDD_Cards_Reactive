@@ -47,5 +47,10 @@ namespace Presenters
             gameManagerPresenter.OnGameStarted -= OnGameStarted;
             tableUIView.RequestDeckCardCountUpdate -= OnRequestDeckCardCountUpdate;
         }
+
+        private void SubscribeToRoundRelatedData()
+        {
+
+        }
     }
 }

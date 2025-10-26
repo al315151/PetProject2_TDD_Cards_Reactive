@@ -53,23 +53,15 @@ namespace View
             }
         }
 
-        
-        private void OnCardButtonPressed(CardSuit arg1, int arg2)
-        {
-            if (playerInputObserver == null) {
-                return;
-            }
-            // Set card that called this event as blank!
-            ResetCardView(arg1, arg2);
-            
-            // Tell the observer what you found!
-            playerInputObserver.OnNext(new KeyValuePair<CardSuit, int>(arg1, arg2));
-        }
-        
         public IDisposable Subscribe(IObserver<KeyValuePair<CardSuit, int>> observer)
         {
             playerInputObserver = observer;
             return this;
+        }
+
+        public void SetPlayerScore(int score)
+        {
+            playerScoreText.text = score.ToString();
         }
 
         public void Dispose()
@@ -94,6 +86,19 @@ namespace View
             {
                 cardViews[i].ResetCardGraphics();
             }
+        }
+
+        private void OnCardButtonPressed(CardSuit arg1, int arg2)
+        {
+            if (playerInputObserver == null)
+            {
+                return;
+            }
+            // Set card that called this event as blank!
+            ResetCardView(arg1, arg2);
+
+            // Tell the observer what you found!
+            playerInputObserver.OnNext(new KeyValuePair<CardSuit, int>(arg1, arg2));
         }
     }
 }

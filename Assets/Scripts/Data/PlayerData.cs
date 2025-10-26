@@ -11,13 +11,14 @@ namespace Data
         public static int MaxHandSize = 3;
 
         public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
+        public ReactiveProperty<int> PlayerScore { get; private set; }
 
         public int PlayerHandSize => PlayerHand.CurrentValue.Count;
         public int PlayerId => id;
 
         private readonly int id;
         
-        int score = 0;        
+        
         private bool inputEnabled = false;
 
         private IObserver<KeyValuePair<int, CardData>> roundDataObserver;
@@ -26,6 +27,7 @@ namespace Data
         {
             this.id = id;
             PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
+            PlayerScore = new ReactiveProperty<int>(0);
             inputEnabled = true;
         }
 
@@ -63,12 +65,12 @@ namespace Data
 
         public int GetScore()
         {
-            return score;
+            return PlayerScore.Value;
         }
 
         public void AddScoreToPlayer(int roundScore)
         {
-            score += roundScore;
+            PlayerScore.Value += roundScore;
         }
 
         public void DisablePlayerInput()
