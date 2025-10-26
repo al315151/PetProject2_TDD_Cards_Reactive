@@ -13,6 +13,8 @@ namespace Data
 
         public bool IsRoundFinished { get; private set; }
 
+        public List<int> PlayerOrder => playerOrder;
+
         private readonly int roundId;
 
         private List<int> playerOrder;

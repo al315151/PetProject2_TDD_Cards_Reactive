@@ -57,7 +57,12 @@ namespace View
 
             for (int i = 0; i < playerScores.Count; i++)
             {
-                npcPlayersScoresText[i].text = string.Format(playerScoreFormat, playerScores[i].Key, playerScores[i].Value);
+                var playerId = playerScores[i].Key.ToString();
+                if (playerScores[i].Key == -1)
+                {
+                    playerId = "You";
+                }
+                npcPlayersScoresText[i].text = string.Format(playerScoreFormat, playerId, playerScores[i].Value);
             }
         }
 
@@ -66,7 +71,29 @@ namespace View
             var playerOrderFormat = "Player {0}";
             for (int i = 0;i < playerOrder.Count;i++)
             {
-                npcPlayersRoundOrderText[i].text = string.Format(playerOrderFormat, playerOrder[i]);
+                var playerId = playerOrder[i].ToString();
+                if (playerOrder[i] == -1)
+                {
+                    playerId = "You";
+                }
+
+                npcPlayersRoundOrderText[i].text = string.Format(playerOrderFormat, playerId);
+            }
+        }
+
+        public void SetupRoundCardsView(List<CardData> playedCards)
+        {
+            for (int i = 0; i < playedCards.Count; i++)
+            {
+                cardViews[i].SetupCardGraphics(playedCards[i].CardSuit, playedCards[i].CardNumber);
+            }
+        }
+
+        public void ResetCardViews()
+        {
+            for (int i = 0; i < cardViews.Count; i++)
+            {
+                cardViews[i].ResetCardGraphics();
             }
         }
     }

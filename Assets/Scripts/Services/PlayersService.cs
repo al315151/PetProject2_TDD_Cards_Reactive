@@ -44,5 +44,10 @@ namespace Services
             allPlayers.Add(userPlayer);
             return allPlayers;
         }
+
+        public List<PlayerData> GetCPUPlayers()
+        {
+            return npcPlayersData;
+        }
     }
 }

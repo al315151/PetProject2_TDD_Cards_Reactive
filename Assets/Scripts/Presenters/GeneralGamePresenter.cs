@@ -13,6 +13,8 @@ namespace Presenters
         private readonly GeneralGameView gameView;
 
         public Action<CardSuit> OnGameStarted;
+        public Action OnGameRoundStarted;
+        public Action OnGameFinished;
         
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
@@ -48,7 +50,15 @@ namespace Presenters
 
         private void StartNextRoundButtonPressed()
         {
-            gameManagerData.StartPlayRound();
+            if (gameManagerData.StartPlayRound())
+            {
+                OnGameRoundStarted?.Invoke();
+            }
+            else
+            {
+                OnGameFinished?.Invoke();
+            }
+            
         }
 
         private void OnPlayersInitialized()
