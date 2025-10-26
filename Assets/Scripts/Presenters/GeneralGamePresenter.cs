@@ -36,6 +36,7 @@ namespace Presenters
         public void StartGameButtonPressed()
         {
             gameManagerData.StartGame();
+            playersService.ResetDataOnPlayers();
             OnGameStarted?.Invoke(gameManagerData.DeckInitialCardSuit);
         }
 

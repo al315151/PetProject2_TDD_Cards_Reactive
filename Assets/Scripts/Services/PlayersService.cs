@@ -49,5 +49,15 @@ namespace Services
         {
             return npcPlayersData;
         }
+
+        public void ResetDataOnPlayers()
+        {
+            //Reset score and hands on every player.
+            userPlayer.Reset();
+            foreach (var player in npcPlayersData)
+            {
+                player.Reset();
+            }
+        }
     }
 }

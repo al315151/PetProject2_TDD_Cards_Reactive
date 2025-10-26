@@ -112,5 +112,11 @@ namespace Data
             await Task.Delay(1);
             RequestCardFromPlayer();
         }
+
+        public void Reset()
+        {
+            PlayerScore.Value = 0;
+            PlayerHand.Value.Clear();
+        }
     }
 }

@@ -8,8 +8,6 @@ namespace View
     public class GeneralGameView : MonoBehaviour
     {
         public Action NewGameButtonClicked;
-        
-        public Action FinishButtonClicked;
 
         public Action StartNextRoundButtonClicked;
         
@@ -21,21 +19,16 @@ namespace View
     
         [SerializeField]
         private Button newGameButton;
-        
-        [SerializeField]
-        private Button finishGameButton;
 
         private void OnEnable()
         {
             newGameButton.onClick.AddListener(OnNewGameClicked);
-            finishGameButton.onClick.AddListener(OnFinishGameClicked);
             startNextRoundButton.onClick.AddListener(OnStartNextRoundButtonClicked);
         }
 
         private void OnDisable()
         {
             newGameButton.onClick.RemoveListener(OnNewGameClicked);
-            finishGameButton.onClick.RemoveListener(OnFinishGameClicked);
             startNextRoundButton.onClick.RemoveListener(OnStartNextRoundButtonClicked);
         }
 
@@ -47,11 +40,6 @@ namespace View
         private void OnNewGameClicked()
         {
             NewGameButtonClicked?.Invoke();            
-        }
-        
-        private void OnFinishGameClicked()
-        {
-            FinishButtonClicked?.Invoke();
         }
 
         public void SetRoundNumber(string roundNumber)
