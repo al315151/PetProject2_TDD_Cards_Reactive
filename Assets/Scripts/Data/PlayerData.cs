@@ -55,9 +55,21 @@ namespace Data
             //For now, choose card at random.
             var randomIndex = new Random().Next(PlayerHand.Value.Count);
             var randomCard = PlayerHand.CurrentValue[randomIndex];
-            PlayerHand.CurrentValue.Remove(randomCard);
-            PlayerHand.OnNext(PlayerHand.CurrentValue);
-            roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, randomCard));
+            SendCardFromHandToRound(randomCard);
+        }
+
+        public void PlayCardFromUserHand(CardSuit cardSuit, int number)
+        {
+            //find card in hand that matches the one 
+            for (int i = 0; i < PlayerHand.CurrentValue.Count; i++)
+            {
+                if (PlayerHand.Value[i].CardSuit == cardSuit && PlayerHand.Value[i].CardNumber == number)
+                {
+                    var selectedCard = PlayerHand.CurrentValue[i];
+                    SendCardFromHandToRound(selectedCard);
+                    break;
+                }
+            }
         }
 
         public void AddCard(CardData cardData)
@@ -97,6 +109,13 @@ namespace Data
         public void Dispose()
         {
             roundDataObserver = null;
+        }
+
+        private void SendCardFromHandToRound(CardData cardData)
+        {
+            PlayerHand.CurrentValue.Remove(cardData);
+            PlayerHand.OnNext(PlayerHand.CurrentValue);
+            roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, cardData));
         }
 
         private async Task TriggerPlayCard()
