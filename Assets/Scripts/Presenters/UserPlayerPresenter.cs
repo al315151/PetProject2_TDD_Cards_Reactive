@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Data;
+using R3;
 using Services;
 using VContainer.Unity;
 using View;
@@ -11,6 +11,9 @@ public class UserPlayerPresenter : IInitializable, IDisposable
     private readonly PlayerView playerView;
 
     private PlayerData userPlayerData;
+
+    private IDisposable playerHandDisposable;
+    private IDisposable playerScoreDisposable;
 
     public UserPlayerPresenter(
         PlayersService playersService,
@@ -29,33 +32,22 @@ public class UserPlayerPresenter : IInitializable, IDisposable
     public void Dispose()
     {
         playersService.OnPlayersInitialized -= OnPlayersInitialized;
-        if (userPlayerData != null)
-        {
-            userPlayerData.PlayerHandUpdated -= OnPlayerHandUpdated;
-            userPlayerData.PlayerScoreUpdated -= OnPlayerScoreUpdated;
-        }
-        
-    }
-
-    private void OnPlayerHandUpdated(List<CardData> list)
-    {
-        playerView.SetupCardViews(list);
+        playerHandDisposable?.Dispose();
+        playerScoreDisposable?.Dispose();
     }
 
     private void OnPlayersInitialized()
     {
+        //Get PlayerData and subscribe to its changes!
         userPlayerData = playersService.GetUserPlayer();
+
         SubscribeToPlayerDataChanges();
     }
 
     private void SubscribeToPlayerDataChanges()
     {
-        userPlayerData.PlayerHandUpdated += OnPlayerHandUpdated;
-        userPlayerData.PlayerScoreUpdated += OnPlayerScoreUpdated;
+        playerHandDisposable = userPlayerData.PlayerHand.Subscribe(handList => { playerView.SetupCardViews(handList);});
+        playerScoreDisposable = userPlayerData.PlayerScore.Subscribe(score => { playerView.SetPlayerScore(score); });
     }
-        
-    private void OnPlayerScoreUpdated()
-    {
-        playerView.SetPlayerScore(userPlayerData.GetScore());
-    }
+
 }

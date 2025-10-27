@@ -96,13 +96,7 @@ namespace Presenters
             gameManagerPresenter.OnGameRoundFinished -= OnGameRoundFinished;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
             tableUIView.RequestDeckCardCountUpdate -= OnRequestDeckCardCountUpdate;
-
-
-            var players = playersService.GetCPUPlayers();
-            foreach (var player in players)
-            {
-                player.PlayerScoreUpdated -= OnPlayerScoreUpdated;
-            }
+            playerDisposables?.Dispose();
         }
 
         private void SetupRoundRelatedData()
@@ -115,15 +109,13 @@ namespace Presenters
         private void SubscribeToPlayerRelatedData()
         {
             var players = playersService.GetCPUPlayers();
+            var disposablesBuilder = new DisposableBuilder();
             foreach (var player in players)
             {
-                player.PlayerScoreUpdated += OnPlayerScoreUpdated;
+                var newDisposable = player.PlayerScore.Subscribe(_ => tableUIView.SetNPCPlayerScores(GetScorePerCPU()));
+                disposablesBuilder.Add(newDisposable);
             }
-        }
-
-        private void OnPlayerScoreUpdated()
-        {
-            tableUIView.SetNPCPlayerScores(GetScorePerCPU());
+            playerDisposables = disposablesBuilder.Build();
         }
 
         private List<KeyValuePair<int, int>> GetScorePerCPU()

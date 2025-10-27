@@ -10,13 +10,10 @@ namespace Data
     {
         public static int MaxHandSize = 3;
 
-        public Action<List<CardData>> PlayerHandUpdated;
-        public Action PlayerScoreUpdated;
+        public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
+        public ReactiveProperty<int> PlayerScore { get; private set; }
 
-        private List<CardData> PlayerHand = new();
-        private int PlayerScore;
-
-        public int PlayerHandSize => PlayerHand.Count;
+        public int PlayerHandSize => PlayerHand.CurrentValue.Count;
         public int PlayerId => id;
 
         private readonly int id;
@@ -29,14 +26,14 @@ namespace Data
         public PlayerData(int id = 0)
         {
             this.id = id;
-            PlayerHand = new List<CardData>();
-            PlayerScore = 0;
+            PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
+            PlayerScore = new ReactiveProperty<int>(0);
             inputEnabled = true;
         }
 
         public void AddCardToHandFromDeck(DeckData deck)
         {
-            if (PlayerHand.Count >= MaxHandSize) {
+            if (PlayerHand.CurrentValue.Count >= MaxHandSize) {
                 return;
             }
             var card = deck.GetTopCardFromDeck();
@@ -44,8 +41,8 @@ namespace Data
             if (card == null) {
                 return;
             }
-            PlayerHand.Add(card);
-            PlayerHandUpdated?.Invoke(PlayerHand);
+            PlayerHand.CurrentValue.Add(card);
+            PlayerHand.OnNext(PlayerHand.CurrentValue);
         }
 
         public IPlayerPrototype Clone(int id)
@@ -56,28 +53,28 @@ namespace Data
         public void RequestCardFromPlayer()
         {
             //For now, choose card at random.
-            var randomIndex = new Random().Next(PlayerHand.Count);
-            var randomCard = PlayerHand[randomIndex];
-            PlayerHand.Remove(randomCard);
-            PlayerHandUpdated?.Invoke(PlayerHand);
+            var randomIndex = new Random().Next(PlayerHand.Value.Count);
+            var randomCard = PlayerHand.CurrentValue[randomIndex];
+            PlayerHand.CurrentValue.Remove(randomCard);
+            PlayerHand.OnNext(PlayerHand.CurrentValue);
             roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, randomCard));
         }
 
         public void AddCard(CardData cardData)
         {
-            PlayerHand.Add(cardData);
-            PlayerHandUpdated?.Invoke(PlayerHand);
+            PlayerHand.CurrentValue.Add(cardData);
+            PlayerHand.OnNext(PlayerHand.CurrentValue);
         }
 
         public int GetScore()
         {
-            return PlayerScore;
+            return PlayerScore.Value;
         }
 
         public void AddScoreToPlayer(int roundScore)
         {
-            PlayerScore += roundScore;
-            PlayerScoreUpdated?.Invoke();
+            PlayerScore.Value += roundScore;
+            PlayerScore.OnNext(PlayerScore.CurrentValue);
         }
 
         public void DisablePlayerInput()
@@ -122,9 +119,11 @@ namespace Data
 
         public void Reset()
         {
-            PlayerScore = 0;
-            PlayerHand.Clear();
-            PlayerHandUpdated?.Invoke(PlayerHand);
+            PlayerScore.Value = 0;
+            PlayerScore.OnNext(PlayerScore.CurrentValue);
+
+            PlayerHand.Value.Clear();
+            PlayerHand.OnNext(PlayerHand.CurrentValue);
         }
     }
 }
