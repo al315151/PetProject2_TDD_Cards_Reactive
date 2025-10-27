@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Data;
 using R3;
 using Services;
 using VContainer.Unity;
 using View;
 
-public class UserPlayerPresenter : IInitializable, IDisposable
+public class UserPlayerPresenter : IInitializable, IDisposable, IObserver<KeyValuePair<CardSuit, int>>
 {
     private readonly PlayersService playersService;
     private readonly PlayerView playerView;
@@ -14,6 +15,8 @@ public class UserPlayerPresenter : IInitializable, IDisposable
 
     private IDisposable playerHandDisposable;
     private IDisposable playerScoreDisposable;
+
+    private IDisposable subscriptionToViewInteractionDisposable;
 
     public UserPlayerPresenter(
         PlayersService playersService,
@@ -27,6 +30,7 @@ public class UserPlayerPresenter : IInitializable, IDisposable
 
     public void Initialize()
     {
+        SubscribeToViewEvents();
     }
 
     public void Dispose()
@@ -34,6 +38,8 @@ public class UserPlayerPresenter : IInitializable, IDisposable
         playersService.OnPlayersInitialized -= OnPlayersInitialized;
         playerHandDisposable?.Dispose();
         playerScoreDisposable?.Dispose();
+
+        subscriptionToViewInteractionDisposable?.Dispose();
     }
 
     private void OnPlayersInitialized()
@@ -50,4 +56,21 @@ public class UserPlayerPresenter : IInitializable, IDisposable
         playerScoreDisposable = userPlayerData.PlayerScore.Subscribe(score => { playerView.SetPlayerScore(score); });
     }
 
+    private void SubscribeToViewEvents()
+    {
+        subscriptionToViewInteractionDisposable = playerView.Subscribe(this);
+    }
+
+    public void OnCompleted()
+    {
+    }
+
+    public void OnError(Exception error)
+    {   
+    }
+
+    public void OnNext(KeyValuePair<CardSuit, int> value)
+    {
+        userPlayerData.PlayCardFromUserHand(value.Key, value.Value);
+    }
 }

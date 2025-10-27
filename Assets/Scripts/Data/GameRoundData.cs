@@ -200,12 +200,10 @@ namespace Data
 
         public void OnCompleted()
         {
-            throw new NotImplementedException();
         }
 
         public void OnError(Exception error)
         {
-            throw new NotImplementedException();
         }
 
         public void OnNext(KeyValuePair<int, CardData> playerAndCard)

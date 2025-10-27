@@ -47,6 +47,11 @@ namespace View
 
         private void OnCardPressed()
         {
+            if (cardSuitImage.sprite == null || cardNumber == 0)
+            {
+                return;
+            }
+
             OnCardButtonPressed?.Invoke(cardSuit, cardNumber);
         }
 
@@ -54,6 +59,7 @@ namespace View
         {
             cardSuitImage.sprite = null;
             cardNumberText.text = string.Empty;
+            cardNumber = 0;
         }
         
         private Sprite GetSuitSprite(CardSuit cardSuit)

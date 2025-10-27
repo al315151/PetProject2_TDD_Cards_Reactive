@@ -94,11 +94,11 @@ namespace View
             {
                 return;
             }
-            // Set card that called this event as blank!
-            ResetCardView(arg1, arg2);
-
             // Tell the observer what you found!
             playerInputObserver.OnNext(new KeyValuePair<CardSuit, int>(arg1, arg2));
+
+            // Set card that called this event as blank!
+            ResetCardView(arg1, arg2);            
         }
     }
 }
