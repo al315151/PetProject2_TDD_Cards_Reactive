@@ -32,7 +32,9 @@ namespace Presenters
             this.gameManagerPresenter = gameManagerPresenter;
             this.gameManagerData = gameManagerData;
             this.playersService = playersService;
-            this.tableUIView = tableUIView;            
+            this.tableUIView = tableUIView;
+
+            playersService.OnPlayersInitialized += OnPlayersInitialized;
         }
 
         public void Initialize()
@@ -40,7 +42,6 @@ namespace Presenters
             gameManagerPresenter.OnGameStarted += OnGameStarted;
             gameManagerPresenter.OnGameRoundStarted += OnGameRoundStarted;
             gameManagerPresenter.OnGameRoundFinished += OnGameRoundFinished;
-            playersService.OnPlayersInitialized += OnPlayersInitialized;
             tableUIView.RequestDeckCardCountUpdate += OnRequestDeckCardCountUpdate;
 
             tableUIView.ResetGameGraphics();
@@ -108,7 +109,7 @@ namespace Presenters
 
         private void SubscribeToPlayerRelatedData()
         {
-            var players = playersService.GetCPUPlayers();
+            var players = playersService.GetAllPlayers();
             var disposablesBuilder = new DisposableBuilder();
             foreach (var player in players)
             {
