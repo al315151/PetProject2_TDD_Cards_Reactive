@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using R3;
 using UnityEditor;
+using UnityEngine;
 
 namespace Data
 {
@@ -13,7 +14,9 @@ namespace Data
         public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
         public ReactiveProperty<int> PlayerScore { get; private set; }
 
-        public int PlayerHandSize => PlayerHand.CurrentValue.Count;
+        public bool IsPlayerTurn => roundDataObserver != null;
+
+        public int PlayerHandSize => PlayerHand.Value.Count;
         public int PlayerId => id;
 
         private readonly int id;
@@ -33,7 +36,7 @@ namespace Data
 
         public void AddCardToHandFromDeck(DeckData deck)
         {
-            if (PlayerHand.CurrentValue.Count >= MaxHandSize) {
+            if (PlayerHand.Value.Count >= MaxHandSize) {
                 return;
             }
             var card = deck.GetTopCardFromDeck();
@@ -41,8 +44,10 @@ namespace Data
             if (card == null) {
                 return;
             }
-            PlayerHand.CurrentValue.Add(card);
-            PlayerHand.OnNext(PlayerHand.CurrentValue);
+            Debug.Log($"Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
+            Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
+            PlayerHand.Value.Add(card);
+            PlayerHand.OnNext(PlayerHand.Value);
         }
 
         public IPlayerPrototype Clone(int id)
@@ -53,19 +58,24 @@ namespace Data
         public void RequestCardFromPlayer()
         {
             //For now, choose card at random.
-            var randomIndex = new Random().Next(PlayerHand.Value.Count);
-            var randomCard = PlayerHand.CurrentValue[randomIndex];
+            var randomIndex = new System.Random().Next(PlayerHand.Value.Count);
+            var randomCard = PlayerHand.Value[randomIndex];
             SendCardFromHandToRound(randomCard);
         }
 
         public void PlayCardFromUserHand(CardSuit cardSuit, int number)
         {
+            if (roundDataObserver == null)
+            {
+                return;
+            }
+
             //find card in hand that matches the one 
             for (int i = 0; i < PlayerHand.CurrentValue.Count; i++)
             {
                 if (PlayerHand.Value[i].CardSuit == cardSuit && PlayerHand.Value[i].CardNumber == number)
                 {
-                    var selectedCard = PlayerHand.CurrentValue[i];
+                    var selectedCard = PlayerHand.Value[i];
                     SendCardFromHandToRound(selectedCard);
                     break;
                 }
@@ -113,7 +123,7 @@ namespace Data
 
         private void SendCardFromHandToRound(CardData cardData)
         {
-            PlayerHand.CurrentValue.Remove(cardData);
+            PlayerHand.Value.Remove(cardData);
             PlayerHand.OnNext(PlayerHand.CurrentValue);
             roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, cardData));
         }

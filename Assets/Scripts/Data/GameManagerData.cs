@@ -145,6 +145,12 @@ namespace Data
 
         public bool StartPlayRound()
         {
+            if (currentGameRound != null && currentGameRound.IsRoundFinished == false ||
+                currentGameRound != null &&  CanRoundBePlayed() == false)
+            {
+                return false;
+            }
+
             //First setup the Round object.
             if (CreateAndStartRound() == false) {
                 return false;
@@ -190,6 +196,15 @@ namespace Data
                     gameWinnerId = player.PlayerId;
                 }
             }
+        }
+
+        public void ResetAll()
+        {
+            deckData.CreateDeck();
+            CurrentRoundIndex.Value = 0;
+            gameWinnerId = 0;
+            roundDataHistory.Clear();
+            currentGameRound = null;
         }
     }
 }

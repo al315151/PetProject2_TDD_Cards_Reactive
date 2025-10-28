@@ -71,6 +71,12 @@ public class UserPlayerPresenter : IInitializable, IDisposable, IObserver<KeyVal
 
     public void OnNext(KeyValuePair<CardSuit, int> value)
     {
+        if (userPlayerData.IsPlayerTurn == false)
+        {
+            return;
+        }
         userPlayerData.PlayCardFromUserHand(value.Key, value.Value);
+
+        playerView.RemoveCard(value);
     }
 }
