@@ -1,8 +1,8 @@
 using System;
+using Codice.Client.Common.GameUI;
 using Data;
 using R3;
 using Services;
-using UnityEngine;
 using VContainer.Unity;
 using View;
 
@@ -15,12 +15,13 @@ namespace Presenters
         public Action<CardSuit> OnGameStarted;
         public Action OnGameRoundStarted;
         public Action OnGameRoundFinished;
-        public Action OnGameFinished;
         
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
 
         private IDisposable currentRoundIndexDisposable;
+
+        private bool hasGameStarted = false;
 
         public GeneralGamePresenter(
             GameManagerData gameManagerData, 
@@ -36,6 +37,7 @@ namespace Presenters
         
         public void StartGameButtonPressed()
         {
+            hasGameStarted = true;
             playersService.ResetDataOnPlayers();
             gameManagerData.ResetAll();
             gameManagerData.StartGame();            
@@ -53,6 +55,10 @@ namespace Presenters
 
         private void StartNextRoundButtonPressed()
         {
+            if (hasGameStarted == false)
+            {
+                return;
+            }
             if (gameManagerData.StartPlayRound())
             {
                 OnGameRoundStarted?.Invoke();
@@ -70,6 +76,7 @@ namespace Presenters
             gameView.StartNextRoundButtonClicked -= StartNextRoundButtonPressed;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
             gameManagerData.CurrentRoundPlayPhaseFinished -= OnCurrentRoundPlayPhaseFinished;
+            gameManagerData.OnGameFinished -= GameFinished;
             currentRoundIndexDisposable?.Dispose();
         }
 
@@ -78,6 +85,7 @@ namespace Presenters
             currentRoundIndexDisposable = gameManagerData.CurrentRoundIndex.Subscribe( onNext: roundIndex => gameView.SetRoundNumber(roundIndex.ToString()));
 
             gameManagerData.CurrentRoundPlayPhaseFinished += OnCurrentRoundPlayPhaseFinished;
+            gameManagerData.OnGameFinished += GameFinished;
         }
 
         private void OnCurrentRoundPlayPhaseFinished()
@@ -90,5 +98,15 @@ namespace Presenters
                 OnGameRoundFinished?.Invoke();
             }
         }
+
+        private void GameFinished()
+        {
+            hasGameStarted = false;
+            gameView.SetGameOverScreen(true);
+            var winnerId = gameManagerData.GameWinnerPlayerId;
+            var winnerName = winnerId == -1 ? "You!" : "Player: " + winnerId.ToString();
+            gameView.SetGameWinner(winnerName);
+        }
+
     }
 }

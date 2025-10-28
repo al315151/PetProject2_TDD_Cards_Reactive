@@ -14,6 +14,7 @@ namespace Data
         public ReactiveProperty<int> CurrentRoundIndex { get; private set; }
 
         public Action CurrentRoundPlayPhaseFinished;
+        public Action OnGameFinished;
 
         private List<PlayerData> playersData;
         private DeckData deckData;        
@@ -100,8 +101,13 @@ namespace Data
 
             if (CanRoundBePlayed() == false) {
                 currentGameRound = null;
+                if (IsGameFinished())
+                {
+                    FinishGame();
+                }
                 return false;
             }
+
             currentGameRound = gameRound;
             return true;
         }
@@ -145,9 +151,12 @@ namespace Data
 
         public bool StartPlayRound()
         {
-            if (currentGameRound != null && currentGameRound.IsRoundFinished == false ||
-                currentGameRound != null &&  CanRoundBePlayed() == false)
+            if (currentGameRound != null && currentGameRound.IsRoundFinished == false)
+            { return false; }
+
+            if (IsGameFinished())
             {
+                FinishGame();
                 return false;
             }
 
@@ -185,6 +194,11 @@ namespace Data
             return true;
         }
 
+        private bool IsGameFinished()
+        {
+            return CanRoundBePlayed() == false && deckData.DeckCardCount == 0;
+        }
+
         public void FinishGame()
         {
             var playerMaxScore = -1;
@@ -196,6 +210,7 @@ namespace Data
                     gameWinnerId = player.PlayerId;
                 }
             }
+            OnGameFinished?.Invoke();
         }
 
         public void ResetAll()

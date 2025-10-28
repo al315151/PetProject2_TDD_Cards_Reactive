@@ -20,17 +20,33 @@ namespace View
         [SerializeField]
         private Button newGameButton;
 
-        private void OnEnable()
+        [SerializeField]
+        private Button restartGameButton;
+
+        [SerializeField]
+        private GameObject gameOverScreenContainer;
+
+        [SerializeField]
+        private TMP_Text gameWinnerText;
+
+        private void Awake()
         {
             newGameButton.onClick.AddListener(OnNewGameClicked);
             startNextRoundButton.onClick.AddListener(OnStartNextRoundButtonClicked);
-            SetRoundNumber(string.Empty);
+            restartGameButton.onClick.AddListener(() => SetGameOverScreen(false));
         }
 
-        private void OnDisable()
+        private void OnEnable()
+        {
+            SetRoundNumber(string.Empty);
+            SetGameOverScreen(false);           
+        }
+
+        private void OnDestroy()
         {
             newGameButton.onClick.RemoveListener(OnNewGameClicked);
             startNextRoundButton.onClick.RemoveListener(OnStartNextRoundButtonClicked);
+            restartGameButton.onClick.RemoveListener(() => SetGameOverScreen(false));
         }
 
         private void OnStartNextRoundButtonClicked()
@@ -46,6 +62,16 @@ namespace View
         public void SetRoundNumber(string roundNumber)
         {
             gameRoundNumberText.text = roundNumber;
+        }
+
+        public void SetGameWinner(string gameWinner)
+        {
+            gameWinnerText.text = gameWinner;
+        }
+
+        public void SetGameOverScreen(bool value)
+        {
+            gameOverScreenContainer.SetActive(value);
         }
     }
 }

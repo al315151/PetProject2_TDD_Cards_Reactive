@@ -17,6 +17,12 @@ Once application starts, a menu with many empty objects will appear.
 * To continue playing, press the button "Start Next Round" again, until no cards in any of the players (user or NPCs) are available.
 * To start a new game, press the button "Start Game".
 
+Card score works the following way:
+* 1 -- 11 points
+* 3 -- 10 points
+* 10 -- 2 points
+* 11 -- 3 points
+* 12 -- 4 points
 
 ## What is this
 
@@ -75,6 +81,6 @@ There are different places to look into.
       * Purpose: call event so that deck card count is obtained to update View through subscription of Presenter to View.
   * Usage of IDisposableBuilder behaviour
     * TableUIPresenter: SubscribeToPlayerRelatedData()
-      * ~~~~Purpose: merge all disposables from subscribing to all PlayerScores from all players, so that UI is updated every time a score is changed. 
+        * Purpose: merge all disposables from subscribing to all PlayerScores from all players, so that UI is updated every time a score is changed.
 
 
