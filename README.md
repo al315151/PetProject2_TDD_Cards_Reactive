@@ -60,21 +60,21 @@ There are different places to look into.
       * Object created: PlayerData
       * Place where it is being created: PlayersService.CreatePlayers()
 * To look into the usage of the UniRx/R3 package, see the following examples:
-      * Usage of IObservable / IObserver behaviour:
-          * IObservable: PlayerData , IObserver: GameRoundData.
-              * Purpose: receive the cards on the intended order from the intended player during the "Play Phase" of the Round.
-          * IObservable: PlayerView, IObserver: UserPlayerPresenter
-              * Purpose: Receive cards from player input through View interaction, then passed from Presenter to the Model. 
-      * Usage of ReactiveProperty behaviour:
-              * PlayerData: PlayerHand and PlayerScore
-                  * Purpose: Update values on View, through subscription of Presenter to the Model.
-              * GameRoundData: PlayedCardsByPlayers
-                  * Purpose: Update values on View, through subscription of TableUIPresenter to the Model.
-      * Usage of Observable.Interval() behaviour
-              * TableUIView: RequestingDeckCardCountUpdate
-                  * Purpose: call event so that deck card count is obtained to update View through subscription of Presenter to View.
-      * Usage of IDisposableBuilder behaviour
-              * TableUIPresenter: SubscribeToPlayerRelatedData()
-                  * Purpose: merge all disposables from subscribing to all PlayerScores from all players, so that UI is updated every time a score is changed. 
+  * Usage of IObservable / IObserver behaviour:
+    * IObservable: PlayerData , IObserver: GameRoundData.
+      * Purpose: receive the cards on the intended order from the intended player during the "Play Phase" of the Round.
+    * IObservable: PlayerView, IObserver: UserPlayerPresenter
+      * Purpose: Receive cards from player input through View interaction, then passed from Presenter to the Model.
+  * Usage of ReactiveProperty behaviour:
+    * PlayerData: PlayerHand and PlayerScore
+      * Purpose: Update values on View, through subscription of Presenter to the Model.
+    * GameRoundData: PlayedCardsByPlayers 
+      * Purpose: Update values on View, through subscription of TableUIPresenter to the Model. 
+  * Usage of Observable.Interval() behaviour
+    * TableUIView: RequestingDeckCardCountUpdate
+      * Purpose: call event so that deck card count is obtained to update View through subscription of Presenter to View.
+  * Usage of IDisposableBuilder behaviour
+    * TableUIPresenter: SubscribeToPlayerRelatedData()
+      * ~~~~Purpose: merge all disposables from subscribing to all PlayerScores from all players, so that UI is updated every time a score is changed. 
 
 
