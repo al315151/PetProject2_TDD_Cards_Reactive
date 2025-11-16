@@ -33,13 +33,25 @@ namespace Presenters
             
             playersService.OnPlayersInitialized += OnPlayersInitialized;
         }
-        
+
+        // MODEL ONLY TEST CONSTRUCTOR
+        public GeneralGamePresenter(
+            GameManagerData gameManagerData,
+            PlayersService playersService)
+        {
+            this.gameManagerData = gameManagerData;
+            this.playersService = playersService;
+
+            playersService.OnPlayersInitialized += OnPlayersInitialized;
+        }
+
         public void StartGameButtonPressed()
         {
             hasGameStarted = true;
             playersService.ResetDataOnPlayers();
             gameManagerData.ResetAll();
-            gameManagerData.StartGame();            
+            gameManagerData.SetupDeckForNewGame();
+            StartGame();
             OnGameStarted?.Invoke(gameManagerData.DeckInitialCardSuit);
         }
 
@@ -49,7 +61,12 @@ namespace Presenters
             gameView.StartNextRoundButtonClicked += StartNextRoundButtonPressed;
             SubscribeOnGameManagerDataStats();
 
-            gameManagerData.CreateGame();
+            gameManagerData.InitializeGameData();
+        }
+
+        public void StartGame()
+        {
+            DrawInitialHandForPlayers();
         }
 
         private void StartNextRoundButtonPressed()
@@ -61,6 +78,17 @@ namespace Presenters
             if (gameManagerData.StartPlayRound())
             {
                 OnGameRoundStarted?.Invoke();
+            }
+        }
+
+        private void DrawInitialHandForPlayers()
+        {
+            var playersData = playersService.GetAllPlayers();
+            var gameDeck = gameManagerData.GetDeckData();
+            for (var i = 0; i < playersData.Count; i++)
+            {
+                var player = playersData[i];
+                player.DrawCardsUntilMaxAllowed(gameDeck);
             }
         }
 

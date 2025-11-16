@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using NUnit.Framework;
+using Presenters;
 using Services;
 
 namespace Tests
@@ -19,7 +20,7 @@ namespace Tests
             var playerService = new PlayersService();
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
-            gameManager.CreateGame();
+            gameManager.InitializeGameData();
 
             Assert.IsTrue(gameManager.NumberOfPlayers == numberOfCPUPlayers + 1);
         }
@@ -30,15 +31,15 @@ namespace Tests
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
+            var gameManagerPresenter = new GeneralGamePresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
-            gameManager.CreateGame();
+
+            // deck created, initial cards dealt, check remaining cards on deck to know if initial card deal is correct.
+            gameManagerPresenter.StartGameButtonPressed();
 
             var playerMaxHandCount = PlayerData.MaxHandSize;
             var numberOfExpectedCards = DeckData.NumberOfCardsPerSuit * Enum.GetValues(typeof(CardSuit)).Length;
-
-            // deck created, initial cards dealt, check remaining cards on deck to know if initial card deal is correct.
-            gameManager.StartGame();
 
             var currentDeckSize = gameManager.CurrentDeckSize();
 
@@ -56,9 +57,9 @@ namespace Tests
             var players = playerService.GetAllPlayers();
             
             gameManager.ReceivePlayersData(players);
-            gameManager.CreateGame();
+            gameManager.InitializeGameData();
 
-            gameManager.StartGame();
+            gameManager.SetupDeckForNewGame();
 
             await PlayOneRound(gameManager);
         
@@ -80,9 +81,9 @@ namespace Tests
             var playerService = new PlayersService();
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
-            gameManager.CreateGame();
+            gameManager.InitializeGameData();
 
-            gameManager.StartGame();
+            gameManager.SetupDeckForNewGame();
 
             var firstRoundFinished = await PlayOneRound(gameManager);
         
@@ -103,14 +104,16 @@ namespace Tests
         {
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
+
+            var gameManagerPresenter = new GeneralGamePresenter(gameManager, playerService);
+
             playerService.CreatePlayers(numberOfCPUPlayers);
             
             var players = playerService.GetAllPlayers();
             
             gameManager.ReceivePlayersData(players);
-            gameManager.CreateGame();
-
-            gameManager.StartGame();
+            
+            gameManagerPresenter.StartGameButtonPressed();
 
             var firstRoundFinished = await PlayOneRound(gameManager);
             var firstRound = gameManager.GetCurrentRound();
@@ -155,9 +158,9 @@ namespace Tests
             var playerService = new PlayersService();
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
-            gameManager.CreateGame();
+            gameManager.InitializeGameData();
 
-            gameManager.StartGame();
+            gameManager.SetupDeckForNewGame();
 
             var previousRoundId = -3;
             // Triggering more rounds than the deck should be able to handle.
@@ -191,9 +194,9 @@ namespace Tests
             var players = playerService.GetAllPlayers();
             
             gameManager.ReceivePlayersData(players);
-            gameManager.CreateGame();
+            gameManager.InitializeGameData();
 
-            gameManager.StartGame();
+            gameManager.SetupDeckForNewGame();
 
             var previousRoundId = -3;
         

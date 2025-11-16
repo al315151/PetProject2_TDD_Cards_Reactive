@@ -63,6 +63,15 @@ namespace Data
             SendCardFromHandToRound(randomCard);
         }
 
+        public void DrawCardsUntilMaxAllowed(DeckData deck)
+        {
+            var numberOfCardsToBeDrawn = MaxHandSize - PlayerHand.Value.Count;
+            for (int i = 0; i < numberOfCardsToBeDrawn; i++)
+            {
+                AddCardToHandFromDeck(deck);
+            }
+        }
+
         public void PlayCardFromUserHand(CardSuit cardSuit, int number)
         {
             if (roundDataObserver == null)

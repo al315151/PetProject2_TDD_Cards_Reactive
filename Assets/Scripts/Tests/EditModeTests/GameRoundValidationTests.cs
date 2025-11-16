@@ -20,11 +20,11 @@ namespace Tests
             var players = playersService.GetAllPlayers();
             
             gameManager.ReceivePlayersData(players);
-            gameManager.CreateGame();
+            gameManager.InitializeGameData();
 
             //Create the game and start it.
             //Only then Game Rounds can be created.
-            gameManager.StartGame();
+            gameManager.SetupDeckForNewGame();
         }
 
         [Test]

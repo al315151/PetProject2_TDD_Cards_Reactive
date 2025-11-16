@@ -37,7 +37,7 @@ namespace Data
             roundDataHistory = new List<GameRoundData>();
         }
         
-        public void CreateGame()
+        public void InitializeGameData()
         {
             //Players will be created through PlayersService.
             deckData.CreateDeck();
@@ -48,29 +48,16 @@ namespace Data
             this.playersData = playersData;
         }
         
-        public void StartGame()
+        public void SetupDeckForNewGame()
         {
             //Shuffle the cards, set the deck chosen Suit.
             deckData.Shuffle();
             deckData.ChooseInitialSuit();
-
-            DrawInitialHandForPlayers();
         }
 
         public int CurrentDeckSize()
         {
             return deckData.DeckCardCount;
-        }
-
-        private void DrawInitialHandForPlayers()
-        {
-            var initialCardCountForPlayer = PlayerData.MaxHandSize;
-            for (var i = 0; i < playersData.Count; i++) { 
-                var player = playersData[i]; 
-                for (int j = 0; j < initialCardCountForPlayer; j++) {
-                    player.AddCardToHandFromDeck(deckData);
-                }
-            }
         }
 
         public int GetCurrentRoundId()
@@ -220,6 +207,11 @@ namespace Data
             gameWinnerId = 0;
             roundDataHistory.Clear();
             currentGameRound = null;
+        }
+
+        public DeckData GetDeckData()
+        {
+            return deckData;
         }
     }
 }
