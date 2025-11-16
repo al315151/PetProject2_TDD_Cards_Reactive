@@ -31,7 +31,7 @@ namespace Tests
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
-            var gameManagerPresenter = new GeneralGamePresenter(gameManager, playerService);
+            var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
 
@@ -105,7 +105,7 @@ namespace Tests
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
 
-            var gameManagerPresenter = new GeneralGamePresenter(gameManager, playerService);
+            var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
 
             playerService.CreatePlayers(numberOfCPUPlayers);
             

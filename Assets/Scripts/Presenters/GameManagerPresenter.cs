@@ -7,7 +7,7 @@ using View;
 
 namespace Presenters
 {
-    public class GeneralGamePresenter : IInitializable, IDisposable
+    public class GameManagerPresenter : IInitializable, IDisposable
     {
         private readonly GeneralGameView gameView;
 
@@ -22,7 +22,7 @@ namespace Presenters
 
         private bool hasGameStarted = false;
 
-        public GeneralGamePresenter(
+        public GameManagerPresenter(
             GameManagerData gameManagerData, 
             PlayersService playersService,
             GeneralGameView gameView)
@@ -35,7 +35,7 @@ namespace Presenters
         }
 
         // MODEL ONLY TEST CONSTRUCTOR
-        public GeneralGamePresenter(
+        public GameManagerPresenter(
             GameManagerData gameManagerData,
             PlayersService playersService)
         {

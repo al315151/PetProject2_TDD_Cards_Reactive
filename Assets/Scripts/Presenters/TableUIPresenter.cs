@@ -11,7 +11,7 @@ namespace Presenters
 {
     public class TableUIPresenter : IInitializable, IDisposable
     {
-        private readonly GeneralGamePresenter gameManagerPresenter;
+        private readonly GameManagerPresenter gameManagerPresenter;
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
         private readonly TableUIView tableUIView;
@@ -24,7 +24,7 @@ namespace Presenters
         private IDisposable playedCardsDisposables;
 
         public TableUIPresenter(
-            GeneralGamePresenter gameManagerPresenter,
+            GameManagerPresenter gameManagerPresenter,
             GameManagerData gameManagerData,
             PlayersService playersService,
             TableUIView tableUIView)

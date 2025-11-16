@@ -41,7 +41,7 @@ namespace LifetimeScope
          builder.Register<PlayersService>(Lifetime.Scoped).As<PlayersService, IInitializable, IDisposable>();
          
          builder.Register<UserPlayerPresenter>(Lifetime.Scoped).As<UserPlayerPresenter, IInitializable, IDisposable>();
-         builder.Register<GeneralGamePresenter>(Lifetime.Scoped).As<GeneralGamePresenter, IInitializable, IDisposable>();
+         builder.Register<GameManagerPresenter>(Lifetime.Scoped).As<GameManagerPresenter, IInitializable, IDisposable>();
          builder.Register<TableUIPresenter>(Lifetime.Scoped).As<TableUIPresenter, IInitializable, IDisposable>();
       }
    }
