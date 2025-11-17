@@ -52,6 +52,7 @@ namespace Tests
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
+            var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             
             var players = playerService.GetAllPlayers();
@@ -61,13 +62,13 @@ namespace Tests
 
             gameManager.SetupDeckForNewGame();
 
-            await PlayOneRound(gameManager);
+            await PlayOneRound(gameManagerPresenter);
         
-            var currentRound = gameManager.GetCurrentRound();
+            var currentRound = gameManagerPresenter.GetCurrentRound();
 
             //Make sure the winner player has gotten the score.
 
-            var roundWinner = GetRoundWinner(players, currentRound);
+            var roundWinner = GetRoundWinner(players, gameManager.GetCurrentRoundData());
             var roundScore = currentRound.GetTotalRoundScore();
         
             Assert.IsTrue(roundWinner.GetScore() == roundScore);
@@ -79,21 +80,24 @@ namespace Tests
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
+            var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
             gameManager.InitializeGameData();
 
             gameManager.SetupDeckForNewGame();
 
-            var firstRoundFinished = await PlayOneRound(gameManager);
+            var firstRoundFinished = await PlayOneRound(gameManagerPresenter);
         
-            var firstRound = gameManager.GetCurrentRound();
+            var firstRound = gameManagerPresenter.GetCurrentRound();
+            var firstRoundId = firstRound.GetCurrentRoundId();
 
-            var secondRoundFinished = await PlayOneRound(gameManager);
+            var secondRoundFinished = await PlayOneRound(gameManagerPresenter);
 
-            var secondRound = gameManager.GetCurrentRound();
+            var secondRound = gameManagerPresenter.GetCurrentRound();
+            var secondRoundId = secondRound.GetCurrentRoundId();
 
-            Assert.IsTrue(firstRoundFinished && secondRoundFinished && firstRound.RoundId != secondRound.RoundId);
+            Assert.IsTrue(firstRoundFinished && secondRoundFinished && firstRoundId != secondRoundId);
         }
 
         [Test]
@@ -104,7 +108,6 @@ namespace Tests
         {
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
-
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
 
             playerService.CreatePlayers(numberOfCPUPlayers);
@@ -115,22 +118,26 @@ namespace Tests
             
             gameManagerPresenter.StartGameButtonPressed();
 
-            var firstRoundFinished = await PlayOneRound(gameManager);
-            var firstRound = gameManager.GetCurrentRound();
+            var firstRoundFinished = await PlayOneRound(gameManagerPresenter);
+            var firstRound = gameManagerPresenter.GetCurrentRound();
+            var firstRoundId = firstRound.GetCurrentRoundId();
 
-            var secondRoundFinished = await PlayOneRound(gameManager);
-            var secondRound = gameManager.GetCurrentRound();
-        
-            var thirdRoundFinished = await PlayOneRound(gameManager);
-            var thirdRound = gameManager.GetCurrentRound();
-        
-            var fourthRoundFinished = await PlayOneRound(gameManager);
-            var fourthRound = gameManager.GetCurrentRound();
+            var secondRoundFinished = await PlayOneRound(gameManagerPresenter);
+            var secondRound = gameManagerPresenter.GetCurrentRound();
+            var secondRoundId = secondRound.GetCurrentRoundId();
+
+            var thirdRoundFinished = await PlayOneRound(gameManagerPresenter);
+            var thirdRound = gameManagerPresenter.GetCurrentRound();
+            var thirdRoundId = thirdRound.GetCurrentRoundId();
+
+            var fourthRoundFinished = await PlayOneRound(gameManagerPresenter);
+            var fourthRound = gameManagerPresenter.GetCurrentRound();
+            var fourthRoundId = fourthRound.GetCurrentRoundId();
 
             var allRoundsFinished = firstRoundFinished && secondRoundFinished && thirdRoundFinished && fourthRoundFinished;
-            var allRoundsIdAreDifferent = firstRound.RoundId != secondRound.RoundId 
-                                          && firstRound.RoundId != thirdRound.RoundId 
-                                          && firstRound.RoundId != fourthRound.RoundId;
+            var allRoundsIdAreDifferent = firstRoundId != secondRoundId
+                                          && firstRoundId != thirdRoundId
+                                          && firstRoundId != fourthRoundId;
 
             var allPlayersHaveFullHand = true;
 
@@ -156,6 +163,7 @@ namespace Tests
         {
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
+            var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayers());
             gameManager.InitializeGameData();
@@ -165,16 +173,17 @@ namespace Tests
             var previousRoundId = -3;
             // Triggering more rounds than the deck should be able to handle.
             for (var i = 0; i < 99; i++) {
-                var nRoundFinished = await PlayOneRound(gameManager);
-                var nRound = gameManager.GetCurrentRound();
+                var nRoundFinished = await PlayOneRound(gameManagerPresenter);
+                var nRound = gameManagerPresenter.GetCurrentRound();
+                var nRoundId = nRound.GetCurrentRoundId();
 
                 // if round cannot be played and deck is 0, game is over!
                 if (nRoundFinished == false && gameManager.CurrentDeckSize() == 0) {
                     break;
                 }
             
-                Assert.IsTrue(nRoundFinished && nRound.RoundId != previousRoundId);
-                previousRoundId = nRound.RoundId;
+                Assert.IsTrue(nRoundFinished && nRoundId != previousRoundId);
+                previousRoundId = nRoundId;
             }
 
             var deckSize = gameManager.CurrentDeckSize();
@@ -189,6 +198,7 @@ namespace Tests
         {
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
+            var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             
             var players = playerService.GetAllPlayers();
@@ -202,22 +212,23 @@ namespace Tests
         
             // Triggering more rounds than the deck should be able to handle.
             while (gameManager.CurrentDeckSize() > 0) {
-                var nRoundFinished = await PlayOneRound(gameManager);
-                var nRound = gameManager.GetCurrentRound();
+                var nRoundFinished = await PlayOneRound(gameManagerPresenter);
+                var nRound = gameManagerPresenter.GetCurrentRound();
+                var nRoundId = nRound.GetCurrentRoundId();
 
                 // if round cannot be played and deck is 0, game is over!
                 if (nRoundFinished == false && gameManager.CurrentDeckSize() == 0) {
                     break;
                 }
             
-                Assert.IsTrue(nRoundFinished && nRound.RoundId != previousRoundId);
-                previousRoundId = nRound.RoundId;
+                Assert.IsTrue(nRoundFinished && nRoundId != previousRoundId);
+                previousRoundId = nRoundId;
             }
 
             var deckSize = gameManager.CurrentDeckSize();
             Assert.IsTrue(deckSize == 0);
 
-            gameManager.FinishGame();
+            gameManagerPresenter.FinishGame();
 
             var gameWinnerScore = gameManager.GameWinnerPlayerScore;
 
@@ -232,7 +243,7 @@ namespace Tests
             Assert.IsFalse(foundHigherScoreThanWinner);
         }
     
-        private async Task<bool> PlayOneRound(GameManagerData gameManager)
+        private async Task<bool> PlayOneRound(GameManagerPresenter gameManager)
         {
             if (gameManager.StartPlayRound() == false) {
                 return false;
@@ -241,14 +252,14 @@ namespace Tests
             var currentRound = gameManager.GetCurrentRound();
             var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
 
-            gameManager.FinishRound();
+            //gameManager.FinishRound();
 
             var roundFinished = await WaitForRoundToBeFinished(currentRound);
 
             return playPhaseFinished && roundFinished;
         }
     
-        private async Task<bool> WaitForRoundToBeFinished(GameRoundData round)
+        private async Task<bool> WaitForRoundToBeFinished(GameRoundPresenter round)
         {
             var timeoutLengthInSeconds = 3;
             var timeoutStartTime = DateTime.Now;
@@ -263,7 +274,7 @@ namespace Tests
             return round.IsRoundFinished;
         }
 
-        private async Task<bool> WaitForRoundPlayPhaseToBeFinished(GameRoundData round)
+        private async Task<bool> WaitForRoundPlayPhaseToBeFinished(GameRoundPresenter round)
         {
             var timeoutLengthInSeconds = 3;
             var timeoutStartTime = DateTime.Now;

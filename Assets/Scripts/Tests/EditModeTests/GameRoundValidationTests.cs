@@ -3,52 +3,54 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using NUnit.Framework;
+using Presenters;
 using Services;
 
 namespace Tests
 {
     public class GameRoundValidationTests
     {
-        private void SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService)
+        private void SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService)
         {
             var numberOfCPUPlayers = 2;
 
-            gameManager = new GameManagerData();
+            gameManagerData = new GameManagerData();
             playersService = new PlayersService();
-            playersService.CreatePlayers(numberOfCPUPlayers);
+            gameManagerPresenter = new GameManagerPresenter(gameManagerData, playersService);
             
+            playersService.CreatePlayers(numberOfCPUPlayers);            
             var players = playersService.GetAllPlayers();
-            
-            gameManager.ReceivePlayersData(players);
-            gameManager.InitializeGameData();
+
+            gameManagerData.ReceivePlayersData(players);
+            gameManagerData.InitializeGameData();
 
             //Create the game and start it.
             //Only then Game Rounds can be created.
-            gameManager.SetupDeckForNewGame();
+            gameManagerData.SetupDeckForNewGame();
         }
 
         [Test]
         public void GameRoundValidationCreateGameRound()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService);
+            SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService);
 
-            gameManager.CreateAndStartRound();
+            gameManagerPresenter.StartPlayRound();
 
-            Assert.IsTrue(gameManager.GetCurrentRoundId() == 1);
+            Assert.IsTrue(gameManagerData.GetCurrentRoundId() == 1);
         }
 
         [Test]
         public void GameRoundValidationEstablishRoundOrder()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService);
+            SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService);
 
-            gameManager.CreateAndStartRound();
+            gameManagerPresenter.CreateAndStartRound();
 
             //Each player needs to play their cards.
             //For now resolving the round is not needed.
-            gameManager.EstablishRoundOrder();
+            gameManagerData.EstablishRoundOrder();
 
-            var firstPlayerInPlayOrder = gameManager.GetCurrentPlayerInOrder();
+            var firstPlayerInPlayOrder = gameManagerData.GetCurrentPlayerInOrder();
             var firstCPUId = 1;
 
             Assert.IsTrue(firstPlayerInPlayOrder == firstCPUId);
@@ -57,15 +59,15 @@ namespace Tests
         [Test]
         public async Task GameRoundValidationPlayPhaseMakesPlayersSelectCardForRound()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManager, out PlayersService playersService);
+            SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService);
 
-            gameManager.CreateAndStartRound();
-            gameManager.EstablishRoundOrder();
+            gameManagerPresenter.CreateAndStartRound();
+            gameManagerData.EstablishRoundOrder();
 
             //Number of players: 2 + player.
             List<PlayerData> players = playersService.GetAllPlayers();
 
-            GameRoundData round = gameManager.GetCurrentRound();
+            GameRoundPresenter round = gameManagerPresenter.GetCurrentRound();
 
             //Following order, wait until all players do play their cards. 
             await GameRoundPlayPhase(round);
@@ -76,7 +78,7 @@ namespace Tests
         [Test]
         public async Task GameRoundValidationResolvePhase_PlayerWins_ChosenSuit()
         {
-            CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData);
+            CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundPresenter gameRoundData);
 
             var chosenCardSuit = CardSuit.Swords;
             var otherCardSuit = CardSuit.Clubs;
@@ -237,7 +239,7 @@ namespace Tests
             Assert.IsTrue(players[0].GetScore() == scoreFromRound);
         }
 
-        private void CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundData gameRoundData)
+        private void CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundPresenter gameRoundData)
         {
             var playerData = new PlayerData();
 
@@ -247,12 +249,12 @@ namespace Tests
                 playerData.Clone(3) as PlayerData,
             };
 
-            gameRoundData = new GameRoundData(1);
+            gameRoundData = new GameRoundPresenter(1);
             gameRoundData.ReceivePlayers(players);
             gameRoundData.SetPlayerOrder(new() { 1, 2, 3 });
         }
 
-        private async Task GameRoundPlayPhase(GameRoundData gameRoundData)
+        private async Task GameRoundPlayPhase(GameRoundPresenter gameRoundData)
         {
             gameRoundData.StartPlayPhase();
 

@@ -44,8 +44,8 @@ namespace Data
             if (card == null) {
                 return;
             }
-            Debug.Log($"Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
-            Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
+            //Debug.Log($"Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
+            //Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
             PlayerHand.Value.Add(card);
             PlayerHand.OnNext(PlayerHand.Value);
         }
