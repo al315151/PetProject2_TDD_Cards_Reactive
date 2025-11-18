@@ -11,7 +11,7 @@ namespace Presenters
 {
     public class TableUIPresenter : IInitializable, IDisposable
     {
-        private readonly GeneralGamePresenter gameManagerPresenter;
+        private readonly GameManagerPresenter gameManagerPresenter;
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
         private readonly TableUIView tableUIView;
@@ -24,7 +24,7 @@ namespace Presenters
         private IDisposable playedCardsDisposables;
 
         public TableUIPresenter(
-            GeneralGamePresenter gameManagerPresenter,
+            GameManagerPresenter gameManagerPresenter,
             GameManagerData gameManagerData,
             PlayersService playersService,
             TableUIView tableUIView)
@@ -49,7 +49,7 @@ namespace Presenters
 
         private void OnGameRoundFinished()
         {
-            var currentRound = gameManagerData.GetCurrentRound();
+            var currentRound = gameManagerData.GetCurrentRoundData();
             if (currentRound != null)
             {
                 var winnerId = currentRound.RoundWinnerId;
@@ -102,9 +102,9 @@ namespace Presenters
 
         private void SetupRoundRelatedData()
         {
-            var currentGameRound = gameManagerData.GetCurrentRound();
+            var currentGameRound = gameManagerData.GetCurrentRoundData();
             tableUIView.SetPlayerRoundOrderText(currentGameRound.PlayerOrder);
-            playedCardsDisposables = currentGameRound.PlayedCardsByPlayers.Subscribe(playedCards => tableUIView.SetupRoundCardsView(playedCards));
+            playedCardsDisposables = currentGameRound.PlayedCardsInRound.Subscribe(playedCards => tableUIView.SetupRoundCardsView(playedCards));
         }
 
         private void SubscribeToPlayerRelatedData()

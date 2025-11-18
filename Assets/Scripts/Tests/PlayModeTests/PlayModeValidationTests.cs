@@ -83,6 +83,9 @@ namespace Tests
             var gameManagerData = scopeContainer.Container.Resolve<GameManagerData>();
             Assert.IsNotNull(gameManagerData);
 
+            var gameManagerPresenter = scopeContainer.Container.Resolve<GameManagerPresenter>();
+            Assert.IsNotNull(gameManagerPresenter);
+
             // trigger newGame as in button interaction.
             gameManagerView.NewGameButtonClicked?.Invoke();
 
@@ -94,7 +97,7 @@ namespace Tests
             // Draw phase -- first round it does nothing, but it will make players draw cards on each following round.
             // Play phase -- Each player, in order, plays the cards they want on the established order.
             // Resolve phase -- A round winner is decided by checking the cards that were received from the players, and scores are given.
-            var currentGameRound = gameManagerData.GetCurrentRound();
+            var currentGameRound = gameManagerPresenter.GetCurrentRound();
             yield return new WaitForSeconds(1.0f);
 
             Assert.IsTrue(currentGameRound.IsRoundFinished);

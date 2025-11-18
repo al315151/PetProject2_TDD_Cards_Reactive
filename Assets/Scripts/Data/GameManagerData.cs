@@ -14,14 +14,11 @@ namespace Data
         public ReactiveProperty<int> CurrentRoundIndex { get; private set; }
 
         public Action CurrentRoundPlayPhaseFinished;
-        public Action OnGameFinished;
 
         private List<PlayerData> playersData;
         private DeckData deckData;        
 
-        private IGameRoundPrototype gameRoundConcretePrototype;
-
-        private GameRoundData currentGameRound;
+        private GameRoundData currentGameRoundData;
         private List<GameRoundData> roundDataHistory;
 
         private int gameWinnerId;
@@ -32,12 +29,10 @@ namespace Data
             deckData = new DeckData();
 
             CurrentRoundIndex = new ReactiveProperty<int>(0);
-
-            gameRoundConcretePrototype = new GameRoundData(CurrentRoundIndex.CurrentValue);
             roundDataHistory = new List<GameRoundData>();
         }
         
-        public void CreateGame()
+        public void InitializeGameData()
         {
             //Players will be created through PlayersService.
             deckData.CreateDeck();
@@ -48,13 +43,16 @@ namespace Data
             this.playersData = playersData;
         }
         
-        public void StartGame()
+        public void SetupDeckForNewGame()
         {
             //Shuffle the cards, set the deck chosen Suit.
             deckData.Shuffle();
             deckData.ChooseInitialSuit();
+        }
 
-            DrawInitialHandForPlayers();
+        public void SetupCurrentGameRoundData(GameRoundData gameRoundData)
+        {
+            currentGameRoundData = gameRoundData;
         }
 
         public int CurrentDeckSize()
@@ -62,54 +60,35 @@ namespace Data
             return deckData.DeckCardCount;
         }
 
-        private void DrawInitialHandForPlayers()
-        {
-            var initialCardCountForPlayer = PlayerData.MaxHandSize;
-            for (var i = 0; i < playersData.Count; i++) { 
-                var player = playersData[i]; 
-                for (int j = 0; j < initialCardCountForPlayer; j++) {
-                    player.AddCardToHandFromDeck(deckData);
-                }
-            }
-        }
-
         public int GetCurrentRoundId()
         {
-            return currentGameRound.RoundId;
+            return currentGameRoundData.RoundId;
         }
 
         public int GetCurrentPlayerInOrder()
         {
-            return currentGameRound.GetCurrentPlayerIdInOrder();
+            return currentGameRoundData.GetCurrentPlayerIdInOrder();
         }
 
-        public bool CreateAndStartRound()
+        public void SetupGameWinner(int playerId, int score)
+        {
+            gameWinnerId = playerId;
+            gameWinnerScore = score;
+        }
+
+        public void IncrementCurrentRoundIndex()
         {
             CurrentRoundIndex.Value++;
-            if (currentGameRound != null) {
-                roundDataHistory.Add(currentGameRound);
-                currentGameRound.PlayPhaseFinished -= OnCurrentRoundPlayPhaseFinished;
-            }            
+        }
 
-            var gameRoundPrototype = gameRoundConcretePrototype.Clone(CurrentRoundIndex.Value);
-            
-            var gameRound = gameRoundPrototype as GameRoundData;
-            gameRound.ReceivePlayers(playersData);
-            gameRound.StartPlayerDrawPhase(deckData);
-
-            gameRound.PlayPhaseFinished += OnCurrentRoundPlayPhaseFinished;
-
-            if (CanRoundBePlayed() == false) {
-                currentGameRound = null;
-                if (IsGameFinished())
-                {
-                    FinishGame();
-                }
-                return false;
+        public bool SavePreviousRoundToRoundHistory()
+        {
+            if (currentGameRoundData != null && !roundDataHistory.Contains(currentGameRoundData))
+            {
+                roundDataHistory.Add(currentGameRoundData);
+                return true;
             }
-
-            currentGameRound = gameRound;
-            return true;
+            return false;
         }
 
         public void EstablishRoundOrder()
@@ -118,7 +97,7 @@ namespace Data
             // Otherwise, player will go last. 
             var playerOrder = new List<int>();
             var startingIndex = 1;
-            if (currentGameRound.RoundId <= 1) {
+            if (currentGameRoundData.RoundId <= 1) {
                 startingIndex = 1;
             }
             else {
@@ -141,76 +120,12 @@ namespace Data
                 startingIndex++;
             }
 
-            currentGameRound.SetPlayerOrder(playerOrder);
+            currentGameRoundData.SetPlayerOrder(playerOrder);
         }
 
-        public GameRoundData GetCurrentRound()
+        public GameRoundData GetCurrentRoundData()
         {
-            return currentGameRound;
-        }
-
-        public bool StartPlayRound()
-        {
-            if (currentGameRound != null && currentGameRound.IsRoundFinished == false)
-            { return false; }
-
-            if (IsGameFinished())
-            {
-                FinishGame();
-                return false;
-            }
-
-            //First setup the Round object.
-            if (CreateAndStartRound() == false) {
-                return false;
-            }
-            // Then set round order.
-            EstablishRoundOrder();
-            // Then, start the Play phase. we will receive event / wait for the cards to be played 
-            currentGameRound.StartPlayPhase();       
-            // On current gameplay, we will have to wait for player input to actually know when to resolve the situation.
-            return true;
-        }
-
-        public void FinishRound()
-        {
-            var winnerId = currentGameRound.ResolveRound(deckData.ChosenCardSuit);
-
-            currentGameRound.FinishRound(winnerId);
-        }
-
-        private void OnCurrentRoundPlayPhaseFinished()
-        {
-            CurrentRoundPlayPhaseFinished?.Invoke();
-        }
-
-        private bool CanRoundBePlayed()
-        {
-            for (int i = 0; i < playersData.Count; i++) {
-                if (playersData[i].PlayerHandSize < 1) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool IsGameFinished()
-        {
-            return CanRoundBePlayed() == false && deckData.DeckCardCount == 0;
-        }
-
-        public void FinishGame()
-        {
-            var playerMaxScore = -1;
-            foreach (var player in playersData) {
-                var currentPlayerScore = player.GetScore();
-                if (currentPlayerScore > playerMaxScore) {
-                    playerMaxScore = currentPlayerScore;
-                    gameWinnerScore = playerMaxScore;
-                    gameWinnerId = player.PlayerId;
-                }
-            }
-            OnGameFinished?.Invoke();
+            return currentGameRoundData;
         }
 
         public void ResetAll()
@@ -219,7 +134,12 @@ namespace Data
             CurrentRoundIndex.Value = 0;
             gameWinnerId = 0;
             roundDataHistory.Clear();
-            currentGameRound = null;
+            currentGameRoundData = null;
+        }
+
+        public DeckData GetDeckData()
+        {
+            return deckData;
         }
     }
 }

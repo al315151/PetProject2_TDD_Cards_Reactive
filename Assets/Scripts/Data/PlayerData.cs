@@ -44,8 +44,8 @@ namespace Data
             if (card == null) {
                 return;
             }
-            Debug.Log($"Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
-            Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
+            //Debug.Log($"Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
+            //Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
             PlayerHand.Value.Add(card);
             PlayerHand.OnNext(PlayerHand.Value);
         }
@@ -61,6 +61,15 @@ namespace Data
             var randomIndex = new System.Random().Next(PlayerHand.Value.Count);
             var randomCard = PlayerHand.Value[randomIndex];
             SendCardFromHandToRound(randomCard);
+        }
+
+        public void DrawCardsUntilMaxAllowed(DeckData deck)
+        {
+            var numberOfCardsToBeDrawn = MaxHandSize - PlayerHand.Value.Count;
+            for (int i = 0; i < numberOfCardsToBeDrawn; i++)
+            {
+                AddCardToHandFromDeck(deck);
+            }
         }
 
         public void PlayCardFromUserHand(CardSuit cardSuit, int number)
@@ -95,6 +104,7 @@ namespace Data
 
         public void AddScoreToPlayer(int roundScore)
         {
+            Debug.Log($"Player: {PlayerId} adds score: {roundScore} , to current score:{PlayerScore.Value}");
             PlayerScore.Value += roundScore;
             PlayerScore.OnNext(PlayerScore.CurrentValue);
         }
