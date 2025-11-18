@@ -252,8 +252,6 @@ namespace Tests
             var currentRound = gameManager.GetCurrentRound();
             var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
 
-            //gameManager.FinishRound();
-
             var roundFinished = await WaitForRoundToBeFinished(currentRound);
 
             return playPhaseFinished && roundFinished;

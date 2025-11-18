@@ -192,13 +192,6 @@ namespace Presenters
             return currentGameRoundPresenter;
         }
 
-        public void FinishRound()
-        {
-            var winnerId = currentGameRoundPresenter.ResolveRound(gameManagerData.DeckInitialCardSuit);
-
-            currentGameRoundPresenter.FinishRound(winnerId);
-        }
-
         private bool IsGameFinished()
         {
             return CanRoundBePlayed() == false && gameManagerData.GetDeckData().DeckCardCount == 0;

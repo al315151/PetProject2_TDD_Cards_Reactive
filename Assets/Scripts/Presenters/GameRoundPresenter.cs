@@ -125,7 +125,6 @@ namespace Presenters
             if (playersWithPredominantSuit.Count == 1) {
                 // Only one player with it, it wins the round!
                 gameRoundData.SetRoundWinnerId(playersWithPredominantSuit[0]);
-                Debug.Log($"[Round: {gameRoundData.RoundId}] Player: {gameRoundData.RoundWinnerId} Wins the Round!");
                 return gameRoundData.RoundWinnerId;
             }
             if (playersWithPredominantSuit.Count == 0) {
@@ -159,9 +158,7 @@ namespace Presenters
             }
 
             var winnerId = maxScore > 0 ? maxScorePlayerId : maxNumberPlayerId;
-            gameRoundData.SetRoundWinnerId(playersWithPredominantSuit[0]);
-
-            Debug.Log($"[Round: {gameRoundData.RoundId}] Player: {gameRoundData.RoundWinnerId} Wins the Round!");
+            gameRoundData.SetRoundWinnerId(winnerId);
             
             return winnerId;
         }

@@ -104,6 +104,7 @@ namespace Data
 
         public void AddScoreToPlayer(int roundScore)
         {
+            Debug.Log($"Player: {PlayerId} adds score: {roundScore} , to current score:{PlayerScore.Value}");
             PlayerScore.Value += roundScore;
             PlayerScore.OnNext(PlayerScore.CurrentValue);
         }
