@@ -32,7 +32,7 @@ namespace Services
             userPlayer = new PlayerData(-1);
 
             for (var i = 0; i < numberOfCPUPlayers; i++) {
-                var newCPU = userPlayer.Clone(npcPlayersData.Count) as PlayerData;
+                var newCPU = userPlayer.Clone(npcPlayersData.Count + 1) as PlayerData;
                 npcPlayersData.Add(newCPU);
             }
         }

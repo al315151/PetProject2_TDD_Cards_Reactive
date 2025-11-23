@@ -14,13 +14,18 @@ namespace Data
         public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
         public ReactiveProperty<int> PlayerScore { get; private set; }
 
+        public PlayerStrategyTypes PlayerStrategy => playerStrategy;
+
+        public CardData LatestPlayedCard;
+
         public bool IsPlayerTurn => roundDataObserver != null;
 
         public int PlayerHandSize => PlayerHand.Value.Count;
         public int PlayerId => id;
 
         private readonly int id;
-        
+
+        private PlayerStrategyTypes playerStrategy;
         
         private bool inputEnabled = false;
 
@@ -32,6 +37,11 @@ namespace Data
             PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
             PlayerScore = new ReactiveProperty<int>(0);
             inputEnabled = true;
+        }
+
+        public void SetPlayerStrategy(PlayerStrategyTypes playerStrategy)
+        {
+            this.playerStrategy = playerStrategy;
         }
 
         public void AddCardToHandFromDeck(DeckData deck)
@@ -55,7 +65,7 @@ namespace Data
             return new PlayerData(id);
         }
 
-        public void RequestCardFromPlayer()
+        public void RequestRandomCardFromPlayer()
         {
             //For now, choose card at random.
             var randomIndex = new System.Random().Next(PlayerHand.Value.Count);
@@ -133,6 +143,7 @@ namespace Data
 
         private void SendCardFromHandToRound(CardData cardData)
         {
+            LatestPlayedCard = cardData;
             PlayerHand.Value.Remove(cardData);
             PlayerHand.OnNext(PlayerHand.CurrentValue);
             roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, cardData));
@@ -143,7 +154,7 @@ namespace Data
 #if UNITY_EDITOR
             //Allow for tests to not await on delays.
             if (EditorApplication.isPlaying == false) {
-                RequestCardFromPlayer();
+                RequestRandomCardFromPlayer();
                 return;
             }
 #endif
@@ -153,7 +164,7 @@ namespace Data
             }
             
             await Task.Delay(1);
-            RequestCardFromPlayer();
+            RequestRandomCardFromPlayer();
         }
 
         public void Reset()

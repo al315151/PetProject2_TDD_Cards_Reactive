@@ -98,7 +98,7 @@ namespace Data
             var playerOrder = new List<int>();
             var startingIndex = 1;
             if (currentGameRoundData.RoundId <= 1) {
-                startingIndex = 1;
+                startingIndex = 0;
             }
             else {
                 var previousRoundWinner = roundDataHistory[^1].RoundWinnerId;
