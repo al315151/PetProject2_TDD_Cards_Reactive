@@ -13,8 +13,6 @@ namespace Data
         public CardSuit DeckInitialCardSuit => deckData.ChosenCardSuit;
         public ReactiveProperty<int> CurrentRoundIndex { get; private set; }
 
-        public List<PlayerData> PlayerData => playersData;
-
         public Action CurrentRoundPlayPhaseFinished;
 
         private List<PlayerData> playersData;
