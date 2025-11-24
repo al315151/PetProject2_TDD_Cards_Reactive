@@ -1,122 +1,35 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using R3;
-using UnityEditor;
-using UnityEngine;
 
 namespace Data
 {
-    public class PlayerData : IPlayerPrototype, IObservable<KeyValuePair<int, CardData>>, IDisposable
+    public class PlayerData
     {
         public static int MaxHandSize = 3;
 
-        public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
-        public ReactiveProperty<int> PlayerScore { get; private set; }
-
-        public PlayerStrategyTypes PlayerStrategy => playerStrategy;
 
         public CardData LatestPlayedCard;
-
-        public bool IsPlayerTurn => roundDataObserver != null;
+        public PlayerStrategyTypes PlayerStrategy => playerStrategy;
+        public bool InputEnabled => inputEnabled;
 
         public int PlayerHandSize => PlayerHand.Value.Count;
         public int PlayerId => id;
 
-        private readonly int id;
+        public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
+        public ReactiveProperty<int> PlayerScore { get; private set; }
 
         private PlayerStrategyTypes playerStrategy;
-        
-        private bool inputEnabled = false;
 
-        private IObserver<KeyValuePair<int, CardData>> roundDataObserver;
-        
-        public PlayerData(int id = 0)
+        private bool inputEnabled = false;
+        private readonly int id;
+
+
+        public PlayerData(int playerId)
         {
-            this.id = id;
+            this.id = playerId;
             PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
             PlayerScore = new ReactiveProperty<int>(0);
             inputEnabled = true;
-        }
-
-        public void SetPlayerStrategy(PlayerStrategyTypes playerStrategy)
-        {
-            this.playerStrategy = playerStrategy;
-        }
-
-        public void AddCardToHandFromDeck(DeckData deck)
-        {
-            if (PlayerHand.Value.Count >= MaxHandSize) {
-                return;
-            }
-            var card = deck.GetTopCardFromDeck();
-            // If cards have run out, do not add anything!
-            if (card == null) {
-                return;
-            }
-            //Debug.Log($"Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
-            //Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
-            PlayerHand.Value.Add(card);
-            PlayerHand.OnNext(PlayerHand.Value);
-        }
-
-        public IPlayerPrototype Clone(int id)
-        {
-            return new PlayerData(id);
-        }
-
-        public void RequestRandomCardFromPlayer()
-        {
-            //For now, choose card at random.
-            var randomIndex = new System.Random().Next(PlayerHand.Value.Count);
-            var randomCard = PlayerHand.Value[randomIndex];
-            SendCardFromHandToRound(randomCard);
-        }
-
-        public void DrawCardsUntilMaxAllowed(DeckData deck)
-        {
-            var numberOfCardsToBeDrawn = MaxHandSize - PlayerHand.Value.Count;
-            for (int i = 0; i < numberOfCardsToBeDrawn; i++)
-            {
-                AddCardToHandFromDeck(deck);
-            }
-        }
-
-        public void PlayCardFromUserHand(CardSuit cardSuit, int number)
-        {
-            if (roundDataObserver == null)
-            {
-                return;
-            }
-
-            //find card in hand that matches the one 
-            for (int i = 0; i < PlayerHand.CurrentValue.Count; i++)
-            {
-                if (PlayerHand.Value[i].CardSuit == cardSuit && PlayerHand.Value[i].CardNumber == number)
-                {
-                    var selectedCard = PlayerHand.Value[i];
-                    SendCardFromHandToRound(selectedCard);
-                    break;
-                }
-            }
-        }
-
-        public void AddCard(CardData cardData)
-        {
-            PlayerHand.CurrentValue.Add(cardData);
-            PlayerHand.OnNext(PlayerHand.CurrentValue);
-        }
-
-        public int GetScore()
-        {
-            return PlayerScore.Value;
-        }
-
-        public void AddScoreToPlayer(int roundScore)
-        {
-            Debug.Log($"Player: {PlayerId} adds score: {roundScore} , to current score:{PlayerScore.Value}");
-            PlayerScore.Value += roundScore;
-            PlayerScore.OnNext(PlayerScore.CurrentValue);
         }
 
         public void DisablePlayerInput()
@@ -128,43 +41,27 @@ namespace Data
         {
             inputEnabled = true;
         }
-        
-        public IDisposable Subscribe(IObserver<KeyValuePair<int, CardData>> observer)
+
+        public int GetScore()
         {
-            roundDataObserver = observer;
-            _ = TriggerPlayCard();
-            return this;
+            return PlayerScore.Value;
         }
 
-        public void Dispose()
+        public void SetPlayerStrategy(PlayerStrategyTypes playerStrategy)
         {
-            roundDataObserver = null;
+            this.playerStrategy = playerStrategy;
         }
 
-        private void SendCardFromHandToRound(CardData cardData)
+        public void AddScoreToPlayer(int roundScore)
         {
-            LatestPlayedCard = cardData;
-            PlayerHand.Value.Remove(cardData);
+            PlayerScore.Value += roundScore;
+            PlayerScore.OnNext(PlayerScore.CurrentValue);
+        }
+
+        public void AddCard(CardData card)
+        {
+            PlayerHand.CurrentValue.Add(card);
             PlayerHand.OnNext(PlayerHand.CurrentValue);
-            roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(id, cardData));
-        }
-
-        private async Task TriggerPlayCard()
-        {
-#if UNITY_EDITOR
-            //Allow for tests to not await on delays.
-            if (EditorApplication.isPlaying == false) {
-                RequestRandomCardFromPlayer();
-                return;
-            }
-#endif
-            //Play mode + input enabled: normal gameplay flow for the player (pressing the buttons).
-            if (inputEnabled && id == -1) {
-                return;
-            }
-            
-            await Task.Delay(1);
-            RequestRandomCardFromPlayer();
         }
 
         public void Reset()
@@ -173,6 +70,13 @@ namespace Data
             PlayerScore.OnNext(PlayerScore.CurrentValue);
 
             PlayerHand.Value.Clear();
+            PlayerHand.OnNext(PlayerHand.CurrentValue);
+        }
+
+        public void UpdateDataAfterPlayPhase(CardData playedCard)
+        {
+            LatestPlayedCard = playedCard;
+            PlayerHand.Value.Remove(playedCard);
             PlayerHand.OnNext(PlayerHand.CurrentValue);
         }
     }

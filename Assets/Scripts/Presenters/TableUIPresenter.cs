@@ -109,7 +109,7 @@ namespace Presenters
 
         private void SubscribeToPlayerRelatedData()
         {
-            var players = playersService.GetAllPlayers();
+            var players = playersService.GetAllPlayersData();
             var disposablesBuilder = new DisposableBuilder();
             foreach (var player in players)
             {
@@ -121,7 +121,7 @@ namespace Presenters
 
         private List<KeyValuePair<int, int>> GetScorePerCPU()
         {
-            var cpuPlayers = playersService.GetCPUPlayers();
+            var cpuPlayers = playersService.GetCPUPlayersData();
             var result = new List<KeyValuePair<int, int>>();
 
             foreach(var player in cpuPlayers)

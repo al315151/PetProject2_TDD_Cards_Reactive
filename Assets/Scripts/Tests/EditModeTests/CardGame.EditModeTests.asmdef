@@ -10,7 +10,8 @@
         "VContainer",
         "R3.Unity",
         "Unity.Collections.Tests.Playmode",
-        "CardGame.Services"
+        "CardGame.Services",
+        "CardGame.PlayerPresenter"
     ],
     "includePlatforms": [
         "Editor"

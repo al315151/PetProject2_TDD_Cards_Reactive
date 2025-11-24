@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Data;
+using PlayerPresenters;
 using R3;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace Presenters
         private readonly GameRoundData gameRoundData;
         
         private IDisposable currentPlayerInOrderDisposable;
+        private List<PlayerPresenter> playerPresenters;
 
         private int roundId;
         
@@ -43,6 +45,11 @@ namespace Presenters
         public int GetCurrentPlayerIdInOrder()
         {
             return gameRoundData.GetCurrentPlayerIdInOrder();
+        }
+
+        public void ReceivePlayerPresenters(List<PlayerPresenter> playerPresenters)
+        {
+            this.playerPresenters = playerPresenters;
         }
 
         public void ReceivePlayers(List<PlayerData> playersData)
@@ -94,12 +101,11 @@ namespace Presenters
 
         private void RequestCardFromPlayer(int playerId)
         {
-            var playersData = gameRoundData.PlayersData;
-            for (var i = 0; i < playersData.Count; i++) {
-                if (playersData[i].PlayerId != playerId) {
+            for (var i = 0; i < playerPresenters.Count; i++) {
+                if (playerPresenters[i].PlayerId != playerId) {
                     continue;
                 }
-                currentPlayerInOrderDisposable = playersData[i].Subscribe(this);
+                currentPlayerInOrderDisposable = playerPresenters[i].Subscribe(this);
                 break;
             }
         }
@@ -189,12 +195,8 @@ namespace Presenters
 
         public void StartPlayerDrawPhase(DeckData deckData)
         {
-            var playersData = gameRoundData.PlayersData;
-            for (var i = 0; i < playersData.Count; i++) {
-                if (playersData[i].PlayerHandSize >= PlayerData.MaxHandSize) {
-                    continue;
-                }
-                playersData[i].AddCardToHandFromDeck(deckData);
+            for (var i = 0; i < playerPresenters.Count; i++) {
+                playerPresenters[i].AddCardToHandFromDeck(deckData);
             }
         }
 

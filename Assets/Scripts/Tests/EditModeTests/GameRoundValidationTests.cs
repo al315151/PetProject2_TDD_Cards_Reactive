@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
 using NUnit.Framework;
+using PlayerPresenters;
 using Presenters;
 using Services;
 
@@ -19,7 +20,7 @@ namespace Tests
             gameManagerPresenter = new GameManagerPresenter(gameManagerData, playersService);
             
             playersService.CreatePlayers(numberOfCPUPlayers);            
-            var players = playersService.GetAllPlayers();
+            var players = playersService.GetAllPlayersData();
 
             gameManagerData.ReceivePlayersData(players);
             gameManagerData.InitializeGameData();
@@ -65,7 +66,7 @@ namespace Tests
             gameManagerData.EstablishRoundOrder();
 
             //Number of players: 2 + player.
-            List<PlayerData> players = playersService.GetAllPlayers();
+            List<PlayerPresenter> players = playersService.GetAllPlayers();
 
             GameRoundPresenter round = gameManagerPresenter.GetCurrentRound();
 
@@ -78,15 +79,15 @@ namespace Tests
         [Test]
         public async Task GameRoundValidationResolvePhase_PlayerWins_ChosenSuit()
         {
-            CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundPresenter gameRoundData);
+            CreateCustomPlayersAndRound(out List<PlayerPresenter> players, out GameRoundPresenter gameRoundData);
 
             var chosenCardSuit = CardSuit.Swords;
             var otherCardSuit = CardSuit.Clubs;
         
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(chosenCardSuit, 5));
-            players[1].AddCard(new CardData(otherCardSuit, 5));
-            players[2].AddCard(new CardData(otherCardSuit, 1));
+            players[0].TestAddCard(new CardData(chosenCardSuit, 5));
+            players[1].TestAddCard(new CardData(otherCardSuit, 5));
+            players[2].TestAddCard(new CardData(otherCardSuit, 1));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -106,9 +107,9 @@ namespace Tests
             var otherCardSuit = CardSuit.Clubs;
 
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(chosenCardSuit, 5));
-            players[1].AddCard(new CardData(chosenCardSuit, 12));
-            players[2].AddCard(new CardData(otherCardSuit, 1));
+            players[0].TestAddCard(new CardData(chosenCardSuit, 5));
+            players[1].TestAddCard(new CardData(chosenCardSuit, 12));
+            players[2].TestAddCard(new CardData(otherCardSuit, 1));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -129,9 +130,9 @@ namespace Tests
             var anotherCardSuit = CardSuit.Coins;
 
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(otherCardSuit, 5));
-            players[1].AddCard(new CardData(anotherCardSuit, 12));
-            players[2].AddCard(new CardData(anotherCardSuit, 1));
+            players[0].TestAddCard(new CardData(otherCardSuit, 5));
+            players[1].TestAddCard(new CardData(anotherCardSuit, 12));
+            players[2].TestAddCard(new CardData(anotherCardSuit, 1));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -152,9 +153,9 @@ namespace Tests
             var anotherCardSuit = CardSuit.Coins;
 
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(otherCardSuit, 5));
-            players[1].AddCard(new CardData(anotherCardSuit, 12));
-            players[2].AddCard(new CardData(otherCardSuit, 1));
+            players[0].TestAddCard(new CardData(otherCardSuit, 5));
+            players[1].TestAddCard(new CardData(anotherCardSuit, 12));
+            players[2].TestAddCard(new CardData(otherCardSuit, 1));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -175,9 +176,9 @@ namespace Tests
             var anotherCardSuit = CardSuit.Coins;
 
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(otherCardSuit, 5));
-            players[1].AddCard(new CardData(anotherCardSuit, 12));
-            players[2].AddCard(new CardData(otherCardSuit, 2));
+            players[0].TestAddCard(new CardData(otherCardSuit, 5));
+            players[1].TestAddCard(new CardData(anotherCardSuit, 12));
+            players[2].TestAddCard(new CardData(otherCardSuit, 2));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -198,9 +199,9 @@ namespace Tests
             var anotherCardSuit = CardSuit.Coins;
 
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(otherCardSuit, 5));
-            players[1].AddCard(new CardData(anotherCardSuit, 1));
-            players[2].AddCard(new CardData(otherCardSuit, 2));
+            players[0].TestAddCard(new CardData(otherCardSuit, 5));
+            players[1].TestAddCard(new CardData(anotherCardSuit, 1));
+            players[2].TestAddCard(new CardData(otherCardSuit, 2));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -224,9 +225,9 @@ namespace Tests
             var anotherCardSuit = CardSuit.Coins;
 
             //Add expected cards to players so that we can rig who is going to win.
-            players[0].AddCard(new CardData(otherCardSuit, 5));
-            players[1].AddCard(new CardData(anotherCardSuit, 12));
-            players[2].AddCard(new CardData(otherCardSuit, 2));
+            players[0].TestAddCard(new CardData(otherCardSuit, 5));
+            players[1].TestAddCard(new CardData(anotherCardSuit, 12));
+            players[2].TestAddCard(new CardData(otherCardSuit, 2));
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -236,21 +237,32 @@ namespace Tests
             int scoreFromRound = gameRoundData.GetTotalRoundScore();
             gameRoundData.FinishRound(winnerId);
 
-            Assert.IsTrue(players[0].GetScore() == scoreFromRound);
+            var firstPlayerData = players[0].GetPlayerData();
+
+            Assert.IsTrue(firstPlayerData.GetScore() == scoreFromRound);
         }
 
-        private void CreateCustomPlayersAndRound(out List<PlayerData> players, out GameRoundPresenter gameRoundData)
+        private void CreateCustomPlayersAndRound(out List<PlayerPresenter> players, out GameRoundPresenter gameRoundData)
         {
-            var playerData = new PlayerData();
+            var playerData = new PlayerPresenter();
 
             players = new() {
-                playerData.Clone(1) as PlayerData,
-                playerData.Clone(2) as PlayerData,
-                playerData.Clone(3) as PlayerData,
+                playerData.Clone(1) as PlayerPresenter,
+                playerData.Clone(2) as PlayerPresenter,
+                playerData.Clone(3) as PlayerPresenter,
             };
 
             gameRoundData = new GameRoundPresenter(1);
-            gameRoundData.ReceivePlayers(players);
+            gameRoundData.ReceivePlayerPresenters(players);
+
+            var playersData = new List<PlayerData>();
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                playersData.Add(players[i].GetPlayerData());
+            }
+
+            gameRoundData.ReceivePlayers(playersData);
             gameRoundData.SetPlayerOrder(new() { 1, 2, 3 });
         }
 

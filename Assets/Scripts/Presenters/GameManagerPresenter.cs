@@ -101,7 +101,8 @@ namespace Presenters
 
         public bool CreateAndStartRound()
         {
-            var playersData = playersService.GetAllPlayers();
+            var playersData = playersService.GetAllPlayersData();
+            var players = playersService.GetAllPlayers();
 
             gameManagerData.IncrementCurrentRoundIndex();
             if (gameManagerData.SavePreviousRoundToRoundHistory())
@@ -115,6 +116,7 @@ namespace Presenters
 
             gameManagerData.SetupCurrentGameRoundData(gameRound.GameRoundData);
 
+            gameRound.ReceivePlayerPresenters(players);
             gameRound.ReceivePlayers(playersData);
             gameRound.StartPlayerDrawPhase(gameManagerData.GetDeckData());
 
@@ -136,7 +138,7 @@ namespace Presenters
 
         public void FinishGame()
         {
-            var playersData = playersService.GetAllPlayers();
+            var playersData = playersService.GetAllPlayersData();
             var playerMaxScore = -1;
             foreach (var player in playersData)
             {
@@ -152,7 +154,7 @@ namespace Presenters
 
         private bool CanRoundBePlayed()
         {
-            var playersData = playersService.GetAllPlayers();
+            var playersData = playersService.GetAllPlayersData();
             for (int i = 0; i < playersData.Count; i++)
             {
                 if (playersData[i].PlayerHandSize < 1)
@@ -199,7 +201,7 @@ namespace Presenters
 
         private void OnPlayersInitialized()
         {
-            gameManagerData.ReceivePlayersData(playersService.GetAllPlayers());
+            gameManagerData.ReceivePlayersData(playersService.GetAllPlayersData());
         }
 
         public void Dispose()

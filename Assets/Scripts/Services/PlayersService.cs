@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using PlayerPresenters;
 using VContainer.Unity;
 
 namespace Services
@@ -12,9 +13,9 @@ namespace Services
 
         public Action OnPlayersInitialized;
         
-        private List<PlayerData> npcPlayersData = new();
+        private List<PlayerPresenter> npcPlayersPresenters = new();
         
-        private PlayerData userPlayer;
+        private PlayerPresenter userPlayer;
         
         public void Initialize()
         {
@@ -29,36 +30,52 @@ namespace Services
         public void CreatePlayers(int numberOfCPUPlayers)
         {
             //Player will be -1. No player should be allowed to be 0.
-            userPlayer = new PlayerData(-1);
+            userPlayer = new PlayerPresenter(-1);
 
             for (var i = 0; i < numberOfCPUPlayers; i++) {
-                var newCPU = userPlayer.Clone(npcPlayersData.Count + 1) as PlayerData;
-                npcPlayersData.Add(newCPU);
+                var newCPU = userPlayer.Clone(npcPlayersPresenters.Count + 1) as PlayerPresenter;
+                npcPlayersPresenters.Add(newCPU);
             }
         }
 
-        public List<PlayerData> GetAllPlayers()
+        public List<PlayerPresenter> GetAllPlayers()
         {
-            var allPlayers = npcPlayersData.ToList();
+            var allPlayers = npcPlayersPresenters.ToList();
             allPlayers.Add(userPlayer);
             return allPlayers;
         }
 
-        public PlayerData GetUserPlayer()
+        public List<PlayerData> GetAllPlayersData()
+        {
+            var data = new List<PlayerData>();
+            foreach (var player in npcPlayersPresenters)
+            {
+                data.Add(player.GetPlayerData());
+            }
+            data.Add(userPlayer.GetPlayerData());
+            return data;
+        }
+
+        public PlayerPresenter GetUserPlayer()
         {
             return userPlayer;
         }
 
-        public List<PlayerData> GetCPUPlayers()
+        public List<PlayerData> GetCPUPlayersData()
         {
-            return npcPlayersData;
+            var data = new List<PlayerData>();
+            foreach (var player in npcPlayersPresenters)
+            {
+                data.Add(player.GetPlayerData());
+            }
+            return data;
         }
 
         public void ResetDataOnPlayers()
         {
             //Reset score and hands on every player.
             userPlayer.Reset();
-            foreach (var player in npcPlayersData)
+            foreach (var player in npcPlayersPresenters)
             {
                 player.Reset();
             }

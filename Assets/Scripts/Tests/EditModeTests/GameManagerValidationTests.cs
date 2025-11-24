@@ -19,7 +19,7 @@ namespace Tests
             var gameManager = new GameManagerData();
             var playerService = new PlayersService();
             playerService.CreatePlayers(numberOfCPUPlayers);
-            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.ReceivePlayersData(playerService.GetAllPlayersData());
             gameManager.InitializeGameData();
 
             Assert.IsTrue(gameManager.NumberOfPlayers == numberOfCPUPlayers + 1);
@@ -33,7 +33,7 @@ namespace Tests
             var playerService = new PlayersService();
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
-            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.ReceivePlayersData(playerService.GetAllPlayersData());
 
             // deck created, initial cards dealt, check remaining cards on deck to know if initial card deal is correct.
             gameManagerPresenter.StartGameButtonPressed();
@@ -55,7 +55,7 @@ namespace Tests
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             
-            var players = playerService.GetAllPlayers();
+            var players = playerService.GetAllPlayersData();
             
             gameManager.ReceivePlayersData(players);
             gameManager.InitializeGameData();
@@ -82,7 +82,7 @@ namespace Tests
             var playerService = new PlayersService();
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
-            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.ReceivePlayersData(playerService.GetAllPlayersData());
             gameManager.InitializeGameData();
 
             gameManager.SetupDeckForNewGame();
@@ -112,7 +112,7 @@ namespace Tests
 
             playerService.CreatePlayers(numberOfCPUPlayers);
             
-            var players = playerService.GetAllPlayers();
+            var players = playerService.GetAllPlayersData();
             
             gameManager.ReceivePlayersData(players);
             
@@ -165,7 +165,7 @@ namespace Tests
             var playerService = new PlayersService();
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
-            gameManager.ReceivePlayersData(playerService.GetAllPlayers());
+            gameManager.ReceivePlayersData(playerService.GetAllPlayersData());
             gameManager.InitializeGameData();
 
             gameManager.SetupDeckForNewGame();
@@ -201,7 +201,7 @@ namespace Tests
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.CreatePlayers(numberOfCPUPlayers);
             
-            var players = playerService.GetAllPlayers();
+            var players = playerService.GetAllPlayersData();
             
             gameManager.ReceivePlayersData(players);
             gameManager.InitializeGameData();

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Data;
 using R3;
-using UnityEngine;
 
 namespace Data
 {
