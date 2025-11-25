@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
+using Strategies;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,14 +18,17 @@ namespace PlayerPresenters
 
         private IObserver<KeyValuePair<int, CardData>> roundDataObserver;
 
+        private IPlayerStrategy playerStrategy;
+
         public PlayerPresenter(int id = 0)
         {
             playerData = new PlayerData(id);
         }
 
-        public void SetPlayerStrategy(PlayerStrategyTypes playerStrategy)
+        public void SetPlayerStrategy(PlayerStrategyType playerStrategyType, IPlayerStrategy playerStrategy)
         {
-            playerData.SetPlayerStrategy(playerStrategy);
+            this.playerStrategy = playerStrategy;
+            playerData.SetPlayerStrategy(playerStrategyType);
         }
 
         public void AddCardToHandFromDeck(DeckData deck)
@@ -47,12 +51,22 @@ namespace PlayerPresenters
             return new PlayerPresenter(id);
         }
 
-        public void RequestRandomCardFromPlayer()
+        private void RequestCardToPlayFromStrategy()
         {
-            //For now, choose card at random.
+            CardData chosenCard;
+
+            chosenCard = playerStrategy != null 
+                ? playerStrategy.ExecuteStrategy() 
+                : GetCardFromFallbackStrategy();
+
+            SendCardFromHandToRound(chosenCard);
+        }
+
+        private CardData GetCardFromFallbackStrategy()
+        {
             var randomIndex = new System.Random().Next(playerData.PlayerHand.Value.Count);
             var randomCard = playerData.PlayerHand.Value[randomIndex];
-            SendCardFromHandToRound(randomCard);
+            return randomCard;
         }
 
         public void DrawCardsUntilMaxAllowed(DeckData deck)
@@ -92,9 +106,7 @@ namespace PlayerPresenters
         public void TestAddCard(CardData cardData)
         {
            playerData.AddCard(cardData);
-        }
-
-        
+        }       
 
         public void AddScoreToPlayer(int roundScore)
         {
@@ -129,7 +141,7 @@ namespace PlayerPresenters
 #if UNITY_EDITOR
             //Allow for tests to not await on delays.
             if (EditorApplication.isPlaying == false) {
-                RequestRandomCardFromPlayer();
+                RequestCardToPlayFromStrategy();
                 return;
             }
 #endif
@@ -139,7 +151,7 @@ namespace PlayerPresenters
             }
             
             await Task.Delay(1);
-            RequestRandomCardFromPlayer();
+            RequestCardToPlayFromStrategy();
         }
 
         public void Reset()

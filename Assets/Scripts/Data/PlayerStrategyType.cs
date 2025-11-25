@@ -1,6 +1,6 @@
 namespace Data
 {
-    public enum PlayerStrategyTypes
+    public enum PlayerStrategyType
     {
         Random = 0
     }

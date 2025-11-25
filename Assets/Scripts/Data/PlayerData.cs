@@ -9,7 +9,7 @@ namespace Data
 
 
         public CardData LatestPlayedCard;
-        public PlayerStrategyTypes PlayerStrategy => playerStrategy;
+        public PlayerStrategyType PlayerStrategy => playerStrategy;
         public bool InputEnabled => inputEnabled;
 
         public int PlayerHandSize => PlayerHand.Value.Count;
@@ -18,7 +18,7 @@ namespace Data
         public ReactiveProperty<List<CardData>> PlayerHand { get; private set; }
         public ReactiveProperty<int> PlayerScore { get; private set; }
 
-        private PlayerStrategyTypes playerStrategy;
+        private PlayerStrategyType playerStrategy;
 
         private bool inputEnabled = false;
         private readonly int id;
@@ -47,7 +47,7 @@ namespace Data
             return PlayerScore.Value;
         }
 
-        public void SetPlayerStrategy(PlayerStrategyTypes playerStrategy)
+        public void SetPlayerStrategy(PlayerStrategyType playerStrategy)
         {
             this.playerStrategy = playerStrategy;
         }

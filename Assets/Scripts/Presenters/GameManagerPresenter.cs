@@ -2,6 +2,7 @@ using System;
 using Data;
 using R3;
 using Services;
+using VContainer;
 using VContainer.Unity;
 using View;
 
@@ -25,8 +26,9 @@ namespace Presenters
 
         private bool hasGameStarted = false;
 
+        [Inject]
         public GameManagerPresenter(
-            GameManagerData gameManagerData, 
+            GameManagerData gameManagerData,
             PlayersService playersService,
             GeneralGameView gameView)
         {

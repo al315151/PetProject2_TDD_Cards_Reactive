@@ -1,19 +1,19 @@
-
-using System.Collections.Generic;
+using Data;
 
 namespace Strategies
 {
     public class PlayerRandomStrategy : IPlayerStrategy
     {
-        private List<CardData> playerHand;
+        private PlayerData playerData;
 
-        public void SetStrategyInputData(List<CardData> playerHand)
+        public void SetStrategyInputData(PlayerData playerData)
         {
-            this.playerHand = playerHand;
+            this.playerData = playerData;
         }
 
         public CardData ExecuteStrategy()
         {
+            var playerHand = playerData.PlayerHand.Value;
             var randomIndex = new System.Random().Next(playerHand.Count);
             return playerHand[randomIndex];
         }

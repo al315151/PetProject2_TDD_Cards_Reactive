@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Factories;
 using PlayerPresenters;
+using UnityEngine.Video;
+using VContainer;
 using VContainer.Unity;
 
 namespace Services
@@ -11,15 +14,23 @@ namespace Services
     {
         private const int MaxCPUPlayers = 3;
 
+        private readonly StrategiesFactory strategiesFactory;
+
         public Action OnPlayersInitialized;
         
         private List<PlayerPresenter> npcPlayersPresenters = new();
         
         private PlayerPresenter userPlayer;
-        
+
+        [Inject]
+        public PlayersService(StrategiesFactory strategiesFactory)
+        {
+            this.strategiesFactory = strategiesFactory;
+        }
+
         public void Initialize()
         {
-            CreatePlayers(MaxCPUPlayers);
+            InitializePlayers(MaxCPUPlayers);
             OnPlayersInitialized?.Invoke();
         }
 
@@ -27,7 +38,7 @@ namespace Services
         {
         }
 
-        public void CreatePlayers(int numberOfCPUPlayers)
+        public void InitializePlayers(int numberOfCPUPlayers)
         {
             //Player will be -1. No player should be allowed to be 0.
             userPlayer = new PlayerPresenter(-1);
@@ -36,6 +47,7 @@ namespace Services
                 var newCPU = userPlayer.Clone(npcPlayersPresenters.Count + 1) as PlayerPresenter;
                 npcPlayersPresenters.Add(newCPU);
             }
+            InitializeStrategies();
         }
 
         public List<PlayerPresenter> GetAllPlayers()
@@ -79,6 +91,21 @@ namespace Services
             {
                 player.Reset();
             }
+        }
+
+        private void InitializeStrategies()
+        {
+            // initialize with Random strategies.
+            foreach (var playerPresenter in npcPlayersPresenters)
+            {
+                var newStrategy = strategiesFactory.CreateRandomStrategy(playerPresenter.GetPlayerData());
+                playerPresenter.SetPlayerStrategy(PlayerStrategyType.Random, newStrategy);
+            }
+
+            // Set base strategy for player as Random
+
+            var playerStrategy = strategiesFactory.CreateRandomStrategy(userPlayer.GetPlayerData());
+            userPlayer.SetPlayerStrategy(PlayerStrategyType.Random, playerStrategy);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data;
+using Factories;
 using NUnit.Framework;
 using PlayerPresenters;
 using Presenters;
@@ -16,10 +17,11 @@ namespace Tests
             var numberOfCPUPlayers = 2;
 
             gameManagerData = new GameManagerData();
-            playersService = new PlayersService();
+            var strategiesFactory = new StrategiesFactory(gameManagerData);
+            playersService = new PlayersService(strategiesFactory);
             gameManagerPresenter = new GameManagerPresenter(gameManagerData, playersService);
             
-            playersService.CreatePlayers(numberOfCPUPlayers);            
+            playersService.InitializePlayers(numberOfCPUPlayers);            
             var players = playersService.GetAllPlayersData();
 
             gameManagerData.ReceivePlayersData(players);
