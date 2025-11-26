@@ -146,7 +146,7 @@ namespace PlayerPresenters
             }
 #endif
             //Play mode + input enabled: normal gameplay flow for the player (pressing the buttons).
-            if (playerData.InputEnabled && playerData.PlayerId == -1) {
+            if (playerData.ExternalInputEnabled && playerData.PlayerId == -1) {
                 return;
             }
             

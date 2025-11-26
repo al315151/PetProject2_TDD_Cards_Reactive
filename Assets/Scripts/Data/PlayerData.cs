@@ -10,7 +10,7 @@ namespace Data
 
         public CardData LatestPlayedCard;
         public PlayerStrategyType PlayerStrategy => playerStrategy;
-        public bool InputEnabled => inputEnabled;
+        public bool ExternalInputEnabled => inputEnabled;
 
         public int PlayerHandSize => PlayerHand.Value.Count;
         public int PlayerId => id;

@@ -12,7 +12,8 @@
         "Unity.Collections.Tests.Playmode",
         "CardGame.Services",
         "CardGame.PlayerPresenter",
-        "CardGame.Factories"
+        "CardGame.Factories",
+        "CardGame.Strategy"
     ],
     "includePlatforms": [
         "Editor"

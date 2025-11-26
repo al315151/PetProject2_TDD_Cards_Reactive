@@ -15,9 +15,15 @@ namespace Factories
         public IPlayerStrategy CreateRandomStrategy(PlayerData playerData)
         {
             var newStrategy = new PlayerRandomStrategy();
-            newStrategy.SetStrategyInputData(playerData);
+            newStrategy.SetupPlayerData(playerData);
             return newStrategy;
         }
 
+        public IPlayerStrategy CreateRoundPlayedCardsStrategy(PlayerData playerData)
+        {
+            var newStrategy = new PlayerTableReadingStrategy();
+            newStrategy.SetupPlayerData(playerData);
+            return newStrategy;
+        }
     }
 }
