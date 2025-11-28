@@ -145,12 +145,14 @@ namespace Tests
             var gameManager = new GameManagerData();
             var strategiesFactory = new StrategiesFactory(gameManager);
             var tableReadingStrategy =
-                strategiesFactory.CreateRoundPlayedCardsStrategy(playerPresenter.GetPlayerData()) as
-                    PlayerTableReadingStrategy;
+                strategiesFactory.CreateRoundPlayedCardsStrategiesSolver(playerPresenter.GetPlayerData()) as
+                    PlayerTableReadingStrategiesSolver;
 
-            tableReadingStrategy.SetupAdditionalData(gameRoundData, chosenCardSuit);
+            tableReadingStrategy?.SetupAdditionalData(
+                PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit,
+                gameRoundData, chosenCardSuit);
 
-            playerPresenter.SetPlayerStrategy(PlayerStrategyType.RoundPlayedCardsProcessing, tableReadingStrategy);
+            playerPresenter.SetPlayerStrategy(PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit, tableReadingStrategy);
         }
 
         private async Task GameRoundPlayPhase(GameRoundPresenter gameRoundData)

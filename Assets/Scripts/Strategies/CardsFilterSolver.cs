@@ -53,9 +53,6 @@ namespace Strategies
             if (cardsOfPredominantSuit.Count == 0) {
                 return GetWinnerCardFromSameSuitCards(cardsToFilter);
             }
-            if (cardsOfPredominantSuit.Count == 1) {
-                return cardsOfPredominantSuit[0];
-            }
 
             return GetWinnerCardFromSameSuitCards(cardsOfPredominantSuit);
         }

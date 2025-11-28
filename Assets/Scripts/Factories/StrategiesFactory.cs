@@ -19,9 +19,9 @@ namespace Factories
             return newStrategy;
         }
 
-        public IPlayerStrategy CreateRoundPlayedCardsStrategy(PlayerData playerData)
+        public IPlayerStrategy CreateRoundPlayedCardsStrategiesSolver(PlayerData playerData)
         {
-            var newStrategy = new PlayerTableReadingStrategy();
+            var newStrategy = new PlayerTableReadingStrategiesSolver();
             newStrategy.SetupPlayerData(playerData);
             return newStrategy;
         }

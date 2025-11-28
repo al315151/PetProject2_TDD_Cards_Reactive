@@ -1,24 +1,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
-using Strategies;
 using UnityEngine;
 
 namespace Strategies
 {
-    public class PlayerTableReadingStrategy : IPlayerStrategy
+    public class PlayerTableReadingStrategiesSolver : IPlayerStrategy
     {
         private PlayerData playerData;
         private GameRoundData gameRoundData;
         private CardSuit predominantCardSuit;
 
-        public void SetupAdditionalData(GameRoundData gameRoundData, CardSuit predominantCardSuit)
+        private PlayerStrategyType playerStrategyType;
+        
+        public void SetupAdditionalData(
+            PlayerStrategyType playerStrategyType,
+            GameRoundData gameRoundData,
+            CardSuit predominantCardSuit)
         {
+            this.playerStrategyType = playerStrategyType;
             this.gameRoundData = gameRoundData;
             this.predominantCardSuit = predominantCardSuit;
         }
 
         public CardData ExecuteStrategy()
+        { 
+            return ExecuteStrategyThroughType(playerStrategyType);
+        }
+
+        public void SetupPlayerData(PlayerData playerData)
+        {
+            this.playerData = playerData;
+        }
+
+        private CardData ExecuteStrategyThroughType(PlayerStrategyType playerStrategyType)
+        {
+            switch (playerStrategyType) {
+                case PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit:
+                    return ExecuteStrategy_MaxRoundWins_UsePredominantSuit();
+                default:
+                    Debug.Log($"Strategy: {playerStrategyType} Not supported by: {this} , assign different strategy to player!");
+                    return playerData.PlayerHand.Value.FirstOrDefault();
+            }
+        }
+
+        private CardData ExecuteStrategy_MaxRoundWins_UsePredominantSuit()
+        {
+            var roundWinCandidates = FindRoundWinningCardCandidates();
+            if (roundWinCandidates.Count == 0) {
+                roundWinCandidates = playerData.PlayerHand.Value;
+            }
+            //If more than one card is found, choose the best one!
+            var bestCandidate = CardsFilterSolver.GetBestCardFromProvidedCards(roundWinCandidates, predominantCardSuit);
+            return bestCandidate;
+        }
+        
+        private List<CardData> FindRoundWinningCardCandidates()
         {
             var potentialCandidates = new List<CardData>();
 
@@ -31,22 +68,9 @@ namespace Strategies
                 }
             }
 
-            //If no cards were found, we choose one at random.
-            if (potentialCandidates.Count == 0) {
-                potentialCandidates = playerHand;
-            }
-            
-            //If more than one card is found, choose the best one!
-            var bestCandidate = CardsFilterSolver.GetBestCardFromProvidedCards(potentialCandidates, predominantCardSuit);
-
-            return bestCandidate;
+            return potentialCandidates;
         }
-
-        public void SetupPlayerData(PlayerData playerData)
-        {
-            this.playerData = playerData;
-        }
-
+        
         private bool DoesCardBeatCurrentPlayedCards(CardData cardData)
         {
             //Rounds can be resolved with the following rules.
