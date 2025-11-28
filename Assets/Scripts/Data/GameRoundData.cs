@@ -14,7 +14,6 @@ namespace Data
 
         public List<PlayerData> PlayersData => playersData;
 
-
         private readonly int roundId;
 
         private List<int> playerOrder;
@@ -26,7 +25,7 @@ namespace Data
         private int roundWinnerId;
         private int currentPlayerInOrderIndex;
 
-        public GameRoundData(int  roundId)
+        public GameRoundData(int roundId)
         {
             this.roundId = roundId;
             playerOrder = new List<int>();
@@ -39,7 +38,7 @@ namespace Data
             this.playerOrder = playerOrder;
         }
 
-        public void SetupPlayers( List<PlayerData> playersData)
+        public void SetupPlayers(List<PlayerData> playersData)
         {
             this.playersData = playersData;
         }

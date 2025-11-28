@@ -31,7 +31,7 @@ namespace Tests
             yield return LoadSampleScene();
 
             var applicationLifetimeScope = GameObject.Find("ApplicationLifetimeScope");
-            
+
             Assert.IsNotNull(applicationLifetimeScope);
 
             var scopeContainer = applicationLifetimeScope.GetComponent<ApplicationLifetimeScope>();
@@ -45,7 +45,7 @@ namespace Tests
             yield return LoadSampleScene();
 
             var scopeContainer = GetPlayModeLifetimeScope();
-            
+
             //Wait some seconds so that everything has been initialized.
             yield return new WaitForSeconds(3.0f);
 
@@ -54,11 +54,11 @@ namespace Tests
 
             // trigger newGame as in button interaction.
             gameManagerView.NewGameButtonClicked?.Invoke();
-            
+
             // Check that deck has the proper suit.
             var tableUIPresenter = scopeContainer.Container.Resolve<TableUIPresenter>();
             Assert.IsNotNull(tableUIPresenter);
-            
+
             var gameManagerData = scopeContainer.Container.Resolve<GameManagerData>();
             Assert.IsNotNull(gameManagerData);
 
@@ -74,10 +74,10 @@ namespace Tests
 
             //Wait some seconds so that everything has been initialized.
             yield return new WaitForSeconds(3.0f);
-            
+
             var gameManagerView = scopeContainer.Container.Resolve<GeneralGameView>();
             Assert.IsNotNull(gameManagerView);
-            
+
             DisablePlayerInput(scopeContainer);
 
             var gameManagerData = scopeContainer.Container.Resolve<GameManagerData>();
@@ -117,7 +117,7 @@ namespace Tests
                 }
             }
         }
-        
+
         private ApplicationLifetimeScope GetPlayModeLifetimeScope()
         {
             var applicationLifetimeScope = GameObject.Find("ApplicationLifetimeScope");
@@ -133,15 +133,15 @@ namespace Tests
             Assert.That(Application.CanStreamedLevelBeLoaded(sceneName),
                 "Cannot load scene '{0}' for test '{1}'.",
                 sceneName, GetType());
-            
+
             var isSceneLoaded = SceneManager.LoadSceneAsync("SampleScene");
 
             while (isSceneLoaded.isDone == false) {
                 yield return null;
             }
-            
+
             var scene = SceneManager.GetSceneByName(sceneName);
-            
+
             Assert.That(scene.isLoaded);
         }
     }

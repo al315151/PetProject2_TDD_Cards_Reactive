@@ -36,7 +36,7 @@ namespace Tests
 
                 for (var i = 0; i < removedCards.Count; i++) {
                     var removedCard = removedCards[i];
-                    if (removedCard.CardNumber == topCard.CardNumber 
+                    if (removedCard.CardNumber == topCard.CardNumber
                         && removedCard.CardSuit == topCard.CardSuit) {
                         areAllCardsDifferent = false;
                         break;
@@ -45,7 +45,7 @@ namespace Tests
 
                 removedCards.Add(topCard);
             }
-        
+
             Assert.IsTrue(areAllCardsDifferent);
         }
 
@@ -89,7 +89,7 @@ namespace Tests
             deck.CreateDeck();
             deck.ChooseInitialSuit();
 
-            CardSuit cardSuit = deck.ChosenCardSuit;
+            var cardSuit = deck.ChosenCardSuit;
 
             Assert.IsNotNull(cardSuit);
         }

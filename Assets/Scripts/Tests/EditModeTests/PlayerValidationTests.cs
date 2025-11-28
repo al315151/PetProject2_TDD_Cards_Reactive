@@ -16,7 +16,7 @@ namespace Tests
             var player = new PlayerPresenter();
             player.AddCardToHandFromDeck(deck);
 
-            for (int i = 0; i < 10; i++) {
+            for (var i = 0; i < 10; i++) {
                 player.AddCardToHandFromDeck(deck);
             }
 
@@ -31,7 +31,8 @@ namespace Tests
             var newPlayer = new PlayerPresenter();
             var copyOfNewPlayer = newPlayer.Clone(4) as PlayerPresenter;
 
-            Assert.IsTrue(newPlayer.PlayerId != copyOfNewPlayer.PlayerId && newPlayer.GetHashCode() != copyOfNewPlayer.GetHashCode());
+            Assert.IsTrue(newPlayer.PlayerId != copyOfNewPlayer.PlayerId &&
+                          newPlayer.GetHashCode() != copyOfNewPlayer.GetHashCode());
         }
     }
 }

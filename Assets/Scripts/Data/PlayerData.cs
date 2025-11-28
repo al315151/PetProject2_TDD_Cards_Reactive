@@ -7,7 +7,6 @@ namespace Data
     {
         public static int MaxHandSize = 3;
 
-
         public CardData LatestPlayedCard;
         public PlayerStrategyType PlayerStrategy => playerStrategy;
         public bool ExternalInputEnabled => inputEnabled;
@@ -23,10 +22,9 @@ namespace Data
         private bool inputEnabled = false;
         private readonly int id;
 
-
         public PlayerData(int playerId)
         {
-            this.id = playerId;
+            id = playerId;
             PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
             PlayerScore = new ReactiveProperty<int>(0);
             inputEnabled = true;

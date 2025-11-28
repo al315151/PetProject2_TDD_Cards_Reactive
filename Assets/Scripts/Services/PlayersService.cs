@@ -17,9 +17,9 @@ namespace Services
         private readonly StrategiesFactory strategiesFactory;
 
         public Action OnPlayersInitialized;
-        
+
         private List<PlayerPresenter> npcPlayersPresenters = new();
-        
+
         private PlayerPresenter userPlayer;
 
         [Inject]
@@ -60,8 +60,7 @@ namespace Services
         public List<PlayerData> GetAllPlayersData()
         {
             var data = new List<PlayerData>();
-            foreach (var player in npcPlayersPresenters)
-            {
+            foreach (var player in npcPlayersPresenters) {
                 data.Add(player.GetPlayerData());
             }
             data.Add(userPlayer.GetPlayerData());
@@ -76,8 +75,7 @@ namespace Services
         public List<PlayerData> GetCPUPlayersData()
         {
             var data = new List<PlayerData>();
-            foreach (var player in npcPlayersPresenters)
-            {
+            foreach (var player in npcPlayersPresenters) {
                 data.Add(player.GetPlayerData());
             }
             return data;
@@ -87,8 +85,7 @@ namespace Services
         {
             //Reset score and hands on every player.
             userPlayer.Reset();
-            foreach (var player in npcPlayersPresenters)
-            {
+            foreach (var player in npcPlayersPresenters) {
                 player.Reset();
             }
         }
@@ -96,8 +93,7 @@ namespace Services
         private void InitializeStrategies()
         {
             // initialize with Random strategies.
-            foreach (var playerPresenter in npcPlayersPresenters)
-            {
+            foreach (var playerPresenter in npcPlayersPresenters) {
                 var newStrategy = strategiesFactory.CreateRandomStrategy(playerPresenter.GetPlayerData());
                 playerPresenter.SetPlayerStrategy(PlayerStrategyType.Random, newStrategy);
             }

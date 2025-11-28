@@ -5,7 +5,6 @@ using R3;
 using Services;
 using VContainer.Unity;
 using View;
-using System.Linq;
 
 namespace Presenters
 {
@@ -50,8 +49,7 @@ namespace Presenters
         private void OnGameRoundFinished()
         {
             var currentRound = gameManagerData.GetCurrentRoundData();
-            if (currentRound != null)
-            {
+            if (currentRound != null) {
                 var winnerId = currentRound.RoundWinnerId;
                 var winnerString = winnerId == -1 ? "You" : winnerId.ToString();
 
@@ -104,15 +102,16 @@ namespace Presenters
         {
             var currentGameRound = gameManagerData.GetCurrentRoundData();
             tableUIView.SetPlayerRoundOrderText(currentGameRound.PlayerOrder);
-            playedCardsDisposables = currentGameRound.PlayedCardsInRound.Subscribe(playedCards => tableUIView.SetupRoundCardsView(playedCards));
+            playedCardsDisposables =
+                currentGameRound.PlayedCardsInRound.Subscribe(playedCards =>
+                    tableUIView.SetupRoundCardsView(playedCards));
         }
 
         private void SubscribeToPlayerRelatedData()
         {
             var players = playersService.GetAllPlayersData();
             var disposablesBuilder = new DisposableBuilder();
-            foreach (var player in players)
-            {
+            foreach (var player in players) {
                 var newDisposable = player.PlayerScore.Subscribe(_ => tableUIView.SetNPCPlayerScores(GetScorePerCPU()));
                 disposablesBuilder.Add(newDisposable);
             }
@@ -124,8 +123,7 @@ namespace Presenters
             var cpuPlayers = playersService.GetCPUPlayersData();
             var result = new List<KeyValuePair<int, int>>();
 
-            foreach(var player in cpuPlayers)
-            {
+            foreach (var player in cpuPlayers) {
                 result.Add(new KeyValuePair<int, int>(player.PlayerId, player.GetScore()));
             }
             return result;

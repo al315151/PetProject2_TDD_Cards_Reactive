@@ -10,13 +10,13 @@ namespace View
         public Action NewGameButtonClicked;
 
         public Action StartNextRoundButtonClicked;
-        
+
         [SerializeField]
         private TMP_Text gameRoundNumberText;
-    
+
         [SerializeField]
         private Button startNextRoundButton;
-    
+
         [SerializeField]
         private Button newGameButton;
 
@@ -39,7 +39,7 @@ namespace View
         private void OnEnable()
         {
             SetRoundNumber(string.Empty);
-            SetGameOverScreen(false);           
+            SetGameOverScreen(false);
         }
 
         private void OnDestroy()
@@ -56,7 +56,7 @@ namespace View
 
         private void OnNewGameClicked()
         {
-            NewGameButtonClicked?.Invoke();            
+            NewGameButtonClicked?.Invoke();
         }
 
         public void SetRoundNumber(string roundNumber)

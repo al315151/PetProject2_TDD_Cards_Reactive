@@ -3,6 +3,6 @@ namespace Data
     public enum PlayerStrategyType
     {
         Random = 0,
-        RoundPlayedCardsProcessing = 1,
+        RoundPlayedCardsProcessing = 1
     }
 }

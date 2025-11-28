@@ -16,7 +16,7 @@ namespace Data
         public Action CurrentRoundPlayPhaseFinished;
 
         private List<PlayerData> playersData;
-        private DeckData deckData;        
+        private DeckData deckData;
 
         private GameRoundData currentGameRoundData;
         private List<GameRoundData> roundDataHistory;
@@ -31,7 +31,7 @@ namespace Data
             CurrentRoundIndex = new ReactiveProperty<int>(0);
             roundDataHistory = new List<GameRoundData>();
         }
-        
+
         public void InitializeGameData()
         {
             //Players will be created through PlayersService.
@@ -42,7 +42,7 @@ namespace Data
         {
             this.playersData = playersData;
         }
-        
+
         public void SetupDeckForNewGame()
         {
             //Shuffle the cards, set the deck chosen Suit.
@@ -83,8 +83,7 @@ namespace Data
 
         public bool SavePreviousRoundToRoundHistory()
         {
-            if (currentGameRoundData != null && !roundDataHistory.Contains(currentGameRoundData))
-            {
+            if (currentGameRoundData != null && !roundDataHistory.Contains(currentGameRoundData)) {
                 roundDataHistory.Add(currentGameRoundData);
                 return true;
             }
@@ -103,7 +102,7 @@ namespace Data
             else {
                 var previousRoundWinner = roundDataHistory[^1].RoundWinnerId;
                 startingIndex = 0;
-                for (int i = 0; i < playersData.Count; i++) {
+                for (var i = 0; i < playersData.Count; i++) {
                     if (playersData[i].PlayerId == previousRoundWinner) {
                         startingIndex = i;
                         break;
@@ -111,7 +110,7 @@ namespace Data
                 }
             }
 
-            for (int i = 0; i < playersData.Count; i++) {
+            for (var i = 0; i < playersData.Count; i++) {
                 if (startingIndex == playersData.Count) {
                     startingIndex = 0;
                 }

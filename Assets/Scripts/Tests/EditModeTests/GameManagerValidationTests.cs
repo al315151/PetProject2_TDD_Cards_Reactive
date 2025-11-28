@@ -16,7 +16,7 @@ namespace Tests
         [TestCase(7)]
         [TestCase(0)]
         public void GameManagerTestCreateGameWithSpecifiedPlayers(int numberOfCPUPlayers)
-        {        
+        {
             var gameManager = new GameManagerData();
             var strategiesFactory = new StrategiesFactory(gameManager);
             var playerService = new PlayersService(strategiesFactory);
@@ -46,7 +46,7 @@ namespace Tests
 
             var currentDeckSize = gameManager.CurrentDeckSize();
 
-            Assert.IsTrue(currentDeckSize == numberOfExpectedCards - (playerMaxHandCount * gameManager.NumberOfPlayers));
+            Assert.IsTrue(currentDeckSize == numberOfExpectedCards - playerMaxHandCount * gameManager.NumberOfPlayers);
         }
 
         [Test]
@@ -58,23 +58,23 @@ namespace Tests
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
-            
+
             var players = playerService.GetAllPlayersData();
-            
+
             gameManager.ReceivePlayersData(players);
             gameManager.InitializeGameData();
 
             gameManager.SetupDeckForNewGame();
 
             await PlayOneRound(gameManagerPresenter);
-        
+
             var currentRound = gameManagerPresenter.GetCurrentRound();
 
             //Make sure the winner player has gotten the score.
 
             var roundWinner = GetRoundWinner(players, gameManager.GetCurrentRoundData());
             var roundScore = currentRound.GetTotalRoundScore();
-        
+
             Assert.IsTrue(roundWinner.GetScore() == roundScore);
         }
 
@@ -93,7 +93,7 @@ namespace Tests
             gameManager.SetupDeckForNewGame();
 
             var firstRoundFinished = await PlayOneRound(gameManagerPresenter);
-        
+
             var firstRound = gameManagerPresenter.GetCurrentRound();
             var firstRoundId = firstRound.GetCurrentRoundId();
 
@@ -117,11 +117,11 @@ namespace Tests
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
 
             playerService.InitializePlayers(numberOfCPUPlayers);
-            
+
             var players = playerService.GetAllPlayersData();
-            
+
             gameManager.ReceivePlayersData(players);
-            
+
             gameManagerPresenter.StartGameButtonPressed();
 
             var firstRoundFinished = await PlayOneRound(gameManagerPresenter);
@@ -140,7 +140,8 @@ namespace Tests
             var fourthRound = gameManagerPresenter.GetCurrentRound();
             var fourthRoundId = fourthRound.GetCurrentRoundId();
 
-            var allRoundsFinished = firstRoundFinished && secondRoundFinished && thirdRoundFinished && fourthRoundFinished;
+            var allRoundsFinished =
+                firstRoundFinished && secondRoundFinished && thirdRoundFinished && fourthRoundFinished;
             var allRoundsIdAreDifferent = firstRoundId != secondRoundId
                                           && firstRoundId != thirdRoundId
                                           && firstRoundId != fourthRoundId;
@@ -155,12 +156,12 @@ namespace Tests
                 allPlayersHaveFullHand = false;
                 break;
             }
-        
+
             Assert.IsTrue(allRoundsFinished);
             Assert.IsTrue(allRoundsIdAreDifferent);
             Assert.IsTrue(allPlayersHaveFullHand);
         }
-    
+
         [Test]
         [TestCase(3)]
         [TestCase(7)]
@@ -188,7 +189,7 @@ namespace Tests
                 if (nRoundFinished == false && gameManager.CurrentDeckSize() == 0) {
                     break;
                 }
-            
+
                 Assert.IsTrue(nRoundFinished && nRoundId != previousRoundId);
                 previousRoundId = nRoundId;
             }
@@ -196,7 +197,7 @@ namespace Tests
             var deckSize = gameManager.CurrentDeckSize();
             Assert.IsTrue(deckSize == 0);
         }
-    
+
         [Test]
         [TestCase(3)]
         [TestCase(7)]
@@ -208,16 +209,16 @@ namespace Tests
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
-            
+
             var players = playerService.GetAllPlayersData();
-            
+
             gameManager.ReceivePlayersData(players);
             gameManager.InitializeGameData();
 
             gameManager.SetupDeckForNewGame();
 
             var previousRoundId = -3;
-        
+
             // Triggering more rounds than the deck should be able to handle.
             while (gameManager.CurrentDeckSize() > 0) {
                 var nRoundFinished = await PlayOneRound(gameManagerPresenter);
@@ -228,7 +229,7 @@ namespace Tests
                 if (nRoundFinished == false && gameManager.CurrentDeckSize() == 0) {
                     break;
                 }
-            
+
                 Assert.IsTrue(nRoundFinished && nRoundId != previousRoundId);
                 previousRoundId = nRoundId;
             }
@@ -247,16 +248,16 @@ namespace Tests
                     break;
                 }
             }
-        
+
             Assert.IsFalse(foundHigherScoreThanWinner);
         }
-    
+
         private async Task<bool> PlayOneRound(GameManagerPresenter gameManager)
         {
             if (gameManager.StartPlayRound() == false) {
                 return false;
             }
-        
+
             var currentRound = gameManager.GetCurrentRound();
             var playPhaseFinished = await WaitForRoundPlayPhaseToBeFinished(currentRound);
 
@@ -264,7 +265,7 @@ namespace Tests
 
             return playPhaseFinished && roundFinished;
         }
-    
+
         private async Task<bool> WaitForRoundToBeFinished(GameRoundPresenter round)
         {
             var timeoutLengthInSeconds = 3;

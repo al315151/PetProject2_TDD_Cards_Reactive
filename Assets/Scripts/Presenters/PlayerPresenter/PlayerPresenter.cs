@@ -55,8 +55,8 @@ namespace PlayerPresenters
         {
             CardData chosenCard;
 
-            chosenCard = playerStrategy != null 
-                ? playerStrategy.ExecuteStrategy() 
+            chosenCard = playerStrategy != null
+                ? playerStrategy.ExecuteStrategy()
                 : GetCardFromFallbackStrategy();
 
             SendCardFromHandToRound(chosenCard);
@@ -72,25 +72,21 @@ namespace PlayerPresenters
         public void DrawCardsUntilMaxAllowed(DeckData deck)
         {
             var numberOfCardsToBeDrawn = PlayerData.MaxHandSize - playerData.PlayerHand.Value.Count;
-            for (int i = 0; i < numberOfCardsToBeDrawn; i++)
-            {
+            for (var i = 0; i < numberOfCardsToBeDrawn; i++) {
                 AddCardToHandFromDeck(deck);
             }
         }
 
         public void PlayCardFromUserHand(CardSuit cardSuit, int number)
         {
-            if (roundDataObserver == null)
-            {
+            if (roundDataObserver == null) {
                 return;
             }
 
             var playerHand = playerData.PlayerHand.CurrentValue;
             //find card in hand that matches the one 
-            for (int i = 0; i < playerHand.Count; i++)
-            {
-                if (playerHand[i].CardSuit == cardSuit && playerHand[i].CardNumber == number)
-                {
+            for (var i = 0; i < playerHand.Count; i++) {
+                if (playerHand[i].CardSuit == cardSuit && playerHand[i].CardNumber == number) {
                     var selectedCard = playerHand[i];
                     SendCardFromHandToRound(selectedCard);
                     break;
@@ -98,15 +94,15 @@ namespace PlayerPresenters
             }
         }
 
-        public PlayerData GetPlayerData() 
+        public PlayerData GetPlayerData()
         {
-            return playerData; 
+            return playerData;
         }
 
         public void TestAddCard(CardData cardData)
         {
-           playerData.AddCard(cardData);
-        }       
+            playerData.AddCard(cardData);
+        }
 
         public void AddScoreToPlayer(int roundScore)
         {
@@ -123,7 +119,7 @@ namespace PlayerPresenters
         {
             playerData.EnablePlayerInput();
         }
-        
+
         public IDisposable Subscribe(IObserver<KeyValuePair<int, CardData>> observer)
         {
             roundDataObserver = observer;
@@ -134,7 +130,7 @@ namespace PlayerPresenters
         public void Dispose()
         {
             roundDataObserver = null;
-        }        
+        }
 
         private async Task TriggerPlayCard()
         {
@@ -149,7 +145,7 @@ namespace PlayerPresenters
             if (playerData.ExternalInputEnabled && playerData.PlayerId == -1) {
                 return;
             }
-            
+
             await Task.Delay(1);
             RequestCardToPlayFromStrategy();
         }

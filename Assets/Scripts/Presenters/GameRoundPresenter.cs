@@ -10,7 +10,7 @@ namespace Presenters
     public class GameRoundPresenter : IGameRoundPrototype, IObserver<KeyValuePair<int, CardData>>
     {
         public Action PlayPhaseFinished;
-        
+
         public GameRoundData GameRoundData => gameRoundData;
 
         public bool IsRoundPlayPhaseFinished => gameRoundData.IsRoundPlayPhaseFinished();
@@ -18,12 +18,12 @@ namespace Presenters
         public bool IsRoundFinished { get; private set; }
 
         private readonly GameRoundData gameRoundData;
-        
+
         private IDisposable currentPlayerInOrderDisposable;
         private List<PlayerPresenter> playerPresenters;
 
         private int roundId;
-        
+
         public GameRoundPresenter(int roundId)
         {
             this.roundId = roundId;
@@ -73,7 +73,8 @@ namespace Presenters
 
         private void OnCardPlayedFromPlayer(int playerId, CardData cardData)
         {
-            Debug.Log($"[Round: {gameRoundData.RoundId}] Player: {playerId} has played card: Number: {cardData.CardNumber} , Suit: {cardData.CardSuit}");
+            Debug.Log(
+                $"[Round: {gameRoundData.RoundId}] Player: {playerId} has played card: Number: {cardData.CardNumber} , Suit: {cardData.CardSuit}");
 
             var PlayedCardsByPlayers = gameRoundData.PlayedCardsInRound;
 
@@ -91,7 +92,7 @@ namespace Presenters
             RequestCardFromPlayer(GetCurrentPlayerIdInOrder());
         }
 
-        private void UnsubscribeToPlayerEvents() 
+        private void UnsubscribeToPlayerEvents()
         {
             if (gameRoundData.ArePlayersEmpty()) {
                 return;
@@ -117,11 +118,11 @@ namespace Presenters
             //If there is more than one, those will be resolved by their scores.
             //if there is none, the first player in order will count as the predominant suit.
 
-            List<int> playersWithPredominantSuit = new List<int>();
+            var playersWithPredominantSuit = new List<int>();
 
             var playedCardsByPlayers = gameRoundData.PlayedCardsByPlayers;
             var dictionaryEnumerator = playedCardsByPlayers.GetEnumerator();
-            
+
             while (dictionaryEnumerator.MoveNext()) {
                 if (dictionaryEnumerator.Current.Value.CardSuit == predominantCardSuit) {
                     playersWithPredominantSuit.Add(dictionaryEnumerator.Current.Key);
@@ -150,7 +151,8 @@ namespace Presenters
 
             for (var i = 0; i < playersWithPredominantSuit.Count; i++) {
                 var cardNumber = playedCardsByPlayers[playersWithPredominantSuit[i]].CardNumber;
-                var cardScore = CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(cardNumber);
+                var cardScore =
+                    CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(cardNumber);
 
                 if (maxScore < cardScore) {
                     maxScorePlayerId = playersWithPredominantSuit[i];
@@ -165,7 +167,7 @@ namespace Presenters
 
             var winnerId = maxScore > 0 ? maxScorePlayerId : maxNumberPlayerId;
             gameRoundData.SetRoundWinnerId(winnerId);
-            
+
             return winnerId;
         }
 
@@ -175,7 +177,9 @@ namespace Presenters
             var dictionaryEnumerator = gameRoundData.PlayedCardsByPlayers.GetEnumerator();
 
             while (dictionaryEnumerator.MoveNext()) {
-                totalRoundScore += CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(dictionaryEnumerator.Current.Value.CardNumber);
+                totalRoundScore +=
+                    CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(dictionaryEnumerator
+                        .Current.Value.CardNumber);
             }
             return totalRoundScore;
         }

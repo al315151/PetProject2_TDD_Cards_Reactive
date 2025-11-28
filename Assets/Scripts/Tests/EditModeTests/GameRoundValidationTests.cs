@@ -12,7 +12,8 @@ namespace Tests
 {
     public class GameRoundValidationTests
     {
-        private void SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService)
+        private void SetupGameManagerAndStartGame(out GameManagerData gameManagerData,
+            out GameManagerPresenter gameManagerPresenter, out PlayersService playersService)
         {
             var numberOfCPUPlayers = 2;
 
@@ -20,8 +21,8 @@ namespace Tests
             var strategiesFactory = new StrategiesFactory(gameManagerData);
             playersService = new PlayersService(strategiesFactory);
             gameManagerPresenter = new GameManagerPresenter(gameManagerData, playersService);
-            
-            playersService.InitializePlayers(numberOfCPUPlayers);            
+
+            playersService.InitializePlayers(numberOfCPUPlayers);
             var players = playersService.GetAllPlayersData();
 
             gameManagerData.ReceivePlayersData(players);
@@ -35,7 +36,7 @@ namespace Tests
         [Test]
         public void GameRoundValidationCreateGameRound()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService);
+            SetupGameManagerAndStartGame(out var gameManagerData, out var gameManagerPresenter, out var playersService);
 
             gameManagerPresenter.StartPlayRound();
 
@@ -45,7 +46,7 @@ namespace Tests
         [Test]
         public void GameRoundValidationEstablishRoundOrder()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService);
+            SetupGameManagerAndStartGame(out var gameManagerData, out var gameManagerPresenter, out var playersService);
 
             gameManagerPresenter.CreateAndStartRound();
 
@@ -62,15 +63,15 @@ namespace Tests
         [Test]
         public async Task GameRoundValidationPlayPhaseMakesPlayersSelectCardForRound()
         {
-            SetupGameManagerAndStartGame(out GameManagerData gameManagerData, out GameManagerPresenter gameManagerPresenter, out PlayersService playersService);
+            SetupGameManagerAndStartGame(out var gameManagerData, out var gameManagerPresenter, out var playersService);
 
             gameManagerPresenter.CreateAndStartRound();
             gameManagerData.EstablishRoundOrder();
 
             //Number of players: 2 + player.
-            List<PlayerPresenter> players = playersService.GetAllPlayers();
+            var players = playersService.GetAllPlayers();
 
-            GameRoundPresenter round = gameManagerPresenter.GetCurrentRound();
+            var round = gameManagerPresenter.GetCurrentRound();
 
             //Following order, wait until all players do play their cards. 
             await GameRoundPlayPhase(round);
@@ -81,11 +82,11 @@ namespace Tests
         [Test]
         public async Task GameRoundValidationResolvePhase_PlayerWins_ChosenSuit()
         {
-            CreateCustomPlayersAndRound(out List<PlayerPresenter> players, out GameRoundPresenter gameRoundData);
+            CreateCustomPlayersAndRound(out var players, out var gameRoundData);
 
             var chosenCardSuit = CardSuit.Swords;
             var otherCardSuit = CardSuit.Clubs;
-        
+
             //Add expected cards to players so that we can rig who is going to win.
             players[0].TestAddCard(new CardData(chosenCardSuit, 5));
             players[1].TestAddCard(new CardData(otherCardSuit, 5));
@@ -95,7 +96,7 @@ namespace Tests
 
             Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
 
-            int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+            var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
 
             Assert.IsTrue(winnerId == players[0].PlayerId);
         }
@@ -117,7 +118,7 @@ namespace Tests
 
             Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
 
-            int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+            var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
 
             Assert.IsTrue(winnerId == players[1].PlayerId);
         }
@@ -140,7 +141,7 @@ namespace Tests
 
             Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
 
-            int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+            var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
 
             Assert.IsTrue(winnerId == players[0].PlayerId);
         }
@@ -163,7 +164,7 @@ namespace Tests
 
             Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
 
-            int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+            var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
 
             Assert.IsTrue(winnerId == players[2].PlayerId);
         }
@@ -208,7 +209,7 @@ namespace Tests
             await GameRoundPlayPhase(gameRoundData);
 
             Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
-        
+
             var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
 
             var scoreFromRound = gameRoundData.GetTotalRoundScore();
@@ -235,8 +236,8 @@ namespace Tests
 
             Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
 
-            int winnerId = gameRoundData.ResolveRound(chosenCardSuit);
-            int scoreFromRound = gameRoundData.GetTotalRoundScore();
+            var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+            var scoreFromRound = gameRoundData.GetTotalRoundScore();
             gameRoundData.FinishRound(winnerId);
 
             var firstPlayerData = players[0].GetPlayerData();
@@ -244,14 +245,15 @@ namespace Tests
             Assert.IsTrue(firstPlayerData.GetScore() == scoreFromRound);
         }
 
-        private void CreateCustomPlayersAndRound(out List<PlayerPresenter> players, out GameRoundPresenter gameRoundData)
+        private void CreateCustomPlayersAndRound(out List<PlayerPresenter> players,
+            out GameRoundPresenter gameRoundData)
         {
             var playerData = new PlayerPresenter();
 
             players = new() {
                 playerData.Clone(1) as PlayerPresenter,
                 playerData.Clone(2) as PlayerPresenter,
-                playerData.Clone(3) as PlayerPresenter,
+                playerData.Clone(3) as PlayerPresenter
             };
 
             gameRoundData = new GameRoundPresenter(1);
@@ -259,8 +261,7 @@ namespace Tests
 
             var playersData = new List<PlayerData>();
 
-            for (int i = 0; i < players.Count; i++)
-            {
+            for (var i = 0; i < players.Count; i++) {
                 playersData.Add(players[i].GetPlayerData());
             }
 
@@ -282,6 +283,5 @@ namespace Tests
                 }
             }
         }
-
     }
 }

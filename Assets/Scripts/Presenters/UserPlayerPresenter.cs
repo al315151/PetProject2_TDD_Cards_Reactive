@@ -57,8 +57,11 @@ namespace Presenters
 
         private void SubscribeToPlayerDataChanges()
         {
-            playerHandDisposable = userPlayerData.PlayerHand.Subscribe(handList => { playerView.SetupCardViews(handList); });
-            playerScoreDisposable = userPlayerData.PlayerScore.Subscribe(score => { playerView.SetPlayerScore(score); });
+            playerHandDisposable = userPlayerData.PlayerHand.Subscribe(handList => {
+                playerView.SetupCardViews(handList);
+            });
+            playerScoreDisposable =
+                userPlayerData.PlayerScore.Subscribe(score => { playerView.SetPlayerScore(score); });
         }
 
         private void SubscribeToViewEvents()
@@ -76,8 +79,7 @@ namespace Presenters
 
         public void OnNext(KeyValuePair<CardSuit, int> value)
         {
-            if (userPlayerPresenter.IsPlayerTurn == false)
-            {
+            if (userPlayerPresenter.IsPlayerTurn == false) {
                 return;
             }
             userPlayerPresenter.PlayCardFromUserHand(value.Key, value.Value);

@@ -12,13 +12,13 @@ namespace View
     {
         [SerializeField]
         private Image cardSuitImage;
-        
+
         [SerializeField]
         private TMP_Text cardNumberText;
 
         [SerializeField]
         private Button cardInteractionButton;
-        
+
         [SerializeField]
         private List<Sprite> cardSuitSprites;
 
@@ -26,7 +26,7 @@ namespace View
 
         private CardSuit cardSuit;
         private int cardNumber;
-        
+
         public void SetupCardGraphics(CardSuit cardSuit, int cardNumber)
         {
             this.cardSuit = cardSuit;
@@ -47,8 +47,7 @@ namespace View
 
         private void OnCardPressed()
         {
-            if (cardSuitImage.sprite == null || cardNumber == 0)
-            {
+            if (cardSuitImage.sprite == null || cardNumber == 0) {
                 return;
             }
 
@@ -61,7 +60,7 @@ namespace View
             cardNumberText.text = string.Empty;
             cardNumber = 0;
         }
-        
+
         private Sprite GetSuitSprite(CardSuit cardSuit)
         {
             return cardSuitSprites[(int)cardSuit];
@@ -71,6 +70,5 @@ namespace View
         {
             return this.cardSuit == cardSuit && this.cardNumber == cardNumber;
         }
-
     }
 }

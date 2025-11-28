@@ -15,7 +15,7 @@ namespace Presenters
         public Action<CardSuit> OnGameStarted;
         public Action OnGameRoundStarted;
         public Action OnGameRoundFinished;
-        
+
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
 
@@ -80,12 +80,10 @@ namespace Presenters
 
         private void StartNextRoundButtonPressed()
         {
-            if (hasGameStarted == false)
-            {
+            if (hasGameStarted == false) {
                 return;
             }
-            if (StartPlayRound())
-            {
+            if (StartPlayRound()) {
                 OnGameRoundStarted?.Invoke();
             }
         }
@@ -94,8 +92,7 @@ namespace Presenters
         {
             var playersData = playersService.GetAllPlayers();
             var gameDeck = gameManagerData.GetDeckData();
-            for (var i = 0; i < playersData.Count; i++)
-            {
+            for (var i = 0; i < playersData.Count; i++) {
                 var player = playersData[i];
                 player.DrawCardsUntilMaxAllowed(gameDeck);
             }
@@ -107,8 +104,7 @@ namespace Presenters
             var players = playersService.GetAllPlayers();
 
             gameManagerData.IncrementCurrentRoundIndex();
-            if (gameManagerData.SavePreviousRoundToRoundHistory())
-            {
+            if (gameManagerData.SavePreviousRoundToRoundHistory()) {
                 currentGameRoundPresenter.PlayPhaseFinished -= OnCurrentRoundPlayPhaseFinished;
             }
 
@@ -124,11 +120,9 @@ namespace Presenters
 
             gameRound.PlayPhaseFinished += OnCurrentRoundPlayPhaseFinished;
 
-            if (CanRoundBePlayed() == false)
-            {
+            if (CanRoundBePlayed() == false) {
                 currentGameRoundPresenter = null;
-                if (IsGameFinished())
-                {
+                if (IsGameFinished()) {
                     FinishGame();
                 }
                 return false;
@@ -142,11 +136,9 @@ namespace Presenters
         {
             var playersData = playersService.GetAllPlayersData();
             var playerMaxScore = -1;
-            foreach (var player in playersData)
-            {
+            foreach (var player in playersData) {
                 var currentPlayerScore = player.GetScore();
-                if (currentPlayerScore > playerMaxScore)
-                {
+                if (currentPlayerScore > playerMaxScore) {
                     playerMaxScore = currentPlayerScore;
                     gameManagerData.SetupGameWinner(player.PlayerId, playerMaxScore);
                 }
@@ -157,10 +149,8 @@ namespace Presenters
         private bool CanRoundBePlayed()
         {
             var playersData = playersService.GetAllPlayersData();
-            for (int i = 0; i < playersData.Count; i++)
-            {
-                if (playersData[i].PlayerHandSize < 1)
-                {
+            for (var i = 0; i < playersData.Count; i++) {
+                if (playersData[i].PlayerHandSize < 1) {
                     return false;
                 }
             }
@@ -169,18 +159,17 @@ namespace Presenters
 
         public bool StartPlayRound()
         {
-            if (currentGameRoundPresenter != null && currentGameRoundPresenter.IsRoundFinished == false)
-            { return false; }
+            if (currentGameRoundPresenter != null && currentGameRoundPresenter.IsRoundFinished == false) {
+                return false;
+            }
 
-            if (IsGameFinished())
-            {
+            if (IsGameFinished()) {
                 FinishGame();
                 return false;
             }
 
             //First setup the Round object.
-            if (CreateAndStartRound() == false)
-            {
+            if (CreateAndStartRound() == false) {
                 return false;
             }
             // Then set round order.
@@ -217,7 +206,9 @@ namespace Presenters
 
         private void SubscribeOnGameManagerDataStats()
         {
-            currentRoundIndexDisposable = gameManagerData.CurrentRoundIndex.Subscribe( onNext: roundIndex => gameView.SetRoundNumber(roundIndex.ToString()));
+            currentRoundIndexDisposable =
+                gameManagerData.CurrentRoundIndex.Subscribe(onNext: roundIndex =>
+                    gameView.SetRoundNumber(roundIndex.ToString()));
 
             gameManagerData.CurrentRoundPlayPhaseFinished += OnCurrentRoundPlayPhaseFinished;
         }
@@ -229,8 +220,7 @@ namespace Presenters
 
         private void OnCurrentRoundPlayPhaseFinished()
         {
-            if (currentGameRoundPresenter != null)
-            {
+            if (currentGameRoundPresenter != null) {
                 var winnerId = currentGameRoundPresenter.ResolveRound(gameManagerData.DeckInitialCardSuit);
                 currentGameRoundPresenter.FinishRound(winnerId);
                 OnGameRoundFinished?.Invoke();
@@ -240,8 +230,7 @@ namespace Presenters
         private void GameFinished()
         {
             hasGameStarted = false;
-            if (gameView == null)
-            {
+            if (gameView == null) {
                 return;
             }
             gameView.SetGameOverScreen(true);
@@ -249,6 +238,5 @@ namespace Presenters
             var winnerName = winnerId == -1 ? "You!" : "Player: " + winnerId.ToString();
             gameView.SetGameWinner(winnerName);
         }
-
     }
 }

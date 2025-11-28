@@ -15,7 +15,7 @@ namespace View
         private const string playerOrderFormat = "Player {0}";
 
         private CardSuitSpriteProvider cardSuitSpriteProvider;
-        
+
         [SerializeField]
         private Image selectedCardSuitImage;
 
@@ -40,12 +40,11 @@ namespace View
         public void Inject(CardSuitSpriteProvider cardSuitProvider)
         {
             cardSuitSpriteProvider = cardSuitProvider;
-            
+
             var everySecondCheck = Observable.Interval(TimeSpan.FromSeconds(1f), destroyCancellationToken);
             everySecondCheck.Subscribe(x => RequestDeckCardCountUpdate?.Invoke());
-
         }
-        
+
         public void SetupSelectedCardSuitVisuals(CardSuit cardSuit)
         {
             selectedCardSuitImage.sprite = cardSuitSpriteProvider.GetCardSuitSprite(cardSuit);
@@ -58,11 +57,9 @@ namespace View
 
         public void SetNPCPlayerScores(List<KeyValuePair<int, int>> playerScores)
         {
-            for (int i = 0; i < playerScores.Count; i++)
-            {
+            for (var i = 0; i < playerScores.Count; i++) {
                 var playerId = playerScores[i].Key.ToString();
-                if (playerScores[i].Key == -1)
-                {
+                if (playerScores[i].Key == -1) {
                     playerId = "You";
                 }
                 npcPlayersScoresText[i].text = string.Format(playerScoreFormat, playerId, playerScores[i].Value);
@@ -71,11 +68,9 @@ namespace View
 
         public void SetPlayerRoundOrderText(List<int> playerOrder)
         {
-            for (int i = 0;i < playerOrder.Count;i++)
-            {
+            for (var i = 0; i < playerOrder.Count; i++) {
                 var playerId = playerOrder[i].ToString();
-                if (playerOrder[i] == -1)
-                {
+                if (playerOrder[i] == -1) {
                     playerId = "You";
                 }
 
@@ -85,16 +80,14 @@ namespace View
 
         public void SetupRoundCardsView(List<CardData> playedCards)
         {
-            for (int i = 0; i < playedCards.Count; i++)
-            {
+            for (var i = 0; i < playedCards.Count; i++) {
                 cardViews[i].SetupCardGraphics(playedCards[i].CardSuit, playedCards[i].CardNumber);
             }
         }
 
         public void ResetCardViews()
         {
-            for (int i = 0; i < cardViews.Count; i++)
-            {
+            for (var i = 0; i < cardViews.Count; i++) {
                 cardViews[i].ResetCardGraphics();
             }
         }
@@ -114,16 +107,14 @@ namespace View
 
         private void ResetNPCScores()
         {
-            foreach(var npcScores in npcPlayersScoresText)
-            {
+            foreach (var npcScores in npcPlayersScoresText) {
                 npcScores.text = string.Format(playerScoreFormat, string.Empty, string.Empty);
             }
         }
 
         private void ResetPlayerRoundOrderText()
         {
-            foreach (var npcRoundOrder in npcPlayersRoundOrderText)
-            {
+            foreach (var npcRoundOrder in npcPlayersRoundOrderText) {
                 npcRoundOrder.text = string.Format(playerOrderFormat, string.Empty);
             }
         }

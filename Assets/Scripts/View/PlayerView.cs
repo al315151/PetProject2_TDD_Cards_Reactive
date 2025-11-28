@@ -9,12 +9,12 @@ namespace View
     {
         [SerializeField]
         private TMP_Text playerScoreText;
-        
+
         [SerializeField]
         private CardView[] cardViews;
 
         private IObserver<KeyValuePair<CardSuit, int>> playerInputObserver;
-        
+
         private void OnEnable()
         {
             for (var i = 0; i < cardViews.Length; i++) {
@@ -24,7 +24,7 @@ namespace View
             ResetAllCardViews();
             SetPlayerScore(0);
         }
-        
+
         private void OnDisable()
         {
             for (var i = 0; i < cardViews.Length; i++) {
@@ -34,17 +34,14 @@ namespace View
 
         public void SetupCardViews(List<CardData> cards)
         {
-            if (cards == null || cards.Count == 0)
-            {
+            if (cards == null || cards.Count == 0) {
                 // Rest all card views!
                 ResetAllCardViews();
                 return;
             }
 
-            for (var i = 0; i < cardViews.Length; i++)
-            {
-                if (i >= cards.Count)
-                {
+            for (var i = 0; i < cardViews.Length; i++) {
+                if (i >= cards.Count) {
                     cardViews[i].ResetCardGraphics();
                     continue;
                 }
@@ -71,10 +68,8 @@ namespace View
 
         private void ResetCardView(CardSuit arg1, int arg2)
         {
-            for (var i = 0; i < cardViews.Length; i++)
-            {
-                if (cardViews[i].IsCardTheSame(arg1, arg2))
-                {
+            for (var i = 0; i < cardViews.Length; i++) {
+                if (cardViews[i].IsCardTheSame(arg1, arg2)) {
                     cardViews[i].ResetCardGraphics();
                 }
             }
@@ -82,16 +77,14 @@ namespace View
 
         private void ResetAllCardViews()
         {
-            for (var i = 0; i < cardViews.Length; i++)
-            {
+            for (var i = 0; i < cardViews.Length; i++) {
                 cardViews[i].ResetCardGraphics();
             }
         }
 
         private void OnCardButtonPressed(CardSuit arg1, int arg2)
         {
-            if (playerInputObserver == null)
-            {
+            if (playerInputObserver == null) {
                 return;
             }
             // Tell the observer what you found!

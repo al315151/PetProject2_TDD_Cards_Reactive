@@ -12,7 +12,7 @@ namespace Strategies
         private GameRoundData gameRoundData;
         private CardSuit predominantCardSuit;
 
-        public void SetupAdditionalData (GameRoundData gameRoundData, CardSuit predominantCardSuit)
+        public void SetupAdditionalData(GameRoundData gameRoundData, CardSuit predominantCardSuit)
         {
             this.gameRoundData = gameRoundData;
             this.predominantCardSuit = predominantCardSuit;
@@ -20,22 +20,19 @@ namespace Strategies
 
         public CardData ExecuteStrategy()
         {
-            List<CardData> potentialCandidates = new List<CardData>();
+            var potentialCandidates = new List<CardData>();
 
             // First, read data from Game Round Data to know what are the currently played cards on the board.
             var playerHand = playerData.PlayerHand.Value;
 
-            foreach (var playerCard in playerHand)
-            {
-                if (DoesCardBeatCurrentPlayedCards(playerCard))
-                {
+            foreach (var playerCard in playerHand) {
+                if (DoesCardBeatCurrentPlayedCards(playerCard)) {
                     potentialCandidates.Add(playerCard);
                 }
             }
 
             //If no cards were found, we choose one at random.
-            if (potentialCandidates.Count == 0)
-            {
+            if (potentialCandidates.Count == 0) {
                 potentialCandidates = playerHand;
             }
 
@@ -55,7 +52,7 @@ namespace Strategies
             //if there is none, the first player in order will count as the predominant suit.
 
             // First, read data from Game Round Data to know what are the currently played cards on the board.
-            
+
             var tempPredominantSuit = predominantCardSuit;
 
             var playedCards = gameRoundData.PlayedCardsInRound.Value.ToList();
@@ -63,24 +60,23 @@ namespace Strategies
 
             var filteredCards = FilterCardsFromSpecifiedSuit(tempPredominantSuit, playedCards);
 
-            if (filteredCards.Count == 0)
-            {
+            if (filteredCards.Count == 0) {
                 // Choose the predominant suit of the first card played this turn.
                 tempPredominantSuit = playedCards[0].CardSuit;
                 filteredCards = FilterCardsFromSpecifiedSuit(tempPredominantSuit, playedCards);
             }
 
-            if (filteredCards.Count == 1)
-            {
+            if (filteredCards.Count == 1) {
                 var canCardWinRound = filteredCards[0] == cardData;
-                Debug.Log($"[Round Reading Strategy] is Card: [{cardData.CardNumber},{cardData.CardSuit}] winner? {canCardWinRound}");
+                Debug.Log(
+                    $"[Round Reading Strategy] is Card: [{cardData.CardNumber},{cardData.CardSuit}] winner? {canCardWinRound}");
                 return canCardWinRound;
             }
 
             //If filtered cards do not contain the card data by this point, no need to check further.
-            if (filteredCards.Contains(cardData) == false)
-            {
-                Debug.Log($"[Round Reading Strategy] Card: [{cardData.CardNumber},{cardData.CardSuit}] not AMONG cards with predominant card suit!");
+            if (filteredCards.Contains(cardData) == false) {
+                Debug.Log(
+                    $"[Round Reading Strategy] Card: [{cardData.CardNumber},{cardData.CardSuit}] not AMONG cards with predominant card suit!");
                 return false;
             }
 
@@ -90,15 +86,14 @@ namespace Strategies
 
             var numberOfCardWithMaxScore = -1;
 
-            foreach (var filteredCard in filteredCards)
-            {
+            foreach (var filteredCard in filteredCards) {
                 var cardNumber = filteredCard.CardNumber;
-                var cardScore = CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(cardNumber);
+                var cardScore =
+                    CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(cardNumber);
 
                 maxScore = Mathf.Max(maxScore, cardScore);
 
-                if (maxScore == cardScore)
-                {
+                if (maxScore == cardScore) {
                     numberOfCardWithMaxScore = cardNumber;
                 }
 
@@ -106,7 +101,8 @@ namespace Strategies
             }
 
             var isCardWinner = numberOfCardWithMaxScore == cardData.CardNumber || cardData.CardNumber == maxNumber;
-            Debug.Log($"[Round Reading Strategy] is Card: [{cardData.CardNumber},{cardData.CardSuit}] winner? {isCardWinner}");
+            Debug.Log(
+                $"[Round Reading Strategy] is Card: [{cardData.CardNumber},{cardData.CardSuit}] winner? {isCardWinner}");
 
             return isCardWinner;
         }
@@ -115,10 +111,8 @@ namespace Strategies
         {
             var result = new List<CardData>();
 
-            foreach (var card in cardsToFilter)
-            {
-                if (card.CardSuit == predominantCardSuit)
-                {
+            foreach (var card in cardsToFilter) {
+                if (card.CardSuit == predominantCardSuit) {
                     result.Add(card);
                 }
             }
