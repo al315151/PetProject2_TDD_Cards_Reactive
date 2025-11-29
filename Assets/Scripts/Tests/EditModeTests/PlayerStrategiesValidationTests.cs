@@ -8,6 +8,7 @@ using PlayerPresenters;
 using Presenters;
 using Strategies;
 using UnityEngine;
+using R3;
 
 namespace Tests
 {
@@ -55,7 +56,10 @@ namespace Tests
 
             var winnerPlayer = players[0];
 
-            SetupBoardReadingStrategyOnPlayer(ref winnerPlayer, gameRoundData.GameRoundData, chosenCardSuit);
+            SetupBoardReadingStrategyOnPlayer(ref winnerPlayer,
+                gameRoundData.GameRoundData,
+                chosenCardSuit,
+                PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit);
 
             //Add expected cards to players so that we can rig who is going to win.
             players[0].TestAddCard(new CardData(otherCardSuit, 5));
@@ -80,8 +84,7 @@ namespace Tests
         }
 
         [Test]
-        public async Task
-            PlayerStrategiesValidation_PlayerUsesBoardReadingStrategy_GoesLastWinsRoundWithChosenSuitAndHigherScore()
+        public async Task PlayerStrategiesValidation_PlayerUsesBoardReadingStrategy_GoesLastWinsRoundWithChosenSuitAndHigherScore()
         {
             CreateCustomPlayersAndRound(out var players, out var gameRoundData);
 
@@ -90,7 +93,11 @@ namespace Tests
 
             var winnerPlayer = players[2];
 
-            SetupBoardReadingStrategyOnPlayer(ref winnerPlayer, gameRoundData.GameRoundData, chosenCardSuit);
+            SetupBoardReadingStrategyOnPlayer(ref winnerPlayer,
+                gameRoundData.GameRoundData,
+                chosenCardSuit,
+                PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit);
+
 
             //Add expected cards to players so that we can rig who is going to win.
             players[2].TestAddCard(new CardData(otherCardSuit, 5));
@@ -99,7 +106,7 @@ namespace Tests
             players[2].TestAddCard(new CardData(otherCardSuit, 3));
 
             players[1].TestAddCard(new CardData(chosenCardSuit, 7));
-            players[0].TestAddCard(new CardData(otherCardSuit, 1));
+            players[0].TestAddCard(new CardData(otherCardSuit, 1));           
 
             await GameRoundPlayPhase(gameRoundData);
 
@@ -112,6 +119,42 @@ namespace Tests
             var firstPlayerData = winnerPlayer.GetPlayerData();
 
             Assert.IsTrue(firstPlayerData.GetScore() == scoreFromRound);
+        }
+
+        [Test]
+        public async Task PlayerStrategiesValidation_PlayerUsesBoardReadingStrategy_CutsLosses_LosesRoundButPlaysLeastValuableCard()
+        {
+            CreateCustomPlayersAndRound(out var players, out var gameRoundData);
+
+            var chosenCardSuit = CardSuit.Swords;
+            var otherCardSuit = CardSuit.Clubs;
+
+            var winnerPlayer = players[2];
+
+            SetupBoardReadingStrategyOnPlayer(ref winnerPlayer,
+                gameRoundData.GameRoundData,
+                chosenCardSuit,
+                PlayerStrategyType.RoundReading_MaxRoundWins_CutLosses);
+
+            //Add expected cards to players so that we can rig who is going to win.
+            players[2].TestAddCard(new CardData(otherCardSuit, 5));
+            players[2].TestAddCard(new CardData(otherCardSuit, 2));
+            players[2].TestAddCard(new CardData(chosenCardSuit, 2));
+            players[2].TestAddCard(new CardData(otherCardSuit, 3));
+
+            players[1].TestAddCard(new CardData(chosenCardSuit, 7));
+            players[0].TestAddCard(new CardData(otherCardSuit, 1));
+
+            var playerScoreBeforeRound = winnerPlayer.GetTotalScoreFromHand();
+
+            await GameRoundPlayPhase(gameRoundData);
+
+            Assert.IsTrue(gameRoundData.IsRoundPlayPhaseFinished);
+
+            var winnerId = gameRoundData.ResolveRound(chosenCardSuit);
+            gameRoundData.FinishRound(winnerId);
+
+            Assert.AreEqual(playerScoreBeforeRound, winnerPlayer.GetTotalScoreFromHand());
         }
 
         private void CreateCustomPlayersAndRound(out List<PlayerPresenter> players,
@@ -140,7 +183,8 @@ namespace Tests
 
         private void SetupBoardReadingStrategyOnPlayer(ref PlayerPresenter playerPresenter,
             GameRoundData gameRoundData,
-            CardSuit chosenCardSuit)
+            CardSuit chosenCardSuit,
+            PlayerStrategyType playerStrategyType)
         {
             var gameManager = new GameManagerData();
             var strategiesFactory = new StrategiesFactory(gameManager);
@@ -149,10 +193,9 @@ namespace Tests
                     PlayerTableReadingStrategiesSolver;
 
             tableReadingStrategy?.SetupAdditionalData(
-                PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit,
-                gameRoundData, chosenCardSuit);
+                playerStrategyType, gameRoundData, chosenCardSuit);
 
-            playerPresenter.SetPlayerStrategy(PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit, tableReadingStrategy);
+            playerPresenter.SetPlayerStrategy(playerStrategyType, tableReadingStrategy);
         }
 
         private async Task GameRoundPlayPhase(GameRoundPresenter gameRoundData)
@@ -168,6 +211,16 @@ namespace Tests
                     break;
                 }
             }
+        }
+
+        private int GetScoreFromCardList(List<CardData> cards)
+        {
+            var score = 0;
+            foreach (var card in cards)
+            {
+                score += CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(card.CardNumber);
+            }
+            return score;
         }
     }
 }

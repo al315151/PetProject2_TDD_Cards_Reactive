@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Strategies
@@ -46,6 +47,37 @@ namespace Strategies
             return maxScore > 0 ? maxScoreCard : maxNumberCard;
         }
 
+        public static CardData GeCardWithLeastValue(List<CardData> cardsToFilter)
+        {
+            //Filtered cards should be more than 1 by this point.
+            var minScore = 15;
+            var minNumber = 13;
+
+            var minScoreCard = cardsToFilter[0];
+            var minNumberCard = cardsToFilter[0];
+
+            foreach (var card in cardsToFilter)
+            {
+                var cardNumber = card.CardNumber;
+                var cardScore = CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(cardNumber);
+
+                minScore = Mathf.Min(minScore, cardScore);
+
+                if (minScore == cardScore)
+                {
+                    minScoreCard = card;
+                }
+
+                minNumber = Mathf.Min(minNumber, cardNumber);
+                if (minNumber == cardNumber)
+                {
+                    minNumberCard = card;
+                }
+            }
+
+            return minScore == 0 ? minScoreCard : minNumberCard;
+        }
+
         public static CardData GetBestCardFromProvidedCards(List<CardData> cardsToFilter, CardSuit predominantCardSuit)
         {
             var cardsOfPredominantSuit = FilterCardsFromSpecifiedSuit(predominantCardSuit, cardsToFilter);
@@ -55,6 +87,22 @@ namespace Strategies
             }
 
             return GetWinnerCardFromSameSuitCards(cardsOfPredominantSuit);
+        }
+
+        public static CardData GetWorstCardFromProvidedCards(List<CardData> cardsToFilter, CardSuit predominantCardSuit)
+        {
+            var filteredCards = new List<CardData>();
+            filteredCards.AddRange(cardsToFilter);
+
+            var cardsOfPredominantSuit = FilterCardsFromSpecifiedSuit(predominantCardSuit, cardsToFilter);
+
+            if (cardsOfPredominantSuit.Count > 0 
+                && cardsOfPredominantSuit.Count < cardsToFilter.Count)
+            {
+                filteredCards = filteredCards.Except(cardsOfPredominantSuit).ToList();
+            }
+
+            return GeCardWithLeastValue(filteredCards);
         }
     }
 }

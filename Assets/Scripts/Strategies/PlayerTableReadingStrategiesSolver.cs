@@ -38,6 +38,8 @@ namespace Strategies
             switch (playerStrategyType) {
                 case PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit:
                     return ExecuteStrategy_MaxRoundWins_UsePredominantSuit();
+                case PlayerStrategyType.RoundReading_MaxRoundWins_CutLosses:
+                    return ExecuteStrategy_MaxRoundWins_CutLosses();
                 default:
                     Debug.Log($"Strategy: {playerStrategyType} Not supported by: {this} , assign different strategy to player!");
                     return playerData.PlayerHand.Value.FirstOrDefault();
@@ -55,6 +57,18 @@ namespace Strategies
             return bestCandidate;
         }
         
+        private CardData ExecuteStrategy_MaxRoundWins_CutLosses()
+        {
+            var roundWinCandidates = FindRoundWinningCardCandidates();
+            if (roundWinCandidates.Count > 0)
+            {
+                return CardsFilterSolver.GetBestCardFromProvidedCards(roundWinCandidates, predominantCardSuit);
+            }
+            //If no card that wins is found, return the card that has the least value.
+            var worstCandidate = CardsFilterSolver.GetWorstCardFromProvidedCards(playerData.PlayerHand.Value, predominantCardSuit);
+            return worstCandidate;
+        }
+
         private List<CardData> FindRoundWinningCardCandidates()
         {
             var potentialCandidates = new List<CardData>();

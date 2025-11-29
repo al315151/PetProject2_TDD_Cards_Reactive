@@ -160,5 +160,15 @@ namespace PlayerPresenters
             playerData.UpdateDataAfterPlayPhase(cardData);
             roundDataObserver?.OnNext(new KeyValuePair<int, CardData>(playerData.PlayerId, cardData));
         }
+
+        public int GetTotalScoreFromHand()
+        {
+            var score = 0;
+            foreach (var card in playerData.PlayerHand.Value)
+            {
+                score += CardNumberToScoreConversionHelper.CardNumberToScoreConversion.GetValueOrDefault(card.CardNumber);
+            }
+            return score;
+        }
     }
 }
