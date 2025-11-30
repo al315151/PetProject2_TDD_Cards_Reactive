@@ -1,0 +1,19 @@
+{
+    "name": "CardGame.Agents",
+    "rootNamespace": "",
+    "references": [
+        "GUID:85e0054f8e64b47309646d35f8851f81",
+        "GUID:27e7c00752eee2245b08871e9df968d3",
+        "GUID:47eb7a162f95d452788943ca722c8e64",
+        "GUID:3a330f58dba77d74dba9b7660d2052a9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
