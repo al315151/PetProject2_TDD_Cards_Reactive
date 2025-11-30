@@ -15,6 +15,7 @@ namespace Presenters
         public Action<CardSuit> OnGameStarted;
         public Action OnGameRoundStarted;
         public Action OnGameRoundFinished;
+        public Action OnGameFinished;
 
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
@@ -78,7 +79,7 @@ namespace Presenters
             DrawInitialHandForPlayers();
         }
 
-        private void StartNextRoundButtonPressed()
+        public void StartNextRoundButtonPressed()
         {
             if (hasGameStarted == false) {
                 return;
@@ -229,6 +230,7 @@ namespace Presenters
 
         private void GameFinished()
         {
+            OnGameFinished?.Invoke();
             hasGameStarted = false;
             if (gameView == null) {
                 return;
