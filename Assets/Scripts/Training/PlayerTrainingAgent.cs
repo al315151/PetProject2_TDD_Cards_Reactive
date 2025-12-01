@@ -18,21 +18,25 @@ namespace Training
 
         public override void CollectObservations(VectorSensor sensor)
         {
+            Debug.Log($"[Framecount: {Time.frameCount}] CollectObservations called!");
             base.CollectObservations(sensor);
         }
 
         public override void OnActionReceived(ActionBuffers actions)
         {
+            Debug.Log($"[Framecount: {Time.frameCount}] ONActionReceived called!");
             base.OnActionReceived(actions);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
         {
+            Debug.Log($"[Framecount: {Time.frameCount}] Heuristic called!");
             base.Heuristic(actionsOut);
         }
 
         public override void OnEpisodeBegin()
         {
+            Debug.Log($"[Framecount: {Time.frameCount}] OnEpisodeBegin called!");
             base.OnEpisodeBegin();
         }
     }

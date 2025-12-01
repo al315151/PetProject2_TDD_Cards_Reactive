@@ -17,6 +17,8 @@ namespace Presenters
         public Action OnGameRoundFinished;
         public Action OnGameFinished;
 
+        public bool HasGameStarted => hasGameStarted;
+
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
 
@@ -42,7 +44,7 @@ namespace Presenters
             playersService.OnPlayersInitialized += OnPlayersInitialized;
         }
 
-        // MODEL ONLY TEST CONSTRUCTOR
+        // MODEL ONLY TEST AND TRAINING CONSTRUCTOR
         public GameManagerPresenter(
             GameManagerData gameManagerData,
             PlayersService playersService)

@@ -2,39 +2,39 @@
     "name": "root",
     "metadata": {
         "timer_format_version": "0.1.0",
-        "start_time_seconds": "1764537635",
+        "start_time_seconds": "1764622642",
         "python_version": "3.10.11 | packaged by Anaconda, Inc. | (main, May 16 2023, 00:55:32) [MSC v.1916 64 bit (AMD64)]",
-        "command_line_arguments": "C:\\Users\\AlbertDF\\miniconda3\\envs\\mlagents\\Scripts\\mlagents-learn config/cardgame_config.yaml --run-id=TestRun --force",
+        "command_line_arguments": "C:\\Users\\AlbertDF\\miniconda3\\envs\\mlagents\\Scripts\\mlagents-learn config/cardgame_config.yaml --run-id=Test --force",
         "mlagents_version": "1.1.0",
         "mlagents_envs_version": "1.1.0",
         "communication_protocol_version": "1.5.0",
         "pytorch_version": "2.9.1+cpu",
         "numpy_version": "1.23.5",
-        "end_time_seconds": "1764537704"
+        "end_time_seconds": "1764622711"
     },
-    "total": 68.95017090000056,
+    "total": 68.6283827999996,
     "count": 1,
-    "self": 0.006805600000916456,
+    "self": 0.004491299999244802,
     "children": {
         "run_training.setup": {
-            "total": 0.11062129999936587,
+            "total": 0.10362260000056267,
             "count": 1,
-            "self": 0.11062129999936587
+            "self": 0.10362260000056267
         },
         "TrainerController.start_learning": {
-            "total": 68.83274400000028,
+            "total": 68.52026889999979,
             "count": 1,
-            "self": 8.70000003487803e-05,
+            "self": 8.619999971415382e-05,
             "children": {
                 "TrainerController._reset_env": {
-                    "total": 68.83264229999986,
+                    "total": 68.5201661000001,
                     "count": 1,
-                    "self": 68.83264229999986
+                    "self": 68.5201661000001
                 },
                 "TrainerController._save_models": {
-                    "total": 1.4700000065204222e-05,
+                    "total": 1.6599999980826396e-05,
                     "count": 1,
-                    "self": 1.4700000065204222e-05
+                    "self": 1.6599999980826396e-05
                 }
             }
         }
