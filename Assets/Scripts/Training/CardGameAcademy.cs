@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Factories;
-using NUnit.Framework;
+using JetBrains.Annotations;
 using Presenters;
 using Services;
 using Unity.MLAgents;
@@ -38,6 +39,11 @@ namespace Training
             Academy.Instance.EnvironmentStep();
         }
 
+        public void FixedUpdate()
+        {
+            //Academy.Instance.EnvironmentStep();
+        }
+
         private void CreateDependencies()
         {
             // Everything has to be initialized by hand because training environment does not work well with VContainer.
@@ -49,6 +55,7 @@ namespace Training
             playersService.Initialize();
             gameManagerData.ReceivePlayersData(playersService.GetAllPlayersData());
             gameManagerPresenter = new GameManagerPresenter(gameManagerData, playersService);
+            DisableNonPlayersInput();
         }
 
         private void Subscribe()
@@ -71,6 +78,11 @@ namespace Training
         {
             Debug.Log($"[Framecount:{Time.frameCount}] OnGameRoundFinished");
             var currentRound = gameManagerPresenter.GetCurrentRound();
+            if (currentRound != null)
+            {
+                currentRound.OnCardRequestedFromPlayer -= OnRequestedCardFromPlayer;
+            }
+
             var roundWinnerId= currentRound.GameRoundData.RoundWinnerId;
 
             foreach (var player in playerTrainingAgents)
@@ -79,12 +91,27 @@ namespace Training
                 player.SetReward(rewardPerRoundWon);
             }
 
+
+            Academy.Instance.EnvironmentStep();
         }
 
         private void OnGameRoundStarted()
         {
             Debug.Log($"[Framecount:{Time.frameCount}] OnGameRoundStarted -- Calling EnvironmentStep");
-            Academy.Instance.EnvironmentStep();
+            var currentRound = gameManagerPresenter.GetCurrentRound();
+            currentRound.OnCardRequestedFromPlayer += OnRequestedCardFromPlayer;
+        }
+
+        private void OnRequestedCardFromPlayer(int playerIndexInTurn)
+        {
+            for (int i = 0; i < playerTrainingAgents.Length; i++)
+            {
+                if (playerTrainingAgents[i].PlayerId == playerIndexInTurn)
+                {
+                    Debug.Log($"[Framecount:{Time.frameCount}] OnRequestCardFromPlayer! requesting decision from player: {playerIndexInTurn}");
+                    playerTrainingAgents[i].RequestDecision();
+                }
+            }
         }
 
         private void OnEnvironmentReset()
@@ -92,7 +119,7 @@ namespace Training
             Debug.Log($"[Framecount:{Time.frameCount}] OnEnvironmentReset!");
             gameManagerPresenter.FinishGame();
             gameManagerPresenter.StartGameButtonPressed();
-            DisablePlayersInput();
+            DisableNonPlayersInput();
             gameManagerPresenter.StartNextRoundButtonPressed();
         }
 
@@ -134,13 +161,50 @@ namespace Training
             }
         }
 
-        private void DisablePlayersInput()
+        private void DisableNonPlayersInput()
         {
             var allPlayers = playersService.GetAllPlayers();
+            var trainingPlayers = new List<int>();
+
+            foreach (var trainingAgent in playerTrainingAgents)
+            {
+                trainingPlayers.Add(trainingAgent.PlayerId);
+            }
+
+            foreach (var player in allPlayers)
+            {              
+                if (trainingPlayers.Contains(player.PlayerId))
+                {
+                    player.EnablePlayerInput();
+                }
+                else
+                {
+                    player.DisablePlayerInput();
+                }                
+            }            
+        }
+
+        public PlayerData GetPlayerData(int playerId)
+        {
+            var allPlayers = playersService.GetAllPlayersData();
             foreach (var player in allPlayers)
             {
-                player.DisablePlayerInput();
+                if (player.PlayerId == playerId)
+                {
+                    return player;
+                }
             }
+            return null;
+        }
+
+        public int GetCurrentNumberOfPlayers()
+        {
+            return playersService.GetAllPlayers().Count;
+        }
+
+        public GameRoundPresenter GetCurrentRoundPresenter()
+        {
+            return gameManagerPresenter.GetCurrentRound();
         }
     }
 }

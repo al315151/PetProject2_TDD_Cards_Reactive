@@ -10,7 +10,7 @@ namespace Presenters
     public class GameRoundPresenter : IGameRoundPrototype, IObserver<KeyValuePair<int, CardData>>
     {
         public Action PlayPhaseFinished;
-
+        public Action<int> OnCardRequestedFromPlayer;
         public GameRoundData GameRoundData => gameRoundData;
 
         public bool IsRoundPlayPhaseFinished => gameRoundData.IsRoundPlayPhaseFinished();
@@ -109,6 +109,7 @@ namespace Presenters
                 currentPlayerInOrderDisposable = playerPresenters[i].Subscribe(this);
                 break;
             }
+            OnCardRequestedFromPlayer?.Invoke(playerId);
         }
 
         public int ResolveRound(CardSuit predominantCardSuit)
