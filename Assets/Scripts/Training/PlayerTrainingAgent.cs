@@ -65,11 +65,16 @@ namespace Training
             var playerData = academy.GetPlayerData(playerId);
             var playerHand = playerData.PlayerHand.Value;
 
-            //If input received is not valid, then return a valid card.
-            if (playerHand.Count >= cardIndexInHand)
+            //Nothing to play, nothing to do.
+            if (playerHand.Count == 0)
             {
-                //cardIndexInHand = Random.Range(0, playerHand.Count);
-                cardIndexInHand = 0;
+                return;
+            }
+
+            //If input received is not valid, then return a valid card.
+            if (cardIndexInHand >= playerHand.Count)
+            {
+                cardIndexInHand = Random.Range(0, playerHand.Count);
             }
 
             var cardDataFromIndex = playerHand[cardIndexInHand];
