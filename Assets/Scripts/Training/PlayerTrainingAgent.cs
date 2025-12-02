@@ -34,11 +34,11 @@ namespace Training
             {
                 if (i >= playedCards.Count)
                 {
-                    Debug.Log($"[Framecount: {Time.frameCount}] Adding empty card on index: {i}");
+                    //Debug.Log($"[Framecount: {Time.frameCount}] Adding empty card on index: {i}");
                     sensor.AddObservation(new Vector2(0, 0));
                     continue;
                 }
-                Debug.Log($"[Framecount: {Time.frameCount}] Adding Card from Round with info: {playedCards[i].CardNumber} , {playedCards[i].CardSuit} on index: {i}");
+                //Debug.Log($"[Framecount: {Time.frameCount}] Adding Card from Round with info: {playedCards[i].CardNumber} , {playedCards[i].CardSuit} on index: {i}");
                 sensor.AddObservation(new Vector2(playedCards[i].CardNumber, (int)playedCards[i].CardSuit));
             }
 
@@ -46,18 +46,18 @@ namespace Training
             {
                 if (i >= playerHand.Count)
                 {
-                    Debug.Log($"[Framecount: {Time.frameCount}] Adding empty card on index: {i}");
+                    //Debug.Log($"[Framecount: {Time.frameCount}] Adding empty card on index: {i}");
                     sensor.AddObservation(new Vector2(0 , 0));
                     continue;
                 }
-                Debug.Log($"[Framecount: {Time.frameCount}] Adding Card from Hand with info: {playerHand[i].CardNumber} , {playerHand[i].CardSuit} on index: {i}");
+                //Debug.Log($"[Framecount: {Time.frameCount}] Adding Card from Hand with info: {playerHand[i].CardNumber} , {playerHand[i].CardSuit} on index: {i}");
                 sensor.AddObservation(new Vector2(playerHand[i].CardNumber, (int)playerHand[i].CardSuit));
             }
         }
 
         public override void OnActionReceived(ActionBuffers actions)
         {
-            Debug.Log($"[Framecount: {Time.frameCount}] OnActionReceived called, actions continuous size: {actions.ContinuousActions.Length} , actions discrete actions: {actions.DiscreteActions.Length}");
+            //Debug.Log($"[Framecount: {Time.frameCount}] OnActionReceived called, actions continuous size: {actions.ContinuousActions.Length} , actions discrete actions: {actions.DiscreteActions.Length}");
 
             var actionsBuffer = actions.DiscreteActions;
             var cardIndexInHand = actionsBuffer[0];
@@ -86,7 +86,7 @@ namespace Training
 
         public override void Heuristic(in ActionBuffers actionsOut)
         {
-            Debug.Log($"[Framecount: {Time.frameCount}] Heuristic called!");
+            //Debug.Log($"[Framecount: {Time.frameCount}] Heuristic called!");
 
             //Reconstruct the data received from the Observations.
             var playerCount = academy.GetCurrentNumberOfPlayers();

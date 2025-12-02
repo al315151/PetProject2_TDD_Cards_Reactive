@@ -4,7 +4,6 @@ using Factories;
 using Presenters;
 using Providers;
 using Services;
-using Training;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -48,7 +47,6 @@ namespace LifetimeScope
                 .As<GameManagerPresenter, IInitializable, IDisposable>();
             builder.Register<TableUIPresenter>(Lifetime.Scoped).As<TableUIPresenter, IInitializable, IDisposable>();
             builder.Register<StrategiesFactory>(Lifetime.Scoped).As<StrategiesFactory>();
-            builder.Register<CardGameAcademy>(Lifetime.Scoped).As<IDisposable, IInitializable>();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace PlayerPresenters
             if (card == null) {
                 return;
             }
-            Debug.Log($"[Framecount: {Time.frameCount}] Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
+            //Debug.Log($"[Framecount: {Time.frameCount}] Player: {PlayerId} Draws card: {card.CardSuit.ToString()} , {card.CardNumber.ToString()}");
             //Debug.Log($"Player: {PlayerId} player hand size: {PlayerHandSize}");
             playerData.AddCard(card);
         }

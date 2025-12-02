@@ -105,16 +105,13 @@ namespace Tests
 
         private void DisablePlayerInput(ApplicationLifetimeScope scope)
         {
-            const int playerId = -1;
             //Get players, and disablePlayer input for user (on tests we make it select random cards).
             var playersService = scope.Container.Resolve<PlayersService>();
             Assert.IsNotNull(playersService);
 
             var players = playersService.GetAllPlayers();
             foreach (var player in players) {
-                if (player.PlayerId == playerId) {
-                    player.DisablePlayerInput();
-                }
+                player.DisablePlayerInput();
             }
         }
 
