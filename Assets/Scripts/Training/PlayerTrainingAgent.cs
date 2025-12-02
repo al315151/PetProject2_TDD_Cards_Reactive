@@ -63,12 +63,19 @@ namespace Training
             var cardIndexInHand = actionsBuffer[0];
 
             var playerData = academy.GetPlayerData(playerId);
-            var cardDataFromIndex = playerData.PlayerHand.Value[cardIndexInHand];
+            var playerHand = playerData.PlayerHand.Value;
 
-           academy.PlayCardFromTrainingAgent(playerId, cardDataFromIndex);
+            //If input received is not valid, then return a valid card.
+            if (playerHand.Count >= cardIndexInHand)
+            {
+                cardIndexInHand = Random.Range(0, playerHand.Count);
+            }
 
-            //Read the data from the actions, and apply it to the player.
-            base.OnActionReceived(actions);
+            var cardDataFromIndex = playerHand[cardIndexInHand];
+
+            Debug.Log($"[Framecount: {Time.frameCount}]Card found by action: {cardDataFromIndex.CardNumber} , {cardDataFromIndex.CardSuit}");
+
+            academy.PlayCardFromTrainingAgent(playerId, cardDataFromIndex);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
@@ -92,14 +99,11 @@ namespace Training
             var discreteActions = actionsOut.DiscreteActions;
 
             discreteActions[0] = Mathf.Max(0, indexOfPlayerCard);
-
-            base.Heuristic(actionsOut);
         }
 
         public override void OnEpisodeBegin()
         {
             Debug.Log($"[Framecount: {Time.frameCount}] OnEpisodeBegin called! for player with ID: {playerId}");
-            base.OnEpisodeBegin();
         }
     }
 }

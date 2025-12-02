@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Factories;
-using JetBrains.Annotations;
 using Presenters;
 using Services;
 using Unity.MLAgents;
@@ -32,16 +30,9 @@ namespace Training
 
         private void InitializeCardGameAcademy()
         {
-            Academy.Instance.AutomaticSteppingEnabled = false;
             CreateDependencies();
             Subscribe();
-            Debug.Log($"[Framecount:{Time.frameCount}] Initialize -- EnvironmentStep");
-            Academy.Instance.EnvironmentStep();
-        }
-
-        public void FixedUpdate()
-        {
-            //Academy.Instance.EnvironmentStep();
+            Debug.Log($"[Framecount:{Time.frameCount}] Initialize");
         }
 
         private void CreateDependencies()
@@ -92,12 +83,11 @@ namespace Training
             }
 
             gameManagerPresenter.StartNextRoundButtonPressed();
-            Academy.Instance.EnvironmentStep();
         }
 
         private void OnGameRoundStarted()
         {
-            Debug.Log($"[Framecount:{Time.frameCount}] OnGameRoundStarted -- Calling EnvironmentStep");
+            Debug.Log($"[Framecount:{Time.frameCount}] OnGameRoundStarted");
             var currentRound = gameManagerPresenter.GetCurrentRound();
             currentRound.OnCardRequestedFromPlayer += OnRequestedCardFromPlayer;
         }
