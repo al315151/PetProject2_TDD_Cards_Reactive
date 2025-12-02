@@ -68,7 +68,8 @@ namespace Training
             //If input received is not valid, then return a valid card.
             if (playerHand.Count >= cardIndexInHand)
             {
-                cardIndexInHand = Random.Range(0, playerHand.Count);
+                //cardIndexInHand = Random.Range(0, playerHand.Count);
+                cardIndexInHand = 0;
             }
 
             var cardDataFromIndex = playerHand[cardIndexInHand];
@@ -103,7 +104,7 @@ namespace Training
 
         public override void OnEpisodeBegin()
         {
-            Debug.Log($"[Framecount: {Time.frameCount}] OnEpisodeBegin called! for player with ID: {playerId}");
+            Debug.Log($"[Framecount: {Time.frameCount}] OnEpisodeBegin called! StepCount from academy: {Academy.Instance.StepCount} for player with ID: {playerId}");
         }
     }
 }

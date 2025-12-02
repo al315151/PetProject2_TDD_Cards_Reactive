@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Data;
 using Factories;
 using Presenters;
@@ -107,7 +108,11 @@ namespace Training
         private void OnEnvironmentReset()
         {
             Debug.Log($"[Framecount:{Time.frameCount}] OnEnvironmentReset!");
-            gameManagerPresenter.FinishGame();
+            StartGame();
+        }
+
+        private void StartGame()
+        {
             gameManagerPresenter.StartGameButtonPressed();
             DisableNonPlayersInput();
             gameManagerPresenter.StartNextRoundButtonPressed();
@@ -149,6 +154,15 @@ namespace Training
             {
                 agent.EndEpisode();
             }
+
+            WaitThenStartTheGameAgain();
+        }
+
+        public async Task WaitThenStartTheGameAgain()
+        {
+            await Task.Delay(10);
+            //Wait for the game to be finished!
+            StartGame();
         }
 
         private void DisableNonPlayersInput()

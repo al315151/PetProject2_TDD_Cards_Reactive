@@ -74,7 +74,7 @@ namespace Presenters
         private void OnCardPlayedFromPlayer(int playerId, CardData cardData)
         {
             Debug.Log(
-                $"[Round: {gameRoundData.RoundId}] Player: {playerId} has played card: Number: {cardData.CardNumber} , Suit: {cardData.CardSuit}");
+                $"[Framecount: {Time.frameCount}] [Round: {gameRoundData.RoundId}] Player: {playerId} has played card: Number: {cardData.CardNumber} , Suit: {cardData.CardSuit}");
 
             var PlayedCardsByPlayers = gameRoundData.PlayedCardsInRound;
 
