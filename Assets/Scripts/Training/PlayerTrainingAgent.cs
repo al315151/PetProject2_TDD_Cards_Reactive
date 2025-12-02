@@ -50,7 +50,7 @@ namespace Training
                     sensor.AddObservation(new Vector2(0 , 0));
                     continue;
                 }
-                Debug.Log($"[Framecount: {Time.frameCount}] Adding Card from Hand with info: {playedCards[i].CardNumber} , {playedCards[i].CardSuit} on index: {i}");
+                Debug.Log($"[Framecount: {Time.frameCount}] Adding Card from Hand with info: {playerHand[i].CardNumber} , {playerHand[i].CardSuit} on index: {i}");
                 sensor.AddObservation(new Vector2(playerHand[i].CardNumber, (int)playerHand[i].CardSuit));
             }
         }

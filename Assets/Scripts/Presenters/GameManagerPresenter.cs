@@ -86,9 +86,7 @@ namespace Presenters
             if (hasGameStarted == false) {
                 return;
             }
-            if (StartPlayRound()) {
-                OnGameRoundStarted?.Invoke();
-            }
+            StartPlayRound();
         }
 
         private void DrawInitialHandForPlayers()
@@ -175,6 +173,8 @@ namespace Presenters
             if (CreateAndStartRound() == false) {
                 return false;
             }
+            OnGameRoundStarted?.Invoke();
+
             // Then set round order.
             gameManagerData.EstablishRoundOrder();
             // Then, start the Play phase. we will receive event / wait for the cards to be played 
