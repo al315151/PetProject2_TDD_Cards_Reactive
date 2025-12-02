@@ -91,7 +91,7 @@ namespace Training
                 player.SetReward(rewardPerRoundWon);
             }
 
-
+            gameManagerPresenter.StartNextRoundButtonPressed();
             Academy.Instance.EnvironmentStep();
         }
 
@@ -205,6 +205,24 @@ namespace Training
         public GameRoundPresenter GetCurrentRoundPresenter()
         {
             return gameManagerPresenter.GetCurrentRound();
+        }
+
+        public CardSuit GetPredominantCardSuit()
+        {
+            return gameManagerPresenter.PredominantCardSuit;
+        }
+
+        public void PlayCardFromTrainingAgent(int playerId, CardData cardData)
+        {
+            var allPlayersPresenters = playersService.GetAllPlayers();
+            foreach (var player in allPlayersPresenters)
+            {
+                if (player.PlayerId == playerId)
+                {
+                    player.PlayCardFromUserHand(cardData.CardSuit, cardData.CardNumber);
+                    break;
+                }
+            }
         }
     }
 }

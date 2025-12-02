@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Data;
+using Strategies;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -12,7 +12,7 @@ namespace Training
         public int PlayerId => playerId;
 
         [SerializeField]
-        private PlayerStrategyType playerStrategyType;
+        private PlayerStrategyType playerStrategyType = PlayerStrategyType.RoundReading_MaxRoundWins_UsePredominantSuit;
 
         [SerializeField]
         private int playerId = 1;
@@ -59,27 +59,40 @@ namespace Training
         {
             Debug.Log($"[Framecount: {Time.frameCount}] OnActionReceived called, actions continuous size: {actions.ContinuousActions.Length} , actions discrete actions: {actions.DiscreteActions.Length}");
 
-            //Reconstruct the data received from the Observations.
-            var playerCount = academy.GetCurrentNumberOfPlayers();
-            var playerMaxHandCount = PlayerData.MaxHandSize;
-            var currentRoundPresenter = academy.GetCurrentRoundPresenter();
-            var currentIndex = 0;
+            var actionsBuffer = actions.DiscreteActions;
+            var cardIndexInHand = actionsBuffer[0];
 
-            var cardsPlayedInRound = new List<CardData>();
+            var playerData = academy.GetPlayerData(playerId);
+            var cardDataFromIndex = playerData.PlayerHand.Value[cardIndexInHand];
 
-            for (int i = 0; i < playerCount; i++)
-            {
-                //var obtainedCard = new CardData(actions.DiscreteActions)
-            }
+           academy.PlayCardFromTrainingAgent(playerId, cardDataFromIndex);
 
-
-            Debug.Log($"[Framecount: {Time.frameCount}] ONActionReceived called!");
+            //Read the data from the actions, and apply it to the player.
             base.OnActionReceived(actions);
         }
 
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             Debug.Log($"[Framecount: {Time.frameCount}] Heuristic called!");
+
+            //Reconstruct the data received from the Observations.
+            var playerCount = academy.GetCurrentNumberOfPlayers();
+            var playerMaxHandCount = PlayerData.MaxHandSize;
+            var playerData = academy.GetPlayerData(playerId);
+            var currentRoundPresenter = academy.GetCurrentRoundPresenter();
+            var roundData = currentRoundPresenter.GameRoundData;
+
+            var strategySolver = new PlayerTableReadingStrategiesSolver();
+            strategySolver.SetupAdditionalData(playerStrategyType, roundData, academy.GetPredominantCardSuit());
+            strategySolver.SetupPlayerData(playerData);
+            var cardPoppedUpFromStrategy = strategySolver.ExecuteStrategy();
+            
+            var indexOfPlayerCard = playerData.PlayerHand.Value.IndexOf(cardPoppedUpFromStrategy);
+
+            var discreteActions = actionsOut.DiscreteActions;
+
+            discreteActions[0] = Mathf.Max(0, indexOfPlayerCard);
+
             base.Heuristic(actionsOut);
         }
 

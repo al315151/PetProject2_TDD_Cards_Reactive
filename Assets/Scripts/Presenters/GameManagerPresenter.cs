@@ -18,6 +18,7 @@ namespace Presenters
         public Action OnGameFinished;
 
         public bool HasGameStarted => hasGameStarted;
+        public CardSuit PredominantCardSuit => gameManagerData.DeckInitialCardSuit;
 
         private readonly GameManagerData gameManagerData;
         private readonly PlayersService playersService;
