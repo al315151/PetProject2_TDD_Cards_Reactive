@@ -110,14 +110,14 @@ namespace PlayerPresenters
             playerData.AddScoreToPlayer(roundScore);
         }
 
-        public void DisablePlayerInput()
+        public void DisableExternalPlayerInput()
         {
-            playerData.DisablePlayerInput();
+            playerData.DisableExternalPlayerInput();
         }
 
-        public void EnablePlayerInput()
+        public void EnableExternalPlayerInput()
         {
-            playerData.EnablePlayerInput();
+            playerData.EnableExternalPlayerInput();
         }
 
         public IDisposable Subscribe(IObserver<KeyValuePair<int, CardData>> observer)

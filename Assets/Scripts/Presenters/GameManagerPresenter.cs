@@ -14,6 +14,7 @@ namespace Presenters
 
         public Action<CardSuit> OnGameStarted;
         public Action OnGameRoundStarted;
+        public Action OnGameRoundStartSetupFinished;
         public Action OnGameRoundFinished;
         public Action OnGameFinished;
 
@@ -181,6 +182,7 @@ namespace Presenters
             // Then, start the Play phase. we will receive event / wait for the cards to be played 
             currentGameRoundPresenter.StartPlayPhase();
             // On current gameplay, we will have to wait for player input to actually know when to resolve the situation.
+            OnGameRoundStartSetupFinished?.Invoke();
             return true;
         }
 

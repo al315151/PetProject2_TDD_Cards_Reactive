@@ -179,11 +179,11 @@ namespace Training
             {              
                 if (trainingPlayers.Contains(player.PlayerId))
                 {
-                    player.EnablePlayerInput();
+                    player.EnableExternalPlayerInput();
                 }
                 else
                 {
-                    player.DisablePlayerInput();
+                    player.DisableExternalPlayerInput();
                 }                
             }            
         }

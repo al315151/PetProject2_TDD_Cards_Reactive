@@ -9,7 +9,7 @@ namespace Data
 
         public CardData LatestPlayedCard;
         public PlayerStrategyType PlayerStrategy => playerStrategy;
-        public bool ExternalInputEnabled => inputEnabled;
+        public bool ExternalInputEnabled => externalInput;
 
         public int PlayerHandSize => PlayerHand.Value.Count;
         public int PlayerId => id;
@@ -19,7 +19,7 @@ namespace Data
 
         private PlayerStrategyType playerStrategy;
 
-        private bool inputEnabled = false;
+        private bool externalInput = false;
         private readonly int id;
 
         public PlayerData(int playerId)
@@ -27,17 +27,17 @@ namespace Data
             id = playerId;
             PlayerHand = new ReactiveProperty<List<CardData>>(new List<CardData>());
             PlayerScore = new ReactiveProperty<int>(0);
-            inputEnabled = true;
+            externalInput = false;
         }
 
-        public void DisablePlayerInput()
+        public void DisableExternalPlayerInput()
         {
-            inputEnabled = false;
+            externalInput = false;
         }
 
-        public void EnablePlayerInput()
+        public void EnableExternalPlayerInput()
         {
-            inputEnabled = true;
+            externalInput = true;
         }
 
         public int GetScore()

@@ -39,7 +39,7 @@ namespace Presenters
         public void Initialize()
         {
             gameManagerPresenter.OnGameStarted += OnGameStarted;
-            gameManagerPresenter.OnGameRoundStarted += OnGameRoundStarted;
+            gameManagerPresenter.OnGameRoundStartSetupFinished += OnGameRoundStarted;
             gameManagerPresenter.OnGameRoundFinished += OnGameRoundFinished;
             tableUIView.RequestDeckCardCountUpdate += OnRequestDeckCardCountUpdate;
 
@@ -91,7 +91,7 @@ namespace Presenters
         public void Dispose()
         {
             gameManagerPresenter.OnGameStarted -= OnGameStarted;
-            gameManagerPresenter.OnGameRoundStarted -= OnGameRoundStarted;
+            gameManagerPresenter.OnGameRoundStartSetupFinished -= OnGameRoundStarted;
             gameManagerPresenter.OnGameRoundFinished -= OnGameRoundFinished;
             playersService.OnPlayersInitialized -= OnPlayersInitialized;
             tableUIView.RequestDeckCardCountUpdate -= OnRequestDeckCardCountUpdate;

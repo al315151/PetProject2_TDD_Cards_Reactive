@@ -51,7 +51,7 @@ namespace Presenters
             //Get PlayerData and subscribe to its changes!
             userPlayerPresenter = playersService.GetUserPlayer();
             userPlayerData = userPlayerPresenter.GetPlayerData();
-
+            userPlayerPresenter.EnableExternalPlayerInput();
             SubscribeToPlayerDataChanges();
         }
 

@@ -111,7 +111,7 @@ namespace Tests
 
             var players = playersService.GetAllPlayers();
             foreach (var player in players) {
-                player.DisablePlayerInput();
+                player.DisableExternalPlayerInput();
             }
         }
 
