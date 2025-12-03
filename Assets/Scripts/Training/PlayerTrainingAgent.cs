@@ -45,7 +45,10 @@ namespace Training
         public override void Initialize()
         {
             base.Initialize();
-            Subscribe();
+            if (isAgentOnTrainingEnvironment == false)
+            {
+                Subscribe();
+            }            
         }
 
         private void Subscribe()
