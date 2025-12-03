@@ -67,6 +67,19 @@ namespace Services
             return data;
         }
 
+        public PlayerPresenter GetPlayerPresenterById(int playerId)
+        {
+            var allPlayers = GetAllPlayers();
+            foreach (var player in allPlayers)
+            {
+                if (player.PlayerId == playerId)
+                {
+                    return player;
+                }
+            }
+            return null;
+        }
+
         public PlayerPresenter GetUserPlayer()
         {
             return userPlayer;

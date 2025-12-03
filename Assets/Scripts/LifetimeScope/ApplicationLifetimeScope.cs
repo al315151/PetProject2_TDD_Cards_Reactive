@@ -4,6 +4,7 @@ using Factories;
 using Presenters;
 using Providers;
 using Services;
+using Training;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -24,6 +25,9 @@ namespace LifetimeScope
 
         [SerializeField]
         private CardSuitSpriteProvider cardSuitSpriteSpriteProvider;
+
+        [SerializeField]
+        private PlayerTrainingAgent playerTrainingAgent;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -47,6 +51,11 @@ namespace LifetimeScope
                 .As<GameManagerPresenter, IInitializable, IDisposable>();
             builder.Register<TableUIPresenter>(Lifetime.Scoped).As<TableUIPresenter, IInitializable, IDisposable>();
             builder.Register<StrategiesFactory>(Lifetime.Scoped).As<StrategiesFactory>();
+
+            if (playerTrainingAgent != null)
+            {
+                builder.RegisterComponent(playerTrainingAgent).As<PlayerTrainingAgent, IDisposable>();
+            }
         }
     }
 }

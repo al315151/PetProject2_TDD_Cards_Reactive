@@ -190,15 +190,9 @@ namespace Training
 
         public PlayerData GetPlayerData(int playerId)
         {
-            var allPlayers = playersService.GetAllPlayersData();
-            foreach (var player in allPlayers)
-            {
-                if (player.PlayerId == playerId)
-                {
-                    return player;
-                }
-            }
-            return null;
+            var playerPresenter = playersService.GetPlayerPresenterById(playerId);
+
+            return playerPresenter != null ? playerPresenter.GetPlayerData() : null;
         }
 
         public int GetCurrentNumberOfPlayers()
