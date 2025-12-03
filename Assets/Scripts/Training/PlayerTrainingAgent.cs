@@ -88,7 +88,7 @@ namespace Training
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            Debug.Log($"[Framecount: {Time.frameCount}] ======ADDED OBSERVATIONS FOR PLAYER: {playerId} ======");
+            Debug.Log($"[Framecount: {Time.frameCount}] ====== ADDED OBSERVATIONS FOR PLAYER: {playerId} ======");
             if (isAgentOnTrainingEnvironment)
             {
                 Debug.Log($"[Framecount: {Time.frameCount}] Observations called from Training environment!");
@@ -168,8 +168,6 @@ namespace Training
 
         public override void OnActionReceived(ActionBuffers actions)
         {
-            //Debug.Log($"[Framecount: {Time.frameCount}] OnActionReceived called, actions continuous size: {actions.ContinuousActions.Length} , actions discrete actions: {actions.DiscreteActions.Length}");
-
             List<CardData> playerHand;
 
             if (isAgentOnTrainingEnvironment)
@@ -223,8 +221,6 @@ namespace Training
 
         public override void Heuristic(in ActionBuffers actionsOut)
         {
-            //Debug.Log($"[Framecount: {Time.frameCount}] Heuristic called!");
-
             var discreteActions = actionsOut.DiscreteActions;
             int indexOfPlayerCard;
             

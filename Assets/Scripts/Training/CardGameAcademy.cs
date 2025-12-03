@@ -158,7 +158,7 @@ namespace Training
             WaitThenStartTheGameAgain();
         }
 
-        public async Task WaitThenStartTheGameAgain()
+        private async Task WaitThenStartTheGameAgain()
         {
             await Task.Delay(10);
             //Wait for the game to be finished!
@@ -212,14 +212,10 @@ namespace Training
 
         public void PlayCardFromTrainingAgent(int playerId, CardData cardData)
         {
-            var allPlayersPresenters = playersService.GetAllPlayers();
-            foreach (var player in allPlayersPresenters)
+            var playerPresenter = playersService.GetPlayerPresenterById(playerId);
+            if (playerPresenter != null)
             {
-                if (player.PlayerId == playerId)
-                {
-                    player.PlayCardFromUserHand(cardData.CardSuit, cardData.CardNumber);
-                    break;
-                }
+                playerPresenter.PlayCardFromUserHand(cardData.CardSuit, cardData.CardNumber);
             }
         }
     }
