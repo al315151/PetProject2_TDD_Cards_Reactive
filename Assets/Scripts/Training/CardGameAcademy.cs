@@ -42,7 +42,7 @@ namespace Training
             Debug.Log($"[Framecount:{Time.frameCount}] Creating dependencies");
             var gameManagerData = new GameManagerData();
             gameManagerData.InitializeGameData();
-            strategiesFactory = new StrategiesFactory(gameManagerData);
+            strategiesFactory = new StrategiesFactory();
             playersService = new PlayersService(strategiesFactory);
             playersService.Initialize();
             gameManagerData.ReceivePlayersData(playersService.GetAllPlayersData());

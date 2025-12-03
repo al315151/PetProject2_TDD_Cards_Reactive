@@ -20,7 +20,7 @@ namespace Tests
             CreateCustomPlayersAndRound(out var players, out var gameRoundData);
 
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var randomStrategy = strategiesFactory.CreateRandomStrategy(players[0].GetPlayerData());
 
             players[0].SetPlayerStrategy(PlayerStrategyType.Random, randomStrategy);
@@ -187,7 +187,7 @@ namespace Tests
             PlayerStrategyType playerStrategyType)
         {
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var tableReadingStrategy =
                 strategiesFactory.CreateRoundPlayedCardsStrategiesSolver(playerPresenter.GetPlayerData()) as
                     PlayerTableReadingStrategiesSolver;

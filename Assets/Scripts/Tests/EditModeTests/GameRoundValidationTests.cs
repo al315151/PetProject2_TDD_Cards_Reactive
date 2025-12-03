@@ -18,7 +18,7 @@ namespace Tests
             var numberOfCPUPlayers = 2;
 
             gameManagerData = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManagerData);
+            var strategiesFactory = new StrategiesFactory();
             playersService = new PlayersService(strategiesFactory);
             gameManagerPresenter = new GameManagerPresenter(gameManagerData, playersService);
 

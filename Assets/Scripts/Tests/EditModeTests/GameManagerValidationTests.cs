@@ -18,7 +18,7 @@ namespace Tests
         public void GameManagerTestCreateGameWithSpecifiedPlayers(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             playerService.InitializePlayers(numberOfCPUPlayers);
             gameManager.ReceivePlayersData(playerService.GetAllPlayersData());
@@ -32,7 +32,7 @@ namespace Tests
         {
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
@@ -54,7 +54,7 @@ namespace Tests
         {
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
@@ -83,7 +83,7 @@ namespace Tests
         {
             var numberOfCPUPlayers = 2;
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
@@ -112,7 +112,7 @@ namespace Tests
         public async Task GameManagerValidation_PlayFourRounds_PlayersHaveProperAmountOfCards(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
 
@@ -169,7 +169,7 @@ namespace Tests
         public async Task GameManagerValidation_PlayAllRounds_PlayUntilDeckIsEmpty(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
@@ -205,7 +205,7 @@ namespace Tests
         public async Task GameManagerValidation_PlayAllRounds_GameWinnerHasHighestScore(int numberOfCPUPlayers)
         {
             var gameManager = new GameManagerData();
-            var strategiesFactory = new StrategiesFactory(gameManager);
+            var strategiesFactory = new StrategiesFactory();
             var playerService = new PlayersService(strategiesFactory);
             var gameManagerPresenter = new GameManagerPresenter(gameManager, playerService);
             playerService.InitializePlayers(numberOfCPUPlayers);
