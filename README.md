@@ -31,6 +31,30 @@ The Agent is trained to replicate the strategy specified on the Agent (can be co
 * Open the PlayWithTrainedPlayerScene, setup the model within the TrainingAgent instance within the scene on the BehaviorParameters --> Model.
 * Start Play mode, as the Agent is already programmed to use the trained model to work.
 
+## How to play
+
+Once application starts, a menu with many empty objects will appear.
+
+* To start the game, press the button "Start Game".
+* Once that happens, cards will be dealt to your hand (bottom part of the UI).
+* To start playing, press the button "Start next Round".
+
+
+* Depending on player order (middle part of the UI, above the "empty cards", the text will tell you which is your order), the NPCs will play before or after you.
+* Click on a card on your hand to play it. Once that happens, the rest of the NPCs will also play their cards.
+* Depending on the cards played, a winner will be announced (rules for it are placed below).
+* If the player won the round, its score will increase depending on the value the cards on this round have.
+
+* To continue playing, press the button "Start Next Round" again, until no cards in any of the players (user or NPCs) are available.
+* To start a new game, press the button "Start Game".
+
+Card score works the following way:
+* 1 -- 11 points
+* 3 -- 10 points
+* 10 -- 2 points
+* 11 -- 3 points
+* 12 -- 4 points
+
 ## How does the game actually works 
 
 For further information about the base project, game rules, etc. Change to "main" branch and check the README there.
